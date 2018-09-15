@@ -31,9 +31,16 @@ function findCard(name)
     return 0
 end
 
+function castSpell(index)
+    message = "You cast " .. cards.name[index]
+    if cards.type[index] == "attack" then
+        message = "You cast " .. cards.name[index] .. " and dealt " .. cards.damage[index] .. " damage."
+    elseif cards.type[index] == "defense" then
+        message = "You cast " .. cards.name[index] .. " and blocked"
+    end
+end
+
 function love.load()
-    fireball = newAnimation(love.graphics.newImage("Assets/Cards/Fireball.png"), 160, 160, 1)
-    waterball = newAnimation(love.graphics.newImage("Assets/Cards/Waterball.png"), 160, 160, 1)
     background = love.graphics.newImage("Assets/Background.png")
     mainMenuTextBackground = love.graphics.newImage("Assets/MainMenuText.png")
     person = love.graphics.newImage("Assets/Person.png")
@@ -44,8 +51,11 @@ function love.load()
     menu = "[P]lay Game"
     input = ""
     message = "Type P to Start"
-    gameStarted = false
+    gameStage = "menu"
 
+    --load cards
+    fireball = newAnimation(love.graphics.newImage("Assets/Cards/Fireball.png"), 160, 160, 1)
+    waterball = newAnimation(love.graphics.newImage("Assets/Cards/Waterball.png"), 160, 160, 1)
     readCards()
 
     love.keyboard.setKeyRepeat(true)
@@ -60,27 +70,26 @@ function love.keypressed(key)
     message = ""
     --textbox
     if key == "backspace" then
-        if utf8.offset(input, - 1) then
-            input = string.sub(input, 1, utf8.offset(input, - 1) - 1)
+        if utf8.offset(input, -1) then
+            input = string.sub(input, 1, utf8.offset(input, -1) - 1)
         end
     end
     if key == "return" then
         --take input
         input = string.lower(input)
-        local index = findCard(input) --find location of card
+        local location = findCard(input) --find location of card
         if input == "p" or input == "play game" then
             --start game
-            gameStarted = true
+            gameStage = "cardSelect"
             input = ""
-            else if index > 0 then
-                --cast spell
-                message = "You cast " .. input
-            else
-                --error message
-                message = "invalid input"
-            end
-            input = "" -- clear input
+        elseif location > 0 and gameStage == "cardSelect" then
+            --add card to deck
+        elseif location > 0 and gameStage == "game" then
+            castSpell(location) --cast the spell
+        else
+            message = "invalid input" --error message
         end
+        input = "" -- clear input
     end
 end
 
@@ -103,7 +112,7 @@ function love.draw()
     love.graphics.setFont(font) --set font to normal font
     love.graphics.printf(message, 5, 570, love.graphics.getWidth(), "left")
     love.graphics.printf(input, 5, 570, love.graphics.getWidth(), "left")
-    if gameStarted == false then
+    if gameStage == "menu" then
         --title
         love.graphics.draw(mainMenuTextBackground, 0, 205)
         love.graphics.setFont(titleFont) --set font to title font
@@ -122,8 +131,8 @@ end
 
 function newAnimation(image, width, height, duration)
     local animation = {}
-    animation.spriteSheet = image;
-    animation.quads = {};
+    animation.spriteSheet = image
+    animation.quads = {}
 
     for y = 0, image:getHeight() - height, height do
         for x = 0, image:getWidth() - width, width do
