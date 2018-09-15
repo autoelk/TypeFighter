@@ -11,7 +11,7 @@ function readCards()
     --read cards into array cards
     io.input("Assets/Cards/cards.txt")
     numCards = io.read()
-    for i=1,numCards do
+    for i = 1, numCards do
         io.read()
         cards.name[i] = io.read()
         cards.damage[i] = io.read()
@@ -19,6 +19,16 @@ function readCards()
         cards.type[i] = io.read()
     end
     io.close()
+end
+
+function findCard(name)
+    name = string.lower(name)
+    for i = 1, numCards do
+        if cards.name[i] == name then
+            return i
+        end
+    end
+    return 0
 end
 
 function love.load()
@@ -34,7 +44,7 @@ function love.load()
     menu = "[P]lay Game"
     input = ""
     message = "Type P to Start"
-    gameStarted = true
+    gameStarted = false
 
     readCards()
 
@@ -57,14 +67,20 @@ function love.keypressed(key)
     if key == "return" then
         --take input
         input = string.lower(input)
+        local index = findCard(input) --find location of card
         if input == "p" or input == "play game" then
             --start game
-            gameStarted = false
-        else
-            --error message
-            message = "invalid input"
+            gameStarted = true
+            input = ""
+            else if index > 0 then
+                --cast spell
+                message = "You cast " .. input
+            else
+                --error message
+                message = "invalid input"
+            end
+            input = "" -- clear input
         end
-        input = ""
     end
 end
 
@@ -87,7 +103,7 @@ function love.draw()
     love.graphics.setFont(font) --set font to normal font
     love.graphics.printf(message, 5, 570, love.graphics.getWidth(), "left")
     love.graphics.printf(input, 5, 570, love.graphics.getWidth(), "left")
-    if gameStarted == true then
+    if gameStarted == false then
         --title
         love.graphics.draw(mainMenuTextBackground, 0, 205)
         love.graphics.setFont(titleFont) --set font to title font
