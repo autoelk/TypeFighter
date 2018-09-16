@@ -4,7 +4,8 @@ cards = {
     ["name"] = {},
     ["damage"] = {},
     ["mana"] = {},
-    ["type"] = {}
+    ["type"] = {},
+    ["anim"] = {}
 }
 
 function split(pString, pPattern)
@@ -27,20 +28,6 @@ function split(pString, pPattern)
         print(Table[i])
     end
     return Table
-end
-
-function readCards()
-    --read cards into array cards
-    io.input("Assets/Cards/cards.txt")
-    numCards = io.read()
-    for i = 1, numCards do
-        tempTable = split(io.read(), " ")
-        cards.name[i] = tempTable[1]
-        cards.damage[i] = tempTable[2]
-        cards.mana[i] = tempTable[3]
-        cards.type[i] = tempTable[4]
-    end
-    io.close()
 end
 
 function findCard(name)
@@ -74,11 +61,18 @@ function love.load()
     input = ""
     message = "Type P to Start"
     gameStage = "menu"
-
-    --load cards
-    fireball = newAnimation(love.graphics.newImage("Assets/Cards/Fireball.png"), 160, 160, 1)
-    waterball = newAnimation(love.graphics.newImage("Assets/Cards/Waterball.png"), 160, 160, 1)
-    readCards()
+    --read cards into array cards
+    io.input("Assets/Cards/cards.txt")
+    numCards = io.read()
+    for i = 1, numCards do
+        local tempTable = split(io.read(), " ")
+        cards.name[i] = tempTable[1]
+        cards.damage[i] = tempTable[2]
+        cards.mana[i] = tempTable[3]
+        cards.type[i] = tempTable[4]
+        cards.anim[i] = newAnimation(love.graphics.newImage("Assets/Cards/" .. tempTable[5]), 160, 160, 1)
+    end
+    io.close()
 
     love.keyboard.setKeyRepeat(true)
 end
@@ -119,13 +113,11 @@ end
 
 function love.update(dt)
     --animations
-    fireball.currentTime = fireball.currentTime + dt
-    if fireball.currentTime >= fireball.duration then
-        fireball.currentTime = fireball.currentTime - fireball.duration
-    end
-    waterball.currentTime = waterball.currentTime + dt
-    if waterball.currentTime >= waterball.duration then
-        waterball.currentTime = waterball.currentTime - waterball.duration
+    for i = 1, numCards do
+        cards.anim[i].currentTime = cards.anim[i].currentTime + dt
+        if cards.anim[i].currentTime >= cards.anim[i].duration then
+            cards.anim[i].currentTime = cards.anim[i].currentTime - cards.anim[i].duration
+        end
     end
 end
 
@@ -147,10 +139,10 @@ function love.draw()
         love.graphics.setFont(font)
         love.graphics.printf(menu, 0, 300, love.graphics.getWidth(), "center")
         --animation
-        local fireballSpriteNum = math.floor(fireball.currentTime / fireball.duration * #fireball.quads) + 1
-        love.graphics.draw(fireball.spriteSheet, fireball.quads[fireballSpriteNum], 750, 345, 3.14159, 1)
-        local waterballSpriteNum = math.floor(waterball.currentTime / waterball.duration * #waterball.quads) + 1
-        love.graphics.draw(waterball.spriteSheet, waterball.quads[waterballSpriteNum], 50, 180, 0, 1)
+        local spriteNum0 = math.floor(cards.anim[1].currentTime / cards.anim[1].duration * #cards.anim[1].quads) + 1
+        local spriteNum1 = math.floor(cards.anim[2].currentTime / cards.anim[2].duration * #cards.anim[2].quads) + 1
+        love.graphics.draw(cards.anim[1].spriteSheet, cards.anim[1].quads[spriteNum0], 50, 180, 0, 1)
+        love.graphics.draw(cards.anim[2].spriteSheet, cards.anim[2].quads[spriteNum1], 750, 345, 3.14159, 1)
     end
     love.graphics.draw(person, 200, 400)
 end
