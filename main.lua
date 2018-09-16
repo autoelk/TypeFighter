@@ -7,16 +7,38 @@ cards = {
     ["type"] = {}
 }
 
+function split(pString, pPattern)
+    local Table = {}
+    local fpat = "(.-)" .. pPattern
+    local last_end = 1
+    local s, e, cap = pString:find(fpat, 1)
+    while s do
+        if s ~= 1 or cap ~= "" then
+            table.insert(Table, cap)
+        end
+        last_end = e + 1
+        s, e, cap = pString:find(fpat, last_end)
+    end
+    if last_end <= #pString then
+        cap = pString:sub(last_end)
+        table.insert(Table, cap)
+    end
+    for i = 1, #Table do
+        print(Table[i])
+    end
+    return Table
+end
+
 function readCards()
     --read cards into array cards
     io.input("Assets/Cards/cards.txt")
     numCards = io.read()
     for i = 1, numCards do
-        io.read()
-        cards.name[i] = io.read()
-        cards.damage[i] = io.read()
-        cards.mana[i] = io.read()
-        cards.type[i] = io.read()
+        tempTable = split(io.read(), " ")
+        cards.name[i] = tempTable[1]
+        cards.damage[i] = tempTable[2]
+        cards.mana[i] = tempTable[3]
+        cards.type[i] = tempTable[4]
     end
     io.close()
 end
@@ -77,7 +99,8 @@ function love.keypressed(key)
     if key == "return" then
         --take input
         input = string.lower(input)
-        local location = findCard(input) --find location of card
+        local location = findCard(input)
+        --find location of card
         if input == "p" or input == "play game" then
             --start game
             gameStage = "cardSelect"
@@ -85,7 +108,8 @@ function love.keypressed(key)
         elseif location > 0 and gameStage == "cardSelect" then
             --add card to deck
         elseif location > 0 and gameStage == "game" then
-            castSpell(location) --cast the spell
+            --cast the spell
+            castSpell(location)
         else
             message = "invalid input" --error message
         end
@@ -109,13 +133,15 @@ function love.draw()
     --background
     love.graphics.draw(background, 0, 0)
     love.graphics.draw(textBox, 0, 570)
-    love.graphics.setFont(font) --set font to normal font
+    love.graphics.setFont(font)
+    --set font to normal font
     love.graphics.printf(message, 5, 570, love.graphics.getWidth(), "left")
     love.graphics.printf(input, 5, 570, love.graphics.getWidth(), "left")
     if gameStage == "menu" then
         --title
         love.graphics.draw(mainMenuTextBackground, 0, 205)
-        love.graphics.setFont(titleFont) --set font to title font
+        love.graphics.setFont(titleFont)
+        --set font to title font
         love.graphics.printf(title, 0, 200, love.graphics.getWidth(), "center")
         --menu
         love.graphics.setFont(font)

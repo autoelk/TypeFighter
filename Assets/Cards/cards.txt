@@ -1,11 +1,3 @@
 2
-
-fireball
-7
-5
-attack
-
-waterball
-10
-6
-attack
+fireball 7 5 attack
+waterball 10 6 attack
