@@ -28,6 +28,17 @@ function split(pString, pPattern)
     return Table
 end
 
+function fileCheck(file_name)
+    local file_found = io.open(file_name, "r")
+
+    if file_found == nil then
+        file_found = false
+    else
+        file_found = true
+    end
+    return file_found
+end
+
 function love.wheelmoved(dx, dy)
     velx = velx + dx * 20
     vely = vely + dy * 20
@@ -60,16 +71,17 @@ function displayCard(cardNum)
         love.graphics.setColor(160 / 255, 160 / 255, 160 / 255)
     end
     love.graphics.rectangle("fill", cardX, cardY, 180, 252)
-    love.graphics.setColor(255, 255, 255)
-    love.graphics.printf(cards.name[cardNum], cardX + 16, cardY + 10, 180, "left")
-    love.graphics.printf(cards.mana[cardNum], cardX - 16, cardY + 10, 180, "right")
-    --print text
-    if cards.type[cardNum] == "attack" then
-        love.graphics.printf("Deal " .. cards.damage[cardNum] .. " damage.", cardX, cardY + 200, 180, "center")
-    end
     --print image
-    love.graphics.rectangle("fill", cardX + 16, cardY + 42, 148, 131)
-    -- end
+    love.graphics.setColor(255, 255, 255)
+    love.graphics.rectangle("fill", cardX + 10, cardY + 25, 160, 160)
+    local spriteNum = math.floor(cards.anim[cardNum].currentTime / cards.anim[cardNum].duration * #cards.anim[cardNum].quads) + 1
+    love.graphics.draw(cards.anim[cardNum].spriteSheet, cards.anim[cardNum].quads[spriteNum], cardX + 10, cardY + 25, 0, 1)
+    --print text
+    love.graphics.printf(cards.name[cardNum], cardX + 10, cardY, 180, "left")
+    love.graphics.printf(cards.mana[cardNum], cardX - 10, cardY, 180, "right")
+    if cards.type[cardNum] == "attack" then
+        love.graphics.printf("Deal " .. cards.damage[cardNum] .. " damage.", cardX + 10, cardY + 200, 180, "left")
+    end
 end
 
 function castSpell(index)
@@ -102,7 +114,11 @@ function love.load()
         cards.mana[i] = tempTable[3]
         cards.type[i] = tempTable[4]
         cards.elem[i] = tempTable[5]
-        cards.anim[i] = newAnimation(love.graphics.newImage("Assets/Cards/" .. tempTable[6]), 160, 160, 1)
+        if fileCheck("Assets/Cards/" .. tempTable[6]) then
+            cards.anim[i] = newAnimation(love.graphics.newImage("Assets/Cards/" .. tempTable[6]), 160, 160, 1)
+        else
+            cards.anim[i] = newAnimation(love.graphics.newImage("Assets/Placeholder.png"), 160, 160, 1)
+        end
     end
     io.close()
 
@@ -110,7 +126,7 @@ function love.load()
     love.keyboard.setKeyRepeat(true)
     --scrolling
     scrollSpeed = 30
-    posx, posy = love.graphics.getWidth() * 0.5, 300
+    posx, posy = love.graphics.getWidth() * 0.5, 200
     velx, vely = 0, 0 -- The scroll velocity
 end
 
@@ -157,6 +173,9 @@ function love.update(dt)
         end
     end
     --scrolling
+    if posy >= 200 then
+        posy = 200
+    end
     posx = posx + velx * scrollSpeed * dt
     posy = posy + vely * scrollSpeed * dt
 
@@ -189,7 +208,6 @@ function love.draw()
     if gameStage == "cardSelect" then --Stage of card selection
         love.graphics.setColor(255, 255, 255) -- reset colors
         --Display card select title
-        love.graphics.draw(mainMenuTextBackground, 0, posy - 150)
         love.graphics.setFont(titleFont) --set font to title font
         love.graphics.printf("Select Cards", 0, posy - 135, love.graphics.getWidth(), "center")
 

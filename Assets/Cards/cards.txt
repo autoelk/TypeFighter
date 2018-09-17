@@ -1,4 +1,4 @@
-3
+4
 bolt 5 2 attack fire Lightning.png
 fireball 7 5 attack fire Fireball.png
 torrent 10 6 attack water Torrent.png
