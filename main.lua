@@ -43,6 +43,28 @@ function findCard(name)
     return 0
 end
 
+function displayCard(cardNum)
+    local colNum = cardNum % 3
+    if colNum == 0 then
+        colNum = 3
+    end
+    local rowNum = math.ceil(cardNum / 3)
+    if cards.elem[cardNum] == "fire" then
+        love.graphics.setColor(232 / 255, 0 / 255, 43 / 255)
+    elseif cards.elem[cardNum] == "earth" then
+        love.graphics.setColor(78 / 255, 171 / 255, 84 / 255)
+    elseif cards.elem[cardNum] == "water" then
+        love.graphics.setColor(39 / 255, 98 / 255, 176 / 255)
+    else
+        love.graphics.setColor(160 / 255, 160 / 255, 160 / 255)
+    end
+    love.graphics.rectangle("fill", 245 * (colNum - 1) + 65, 317 * (rowNum - 1) + posy, 180, 252, 10)
+    love.graphics.setColor(255, 255, 255)
+    love.graphics.printf(cards.name[cardNum], 245 * (colNum - 1) + 65, 317 * (rowNum - 1) + posy, 180, "left")
+    love.graphics.printf(cards.mana[cardNum], 245 * (colNum - 1) + 65, 317 * (rowNum - 1) + posy, 180, "right")
+    -- end
+end
+
 function castSpell(index)
     message = "You cast " .. cards.name[index]
     if cards.type[index] == "attack" then
@@ -164,43 +186,16 @@ function love.draw()
         love.graphics.printf("Select Cards", 0, posy - 135, love.graphics.getWidth(), "center")
 
         love.graphics.setFont(font)
-        local extraCards = numCards % 3
-        for i = 1, math.floor(numCards / 3) do
+        -- local extraCards = numCards % 3
+        for i = 1, math.ceil(numCards / 3) do
             for j = 1, 3 do
-                if cards.elem[i + j - 1] == "fire" then
-                    love.graphics.setColor(232 / 255, 0 / 255, 43 / 255)
-                elseif cards.elem[i + j - 1] == "earth" then
-                    love.graphics.setColor(78 / 255, 171 / 255, 84 / 255)
-                elseif cards.elem[i + j - 1] == "water" then
-                    love.graphics.setColor(39 / 255, 98 / 255, 176 / 255)
-                else
-                    love.graphics.setColor(160 / 255, 160 / 255, 160 / 255)
-                end
-                love.graphics.rectangle("fill", 245 * (j - 1) + 65, 317 * (i - 1) + posy, 180, 252, 10)
-                love.graphics.setColor(255, 255, 255)
-                love.graphics.printf(cards.name[i + j - 1], 245 * (j - 1) + 65, 317 * (i - 1) + posy, 180, "left")
-                love.graphics.printf(cards.mana[i + j - 1], 245 * (j - 1) + 65, 317 * (i - 1) + posy, 180, "right")
+                displayCard(i + j - 1)
             end
         end
-        --draw the extra cards
-        for i = 1, extraCards do
-            if cards.elem[math.floor(numCards / 3) + i] == "fire" then
-                love.graphics.setColor(232 / 255, 0 / 255, 43 / 255)
-            elseif cards.elem[math.floor(numCards / 3) + i] == "earth" then
-                love.graphics.setColor(78 / 255, 171 / 255, 84 / 255)
-            elseif cards.elem[math.floor(numCards / 3) + i] == "water" then
-                love.graphics.setColor(39 / 255, 98 / 255, 176 / 255)
-            else
-                love.graphics.setColor(160 / 255, 160 / 255, 160 / 255)
-            end
-            love.graphics.rectangle("fill", 245 * (i - 1) + 65, 317 * math.floor(numCards / 3) + posy, 180, 252, 10)
-            love.graphics.setColor(255, 255, 255)
-            love.graphics.printf(cards.name[math.floor(numCards / 3) + i], 245 * (i - 1) + 65, math.floor(numCards / 3) + posy, 180, "left")
-            love.graphics.printf(cards.mana[math.floor(numCards / 3) + i], 245 * (i - 1) + 65, math.floor(numCards / 3) + posy, 180, "right")
+        if gameStage == "game" then
         end
     end
-    if gameStage == "game" then
-    end
+
     --input box at bottom of screen
     love.graphics.draw(textBox, 0, 570)
     love.graphics.printf(message, 5, 570, love.graphics.getWidth(), "left")
