@@ -44,11 +44,12 @@ function findCard(name)
 end
 
 function displayCard(cardNum)
-    local colNum = cardNum % 3
+    love.graphics.setFont(font)
+    local colNum, rowNum = cardNum % 3, math.ceil(cardNum / 3)
     if colNum == 0 then
         colNum = 3
     end
-    local rowNum = math.ceil(cardNum / 3)
+    local cardX, cardY = 245 * (colNum - 1) + 65, 317 * (rowNum - 1) + posy
     if cards.elem[cardNum] == "fire" then
         love.graphics.setColor(232 / 255, 0 / 255, 43 / 255)
     elseif cards.elem[cardNum] == "earth" then
@@ -58,10 +59,16 @@ function displayCard(cardNum)
     else
         love.graphics.setColor(160 / 255, 160 / 255, 160 / 255)
     end
-    love.graphics.rectangle("fill", 245 * (colNum - 1) + 65, 317 * (rowNum - 1) + posy, 180, 252, 10)
+    love.graphics.rectangle("fill", cardX, cardY, 180, 252)
     love.graphics.setColor(255, 255, 255)
-    love.graphics.printf(cards.name[cardNum], 245 * (colNum - 1) + 65, 317 * (rowNum - 1) + posy, 180, "left")
-    love.graphics.printf(cards.mana[cardNum], 245 * (colNum - 1) + 65, 317 * (rowNum - 1) + posy, 180, "right")
+    love.graphics.printf(cards.name[cardNum], cardX + 16, cardY + 10, 180, "left")
+    love.graphics.printf(cards.mana[cardNum], cardX - 16, cardY + 10, 180, "right")
+    --print text
+    if cards.type[cardNum] == "attack" then
+        love.graphics.printf("Deal " .. cards.damage[cardNum] .. " damage.", cardX, cardY + 200, 180, "center")
+    end
+    --print image
+    love.graphics.rectangle("fill", cardX + 16, cardY + 42, 148, 131)
     -- end
 end
 
@@ -102,7 +109,7 @@ function love.load()
     --allow repeating input
     love.keyboard.setKeyRepeat(true)
     --scrolling
-    scrollSpeed = 10
+    scrollSpeed = 30
     posx, posy = love.graphics.getWidth() * 0.5, 300
     velx, vely = 0, 0 -- The scroll velocity
 end
@@ -162,7 +169,8 @@ function love.draw()
     --background
     love.graphics.draw(background, 0, 0)
     love.graphics.setFont(font)
-    love.graphics.draw(person, 200, 400)
+    love.graphics.draw(person, 100, 320)
+    love.graphics.draw(person, 700, 320, 0, -1, 1)
     --set font to normal font
     if gameStage == "menu" then
         --title
@@ -173,10 +181,10 @@ function love.draw()
         love.graphics.setFont(font)
         love.graphics.printf("[P]lay Game", 0, 300, love.graphics.getWidth(), "center")
         --animation
-        local spriteNum0 = math.floor(cards.anim[1].currentTime / cards.anim[1].duration * #cards.anim[1].quads) + 1
-        local spriteNum1 = math.floor(cards.anim[2].currentTime / cards.anim[2].duration * #cards.anim[2].quads) + 1
-        love.graphics.draw(cards.anim[1].spriteSheet, cards.anim[1].quads[spriteNum0], 50, 180, 0, 1)
-        love.graphics.draw(cards.anim[2].spriteSheet, cards.anim[2].quads[spriteNum1], 750, 345, 3.14159, 1)
+        local spriteNum0 = math.floor(cards.anim[findCard("torrent")].currentTime / cards.anim[findCard("torrent")].duration * #cards.anim[findCard("torrent")].quads) + 1
+        local spriteNum1 = math.floor(cards.anim[findCard("fireball")].currentTime / cards.anim[findCard("fireball")].duration * #cards.anim[findCard("fireball")].quads) + 1
+        love.graphics.draw(cards.anim[findCard("torrent")].spriteSheet, cards.anim[findCard("torrent")].quads[spriteNum0], 50, 180, 0, 1)
+        love.graphics.draw(cards.anim[findCard("fireball")].spriteSheet, cards.anim[findCard("fireball")].quads[spriteNum1], 750, 345, 3.14159, 1)
     end
     if gameStage == "cardSelect" then --Stage of card selection
         love.graphics.setColor(255, 255, 255) -- reset colors
@@ -185,8 +193,6 @@ function love.draw()
         love.graphics.setFont(titleFont) --set font to title font
         love.graphics.printf("Select Cards", 0, posy - 135, love.graphics.getWidth(), "center")
 
-        love.graphics.setFont(font)
-        -- local extraCards = numCards % 3
         for i = 1, math.ceil(numCards / 3) do
             for j = 1, 3 do
                 displayCard(i + j - 1)

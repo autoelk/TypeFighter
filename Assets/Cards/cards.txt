@@ -1,4 +1,5 @@
 3
-torrent 10 6 attack water Torrent.png
-fireball 7 5 attack fire Fireball.png
 bolt 5 2 attack fire Lightning.png
+fireball 7 5 attack fire Fireball.png
+torrent 10 6 attack water Torrent.png
+heal 5 5 defense earth Heal.png
