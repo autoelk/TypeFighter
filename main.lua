@@ -23,6 +23,15 @@ function findCard(thingToFind)
     return 0
 end
 
+function inDeck(thingToFind, table)
+    for i = 1, #table do
+        if thingToFind == table[i] then
+            return true
+        end
+    end
+    return false
+end
+
 function castSpell(index)
     message = "You cast " .. cards.name[index]
     if cards.type[index] == "attack" then
@@ -80,18 +89,36 @@ function love.keypressed(key)
     end
     if key == "return" then
         --take input
-        input = string.lower(input)
+        input = string.gsub(string.lower(input), "%s+", "")
         local location = findCard(input)
         --find location of card
         if input == "p" or input == "play game" then
             --start game
             gameStage = "cardSelect"
             input = ""
+            message = 'Type "deck" to view current deck'
         elseif location > 0 and gameStage == "cardSelect" then
             --add card to deck
+            if inDeck(location, deck1) then
+                message = "Sorry, but " .. cards.name[location] .. " is already in your deck"
+            elseif pick1 > 0 then
+                table.insert(deck1, location)
+                message = cards.name[location] .. " was added to you deck"
+            else
+                message = "You have no picks remaining"
+            end
         elseif location > 0 and gameStage == "game" then
             --cast the spell
             castSpell(location)
+        elseif input == "deck" then
+            local deck = ""
+            for i = 1, #deck1 do
+                deck = deck .. cards.name[deck1[i]] .. " "
+            end
+            if deck == "" then
+                deck = "Your deck is currently empty, add cards by typing their names"
+            end
+            message = deck
         else
             message = "invalid input" --error message
         end
