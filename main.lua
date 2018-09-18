@@ -9,10 +9,14 @@ cards = {
     ["anim"] = {}
 }
 
-function findCard(name)
-    name = string.lower(name)
+deck1, deck2 = {}, {}
+pick1, pick2 = 5, 5
+-- ban1, ban2 = 2, 2
+
+function findCard(thingToFind)
+    thingToFind = string.lower(thingToFind)
     for i = 1, numCards do
-        if cards.name[i] == name then
+        if cards.name[i] == thingToFind then
             return i
         end
     end
@@ -130,25 +134,22 @@ function love.draw()
         --menu
         love.graphics.setFont(font)
         love.graphics.printf("[P]lay Game", 0, 300, love.graphics.getWidth(), "center")
+        -- love.graphics.printf("Music by Eric Matyas www.soundimage.org", 0, 540, love.graphics.getWidth(), "right")
         --animation
         local spriteNum0 = math.floor(cards.anim[findCard("torrent")].currentTime / cards.anim[findCard("torrent")].duration * #cards.anim[findCard("torrent")].quads) + 1
         local spriteNum1 = math.floor(cards.anim[findCard("fireball")].currentTime / cards.anim[findCard("fireball")].duration * #cards.anim[findCard("fireball")].quads) + 1
         love.graphics.draw(cards.anim[findCard("torrent")].spriteSheet, cards.anim[findCard("torrent")].quads[spriteNum0], 50, 180, 0, 1)
         love.graphics.draw(cards.anim[findCard("fireball")].spriteSheet, cards.anim[findCard("fireball")].quads[spriteNum1], 750, 345, 3.14159, 1)
-    end
-    if gameStage == "cardSelect" then --Stage of card selection
+    elseif gameStage == "cardSelect" then --Stage of card selection
         love.graphics.setColor(255, 255, 255) -- reset colors
         --Display card select title
         love.graphics.setFont(titleFont) --set font to title font
         love.graphics.printf("Select Cards", 0, posy - 135, love.graphics.getWidth(), "center")
 
-        for i = 1, math.ceil(numCards / 3) do
-            for j = 1, 3 do
-                displayCard(i + j - 1)
-            end
+        for i = 1, numCards do
+            displayCard(i)
         end
-        if gameStage == "game" then
-        end
+    elseif gameStage == "game" then
     end
 
     --input box at bottom of screen
