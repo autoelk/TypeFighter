@@ -1,27 +1,9 @@
 local utf8 = require("utf8")
-
-cards = {
-    ["name"] = {},
-    ["damage"] = {},
-    ["mana"] = {},
-    ["type"] = {},
-    ["elem"] = {},
-    ["anim"] = {}
-}
+require "cards"
 
 deck1, deck2 = {}, {}
 pick1, pick2 = 5, 5
 -- ban1, ban2 = 2, 2
-
-function findCard(thingToFind)
-    thingToFind = string.lower(thingToFind)
-    for i = 1, numCards do
-        if cards.name[i] == thingToFind then
-            return i
-        end
-    end
-    return 0
-end
 
 function inDeck(thingToFind, table)
     for i = 1, #table do
@@ -52,23 +34,8 @@ function love.load()
     input = ""
     message = "Type P to Start"
     gameStage = "menu"
-    --read each card into array cards
-    io.input("Assets/Cards/cards.txt")
-    numCards = io.read()
-    for i = 1, numCards do
-        local tempTable = split(io.read(), " ")
-        cards.name[i] = tempTable[1]
-        cards.damage[i] = tempTable[2]
-        cards.mana[i] = tempTable[3]
-        cards.type[i] = tempTable[4]
-        cards.elem[i] = tempTable[5]
-        if fileCheck("Assets/Cards/" .. tempTable[6]) then
-            cards.anim[i] = newAnimation(love.graphics.newImage("Assets/Cards/" .. tempTable[6]), 160, 160, 1)
-        else
-            cards.anim[i] = newAnimation(love.graphics.newImage("Assets/Placeholder.png"), 160, 160, 1)
-        end
-    end
-    io.close()
+
+    numCards = readCards()
 
     --allow repeating input
     love.keyboard.setKeyRepeat(true)
@@ -144,6 +111,10 @@ function love.update(dt)
     -- Gradually reduce the velocity to create smooth scrolling effect.
     velx = velx - velx * math.min(dt * 10, 1)
     vely = vely - vely * math.min(dt * 10, 1)
+
+    if #deck1 == 5 and #deck2 == 5 then -- switch gamestage to game when both are done picking
+      gameStage = "game"
+    end
 end
 
 function love.draw()
