@@ -113,7 +113,7 @@ function love.update(dt)
     vely = vely - vely * math.min(dt * 10, 1)
 
     if #deck1 == 5 and #deck2 == 5 then -- switch gamestage to game when both are done picking
-      gameStage = "game"
+        gameStage = "game"
     end
 end
 
@@ -154,36 +154,6 @@ function love.draw()
     love.graphics.draw(textBox, 0, 570)
     love.graphics.printf(message, 5, 570, love.graphics.getWidth(), "left")
     love.graphics.printf(input, 5, 570, love.graphics.getWidth(), "left")
-end
-
-function displayCard(cardNum)
-    love.graphics.setFont(font)
-    local colNum, rowNum = cardNum % 3, math.ceil(cardNum / 3)
-    if colNum == 0 then
-        colNum = 3
-    end
-    local cardX, cardY = 245 * (colNum - 1) + 65, 317 * (rowNum - 1) + posy
-    if cards.elem[cardNum] == "fire" then
-        love.graphics.setColor(232 / 255, 0 / 255, 43 / 255)
-    elseif cards.elem[cardNum] == "earth" then
-        love.graphics.setColor(78 / 255, 171 / 255, 84 / 255)
-    elseif cards.elem[cardNum] == "water" then
-        love.graphics.setColor(39 / 255, 98 / 255, 176 / 255)
-    else
-        love.graphics.setColor(160 / 255, 160 / 255, 160 / 255)
-    end
-    love.graphics.rectangle("fill", cardX, cardY, 180, 252)
-    --print image
-    love.graphics.setColor(255, 255, 255)
-    love.graphics.rectangle("fill", cardX + 10, cardY + 25, 160, 160)
-    local spriteNum = math.floor(cards.anim[cardNum].currentTime / cards.anim[cardNum].duration * #cards.anim[cardNum].quads) + 1
-    love.graphics.draw(cards.anim[cardNum].spriteSheet, cards.anim[cardNum].quads[spriteNum], cardX + 10, cardY + 25, 0, 1)
-    --print text
-    love.graphics.printf(cards.name[cardNum], cardX + 10, cardY, 180, "left")
-    love.graphics.printf(cards.mana[cardNum], cardX - 10, cardY, 180, "right")
-    if cards.type[cardNum] == "attack" then
-        love.graphics.printf("Deal " .. cards.damage[cardNum] .. " damage.", cardX + 10, cardY + 200, 180, "left")
-    end
 end
 
 function newAnimation(image, width, height, duration)
