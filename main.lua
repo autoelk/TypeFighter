@@ -1,6 +1,7 @@
 local utf8 = require("utf8")
 require "cards"
 
+cards = {}
 deck1, deck2 = {}, {}
 pick1, pick2 = 5, 5
 -- ban1, ban2 = 2, 2
@@ -15,12 +16,22 @@ function inDeck(thingToFind, table)
 end
 
 function castSpell(index)
-    message = "You cast " .. cards.name[index]
-    if cards.type[index] == "attack" then
-        message = "You cast " .. cards.name[index] .. " and dealt " .. cards.damage[index] .. " damage."
-    elseif cards.type[index] == "defense" then
-        message = "You cast " .. cards.name[index] .. " and blocked"
+    message = "You cast " .. cards[index].name
+    if cards[index].type == "attack" then
+        message = "You cast " .. cards[index].name .. " and dealt " .. cards[index].damage .. " damage."
+    elseif cards[index].type == "defense" then
+        message = "You cast " .. cards[index].name .. " and blocked"
     end
+end
+
+function readCards()
+    --read each card into array cards
+    io.input("Assets/Cards/cards.txt")
+    numCards = io.read()
+    for i = 1, numCards do
+        cards[i] = Card:Create()
+    end
+    io.close()
 end
 
 function love.load()
@@ -35,7 +46,7 @@ function love.load()
     message = "Type P to Start"
     gameStage = "menu"
 
-    numCards = readCards()
+    readCards()
 
     --allow repeating input
     love.keyboard.setKeyRepeat(true)
@@ -69,10 +80,10 @@ function love.keypressed(key)
             if pick1 <= 0 then
                 message = "You have no picks remaining, type deck to view current"
             elseif inDeck(location, deck1) then
-                message = "Sorry, but " .. cards.name[location] .. " is already in your deck"
+                message = "Sorry, but " .. cards[location].name .. " is already in your deck"
             else
                 table.insert(deck1, location)
-                message = cards.name[location] .. " was added to you deck"
+                message = cards[location].name .. " was added to you deck"
                 pick1 = pick1 - 1
             end
         elseif location > 0 and gameStage == "game" then
@@ -90,9 +101,9 @@ end
 function love.update(dt)
     --animations
     for i = 1, numCards do
-        cards.anim[i].currentTime = cards.anim[i].currentTime + dt
-        if cards.anim[i].currentTime >= cards.anim[i].duration then
-            cards.anim[i].currentTime = cards.anim[i].currentTime - cards.anim[i].duration
+        cards[i].anim.currentTime = cards[i].anim.currentTime + dt
+        if cards[i].anim.currentTime >= cards[i].anim.duration then
+            cards[i].anim.currentTime = cards[i].anim.currentTime - cards[i].anim.duration
         end
     end
     --scrolling
@@ -128,10 +139,10 @@ function love.draw()
         love.graphics.printf("[P]lay Game", 0, 300, 800, "center")
         -- love.graphics.printf("Music by Eric Matyas www.soundimage.org", 0, 540, 800, "right")
         --animation
-        local spriteNum0 = math.floor(cards.anim[findCard("torrent")].currentTime / cards.anim[findCard("torrent")].duration * #cards.anim[findCard("torrent")].quads) + 1
-        local spriteNum1 = math.floor(cards.anim[findCard("fireball")].currentTime / cards.anim[findCard("fireball")].duration * #cards.anim[findCard("fireball")].quads) + 1
-        love.graphics.draw(cards.anim[findCard("torrent")].spriteSheet, cards.anim[findCard("torrent")].quads[spriteNum0], 50, 180, 0, 1)
-        love.graphics.draw(cards.anim[findCard("fireball")].spriteSheet, cards.anim[findCard("fireball")].quads[spriteNum1], 750, 345, 3.14159, 1)
+        local spriteNum0 = math.floor(cards[findCard("torrent")].anim.currentTime / cards[findCard("torrent")].anim.duration * #cards[findCard("torrent")].anim.quads) + 1
+        local spriteNum1 = math.floor(cards[findCard("fireball")].anim.currentTime / cards[findCard("fireball")].anim.duration * #cards[findCard("fireball")].anim.quads) + 1
+        love.graphics.draw(cards[findCard("torrent")].anim.spriteSheet, cards[findCard("torrent")].anim.quads[spriteNum0], 50, 180, 0, 1)
+        love.graphics.draw(cards[findCard("fireball")].anim.spriteSheet, cards[findCard("fireball")].anim.quads[spriteNum1], 750, 345, 3.14159, 1)
     elseif gameStage == "cardSelect" then --Stage of card selection
         love.graphics.setColor(255, 255, 255) -- reset colors
         --Display card select title
@@ -139,7 +150,7 @@ function love.draw()
         love.graphics.printf("Select Cards", 0, posy - 135, 800, "center")
 
         for i = 1, numCards do
-            displayCard(i)
+            Card:Display(i)
         end
     elseif gameStage == "game" then
     end
@@ -153,7 +164,7 @@ end
 function printDeck()
     local deck = ""
     for i = 1, #deck1 do
-        deck = deck .. cards.name[deck1[i]] .. " "
+        deck = deck .. cards[deck1[i]].name .. " "
     end
     if deck == "" then
         deck = "Your deck is currently empty, add cards by typing their names"
