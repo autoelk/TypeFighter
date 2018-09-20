@@ -41,7 +41,7 @@ function love.load()
     love.keyboard.setKeyRepeat(true)
     --scrolling
     scrollSpeed = 30
-    posx, posy = love.graphics.getWidth() * 0.5, 200
+    posx, posy = 800 * 0.5, 200
     velx, vely = 0, 0 -- The scroll velocity
 end
 
@@ -66,26 +66,20 @@ function love.keypressed(key)
             message = 'Type "deck" to view current deck'
         elseif location > 0 and gameStage == "cardSelect" then
             --add card to deck
-            if inDeck(location, deck1) then
+            if pick1 <= 0 then
+                message = "You have no picks remaining, type deck to view current"
+            elseif inDeck(location, deck1) then
                 message = "Sorry, but " .. cards.name[location] .. " is already in your deck"
-            elseif pick1 > 0 then
+            else
                 table.insert(deck1, location)
                 message = cards.name[location] .. " was added to you deck"
-            else
-                message = "You have no picks remaining"
+                pick1 = pick1 - 1
             end
         elseif location > 0 and gameStage == "game" then
             --cast the spell
             castSpell(location)
         elseif input == "deck" then
-            local deck = ""
-            for i = 1, #deck1 do
-                deck = deck .. cards.name[deck1[i]] .. " "
-            end
-            if deck == "" then
-                deck = "Your deck is currently empty, add cards by typing their names"
-            end
-            message = deck
+            message = printDeck()
         else
             message = "invalid input" --error message
         end
@@ -128,11 +122,11 @@ function love.draw()
         --title
         love.graphics.draw(mainMenuTextBackground, 0, 205)
         love.graphics.setFont(titleFont) --set font to title font
-        love.graphics.printf("TypeFighter", 0, 200, love.graphics.getWidth(), "center")
+        love.graphics.printf("TypeFighter", 0, 200, 800, "center")
         --menu
         love.graphics.setFont(font)
-        love.graphics.printf("[P]lay Game", 0, 300, love.graphics.getWidth(), "center")
-        -- love.graphics.printf("Music by Eric Matyas www.soundimage.org", 0, 540, love.graphics.getWidth(), "right")
+        love.graphics.printf("[P]lay Game", 0, 300, 800, "center")
+        -- love.graphics.printf("Music by Eric Matyas www.soundimage.org", 0, 540, 800, "right")
         --animation
         local spriteNum0 = math.floor(cards.anim[findCard("torrent")].currentTime / cards.anim[findCard("torrent")].duration * #cards.anim[findCard("torrent")].quads) + 1
         local spriteNum1 = math.floor(cards.anim[findCard("fireball")].currentTime / cards.anim[findCard("fireball")].duration * #cards.anim[findCard("fireball")].quads) + 1
@@ -142,7 +136,7 @@ function love.draw()
         love.graphics.setColor(255, 255, 255) -- reset colors
         --Display card select title
         love.graphics.setFont(titleFont) --set font to title font
-        love.graphics.printf("Select Cards", 0, posy - 135, love.graphics.getWidth(), "center")
+        love.graphics.printf("Select Cards", 0, posy - 135, 800, "center")
 
         for i = 1, numCards do
             displayCard(i)
@@ -152,8 +146,19 @@ function love.draw()
 
     --input box at bottom of screen
     love.graphics.draw(textBox, 0, 570)
-    love.graphics.printf(message, 5, 570, love.graphics.getWidth(), "left")
-    love.graphics.printf(input, 5, 570, love.graphics.getWidth(), "left")
+    love.graphics.printf(message, 5, 570, 800, "left")
+    love.graphics.printf(input, 5, 570, 800, "left")
+end
+
+function printDeck()
+    local deck = ""
+    for i = 1, #deck1 do
+        deck = deck .. cards.name[deck1[i]] .. " "
+    end
+    if deck == "" then
+        deck = "Your deck is currently empty, add cards by typing their names"
+    end
+    return deck
 end
 
 function newAnimation(image, width, height, duration)
