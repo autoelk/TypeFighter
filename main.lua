@@ -1,8 +1,8 @@
 local utf8 = require("utf8")
 require "cards"
+require "player"
 
 cards = {}
-pick1, pick2 = 5, 5
 
 function love.load()
     background = love.graphics.newImage("Assets/Background.png")
@@ -16,7 +16,16 @@ function love.load()
     message = "Type P to Start"
     gameStage = "menu"
 
-    readCards()
+    --read each card into array cards
+    io.input("Assets/Cards/cards.txt")
+    numCards = io.read()
+    for i = 1, numCards do
+        cards[i] = Card:Create()
+    end
+    io.close()
+
+    player1 = Player:Create(1)
+    player2 = Player:Create(2)
 
     --allow repeating input
     love.keyboard.setKeyRepeat(true)
@@ -47,7 +56,7 @@ function love.keypressed(key)
             message = 'Type "deck" to view current deck and type "start" when you are done'
         elseif location > 0 and gameStage == "cardSelect" then
             --add card to deck
-            if pick1 <= 0 then
+            if player1.picks <= 0 then
                 message = "You have no picks remaining"
             elseif cards[location].deck == 1 then
                 message = "Sorry, but " .. cards[location].name .. " is already in your deck"
@@ -56,13 +65,13 @@ function love.keypressed(key)
             else
                 cards[location].deck = 1
                 message = cards[location].name .. " was added to you deck"
-                pick1 = pick1 - 1
+                player1.picks = player1.picks - 1
             end
         elseif input == "start" and gameStage == "cardSelect" then
-            if pick1 > 0 then -- switch gamestage to game when both are done picking
-            elseif pick2 > 0 then
-                message = "Opponent stil has " .. pick2 .. " picks left"
-                message = "You stil have " .. pick1 .. " picks left"
+            if player1.picks > 0 then -- switch gamestage to game when both are done picking
+                message = "You stil have " .. player1.picks .. " picks left"
+            elseif player2.picks > 0 then
+                message = "Opponent stil has " .. player2.picks .. " picks left"
             else
                 message = "Game Started"
                 gameStage = "game"
@@ -138,16 +147,6 @@ function love.draw()
     love.graphics.setFont(font)
     love.graphics.printf(message, 5, 570, 800, "left")
     love.graphics.printf(input, 5, 570, 800, "left")
-end
-
-function readCards()
-    --read each card into array cards
-    io.input("Assets/Cards/cards.txt")
-    numCards = io.read()
-    for i = 1, numCards do
-        cards[i] = Card:Create()
-    end
-    io.close()
 end
 
 function printDeck()
