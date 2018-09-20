@@ -7,10 +7,11 @@ function Card:Create()
         damage = tempTable[2],
         mana = tempTable[3],
         type = tempTable[4],
-        elem = tempTable[5]
+        elem = tempTable[5],
+        deck = 0
     }
-    if fileCheck("Assets/Cards/" .. tempTable[6]) then
-        card.anim = newAnimation(love.graphics.newImage("Assets/Cards/" .. tempTable[6]), 160, 160, 1)
+    if fileCheck("Assets/Cards/" .. card.name .. ".png") then
+        card.anim = newAnimation(love.graphics.newImage("Assets/Cards/" .. card.name .. ".png"), 160, 160, 1)
     else
         card.anim = newAnimation(love.graphics.newImage("Assets/Placeholder.png"), 160, 160, 1)
     end
@@ -47,10 +48,24 @@ function Card:Display(cardIndex)
     end
 end
 
-function findCard(thingToFind)
-    thingToFind = string.lower(thingToFind)
+function Card:Cast(caster, index)
+    if caster == 1 then
+        caster = "You"
+    elseif caster == 2 then
+        caster = "Opponent"
+    end
+    message = caster .. " cast " .. cards[index].name
+    if cards[index].type == "attack" then
+        message = caster .. " cast " .. cards[index].name .. " and dealt " .. cards[index].damage .. " damage."
+    elseif cards[index].type == "defense" then
+        message = caster .. " cast " .. cards[index].name .. " and blocked"
+    end
+end
+
+function findCard(cardToFind)
+    cardToFind = string.lower(cardToFind)
     for i = 1, numCards do
-        if cards[i].name == thingToFind then
+        if cards[i].name == cardToFind then
             return i
         end
     end
