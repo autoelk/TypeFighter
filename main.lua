@@ -6,9 +6,7 @@ cards = {}
 
 function love.load()
     background = love.graphics.newImage("Assets/Background.png")
-    mainMenuTextBackground = love.graphics.newImage("Assets/MainMenuText.png")
     person = love.graphics.newImage("Assets/Person.png")
-    textBox = love.graphics.newImage("Assets/TextBox.png")
     titleFont = love.graphics.newFont("Assets/munro.ttf", 96)
     font = love.graphics.newFont("Assets/munro.ttf", 24)
     --initialize variables
@@ -49,11 +47,13 @@ function love.keypressed(key)
         input = string.gsub(string.lower(input), "%s+", "")
         local location = findCard(input)
         --find location of card
-        if input == "p" or input == "play game" then
+        if (input == "p" or input == "play game") and gameStage == "menu" then
             --start game
             gameStage = "cardSelect"
             input = ""
             message = 'Type "deck" to view current deck and type "start" when you are done'
+        elseif (input == "q" or input == "quit") and gameStage == "menu" then
+            love.event.quit()
         elseif location > 0 and gameStage == "cardSelect" then
             --add card to deck
             if player1.picks <= 0 then
@@ -116,15 +116,16 @@ function love.draw()
     love.graphics.setFont(font)
     love.graphics.draw(person, 100, 320)
     love.graphics.draw(person, 700, 320, 0, -1, 1)
-    love.graphics.setColor(255, 255, 255) -- reset colors
     if gameStage == "menu" then
         --title
-        love.graphics.draw(mainMenuTextBackground, 0, 205)
+        love.graphics.setColor(0, 0, 0, 0.75)
+        love.graphics.rectangle("fill", 0, 205, 800, 160)
+        love.graphics.setColor(255, 255, 255)
         love.graphics.setFont(titleFont) --set font to title font
         love.graphics.printf("TypeFighter", 0, 200, 800, "center")
         --menu
         love.graphics.setFont(font)
-        love.graphics.printf("[P]lay Game", 0, 300, 800, "center")
+        love.graphics.printf("[P]lay Game\n[Q]uit", 0, 300, 800, "center")
         -- love.graphics.printf("Music by Eric Matyas www.soundimage.org", 0, 540, 800, "right")
         --animation
         local spriteNum0 = math.floor(cards[findCard("torrent")].anim.currentTime / cards[findCard("torrent")].anim.duration * #cards[findCard("torrent")].anim.quads) + 1
@@ -143,8 +144,10 @@ function love.draw()
     end
 
     --input box at bottom of screen
-    love.graphics.draw(textBox, 0, 570)
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.rectangle("fill", 0, 570, 800, 30)
     love.graphics.setFont(font)
+    love.graphics.setColor(255, 255, 255) -- reset colors
     love.graphics.printf(message, 5, 570, 800, "left")
     love.graphics.printf(input, 5, 570, 800, "left")
 end
