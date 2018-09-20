@@ -76,11 +76,15 @@ function love.keypressed(key)
                 message = "Game Started"
                 gameStage = "game"
             end
+        elseif (input == "q" or input == "quit") and gameStage == "cardSelect" then
+            gameStage = "menu"
         elseif location > 0 and gameStage == "game" then
             --cast the spell
             if cards[location].deck == 1 then
                 Card:Cast(1, location)
             end
+        elseif (input == "q" or input == "quit") and gameStage == "game" then
+            gameStage = "cardSelect"
         elseif input == "deck" then
             message = printDeck()
         else
