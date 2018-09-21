@@ -25,14 +25,21 @@ function Card:Display(cardIndex)
         colNum = 3
     end
     local cardX, cardY = 245 * (colNum - 1) + 65, 317 * (rowNum - 1) + posy
+    if cards[cardIndex].deck == 1 then
+        love.graphics.setColor(226 / 255, 132 / 255, 19 / 255) -- player 1 color
+        love.graphics.rectangle("fill", cardX - 10, cardY - 10, 200, 272, 5)
+    elseif cards[cardIndex].deck == 2 then
+        love.graphics.setColor(55 / 255, 18 / 255, 60 / 255) -- player 2 color
+        love.graphics.rectangle("fill", cardX - 10, cardY - 10, 200, 272, 5)
+    end
     if cards[cardIndex].elem == "fire" then
-        love.graphics.setColor(232 / 255, 0 / 255, 43 / 255)
+        love.graphics.setColor(195 / 255, 60 / 255, 84 / 255)
     elseif cards[cardIndex].elem == "earth" then
-        love.graphics.setColor(78 / 255, 171 / 255, 84 / 255)
+        love.graphics.setColor(117 / 255, 142 / 255, 79 / 255)
     elseif cards[cardIndex].elem == "water" then
-        love.graphics.setColor(39 / 255, 98 / 255, 176 / 255)
+        love.graphics.setColor(30 / 255, 56 / 255, 136 / 255)
     else
-        love.graphics.setColor(160 / 255, 160 / 255, 160 / 255)
+        love.graphics.setColor(77 / 255, 80 / 255, 87 / 255)
     end
     love.graphics.rectangle("fill", cardX, cardY, 180, 252)
     --print image
@@ -43,9 +50,13 @@ function Card:Display(cardIndex)
     --print text
     love.graphics.printf(cards[cardIndex].name, cardX + 10, cardY, 180, "left")
     love.graphics.printf(cards[cardIndex].mana, cardX - 10, cardY, 180, "right")
+    local cardText = ""
     if cards[cardIndex].type == "attack" then
-        love.graphics.printf("Deal " .. cards[cardIndex].damage .. " damage.", cardX + 10, cardY + 200, 180, "left")
+        cardText = "Deal " .. cards[cardIndex].damage .. " damage."
+    elseif cards[cardIndex].type == "heal" then
+        cardText = "Gain " .. cards[cardIndex].damage .. " life."
     end
+    love.graphics.printf(cardText, cardX + 10, cardY + 200, 180, "left")
 end
 
 function findCard(cardToFind)

@@ -1,7 +1,11 @@
-6
+10
 bolt 5 2 attack fire
 fireball 7 5 attack fire
 torrent 10 6 attack water
-heal 5 5 defense earth
-test 6 6 attack earth
-test2 3 5 defense water
+heal 5 5 heal earth
+fill1 6 6 attack earth
+fill2 4 3 attack water
+fill3 3 1 heal fire
+fill4 6 5 heal water
+fill5 2 6 attack earth
+fill6 1 2 heal fire
