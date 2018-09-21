@@ -48,20 +48,6 @@ function Card:Display(cardIndex)
     end
 end
 
-function Card:Cast(caster, index)
-    if caster == 1 then
-        caster = "You"
-    elseif caster == 2 then
-        caster = "Opponent"
-    end
-    message = caster .. " cast " .. cards[index].name
-    if cards[index].type == "attack" then
-        message = caster .. " cast " .. cards[index].name .. " and dealt " .. cards[index].damage .. " damage."
-    elseif cards[index].type == "defense" then
-        message = caster .. " cast " .. cards[index].name .. " and blocked"
-    end
-end
-
 function findCard(cardToFind)
     cardToFind = string.lower(cardToFind)
     for i = 1, numCards do
