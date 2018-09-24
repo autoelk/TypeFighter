@@ -10,7 +10,8 @@ function Player:Create(number)
         maxHealth = 50,
         health = 50,
         mana = 0,
-        manaRegen = 0
+        manaRegen = 0,
+        anim = newAnimation(love.graphics.newImage("Assets/Wizard.png"), 160, 160, 1)
     }
     setmetatable(player, self)
     return player

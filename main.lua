@@ -7,7 +7,6 @@ cards = {}
 function love.load()
     math.randomseed(os.time())
     background = love.graphics.newImage("Assets/Background.png")
-    person = love.graphics.newImage("Assets/Person.png")
     titleFont = love.graphics.newFont("Assets/munro.ttf", 96)
     uiFont = love.graphics.newFont("Assets/munro.ttf", 36)
     font = love.graphics.newFont("Assets/munro-narrow.ttf", 24)
@@ -119,9 +118,6 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
-    -- if input ~= "" then
-    --     message = ""
-    -- end
     --animations
     for i = 1, numCards do
         cards[i].anim.currentTime = cards[i].anim.currentTime + dt
@@ -129,6 +125,15 @@ function love.update(dt)
             cards[i].anim.currentTime = cards[i].anim.currentTime - cards[i].anim.duration
         end
     end
+    player1.anim.currentTime = player1.anim.currentTime + dt
+    if player1.anim.currentTime >= player1.anim.duration then
+        player1.anim.currentTime = player1.anim.currentTime - player1.anim.duration
+    end
+    player2.anim.currentTime = player2.anim.currentTime + dt
+    if player2.anim.currentTime >= player2.anim.duration then
+        player2.anim.currentTime = player2.anim.currentTime - player2.anim.duration
+    end
+
     --scrolling
     if posy >= 200 then
         posy = 200
@@ -169,8 +174,11 @@ function love.draw()
     --background
     love.graphics.draw(background, 0, 0)
     love.graphics.setFont(font)
-    love.graphics.draw(person, 100, 320)
-    love.graphics.draw(person, 700, 320, 0, -1, 1)
+    --players
+    -- local player1SpriteNum = math.floor(player1.anim.currentTime / player1.anim.duration * #player1.anim.quads) + 1
+    love.graphics.draw(player1.anim.spriteSheet, player1.anim.quads[1], 100, 330, 0)
+    -- local player2SpriteNum = math.floor(player2.anim.currentTime / player2.anim.duration * #player2.anim.quads) + 1
+    love.graphics.draw(player2.anim.spriteSheet, player2.anim.quads[1], 700, 330, 0, -1, 1)
     if gameStage == "menu" then
         --title
         love.graphics.setColor(0, 0, 0, 0.75)
