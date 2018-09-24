@@ -137,6 +137,8 @@ function love.update(dt)
     --scrolling
     if posy >= 200 then
         posy = 200
+    elseif posy <= (math.ceil(numCards / 3) - 1) * -317 + 25 then
+        posy = (math.ceil(numCards / 3) - 1) * -317 + 25
     end
     posx = posx + velx * scrollSpeed * dt
     posy = posy + vely * scrollSpeed * dt
