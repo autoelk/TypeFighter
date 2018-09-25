@@ -26,10 +26,10 @@ function Card:Display(cardIndex)
     end
     local cardX, cardY = 245 * (colNum - 1) + 65, 317 * (rowNum - 1) + posy
     if cards[cardIndex].deck == 1 then
-        love.graphics.setColor(colors.player1)
+        love.graphics.setColor(colors.white)
         love.graphics.rectangle("fill", cardX - 10, cardY - 10, 200, 272, 5)
     elseif cards[cardIndex].deck == 2 then
-        love.graphics.setColor(colors.player2)
+        love.graphics.setColor(colors.black)
         love.graphics.rectangle("fill", cardX - 10, cardY - 10, 200, 272, 5)
     end
     if cards[cardIndex].elem == "fire" then

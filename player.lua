@@ -12,7 +12,7 @@ function Player:Create(number)
         mana = 0,
         manaRegen = 0,
         spriteNum = 1,
-        anim = newAnimation(love.graphics.newImage("Assets/Wizard.png"), 160, 160, 1)
+        anim = newAnimation(love.graphics.newImage("Assets/Wizard.png"), 160, 160, 2)
     }
     setmetatable(player, self)
     return player
@@ -23,15 +23,15 @@ function Player:Damage(amtDamage)
 end
 
 function Player:Draw()
-  if self.health <= 0 and self.spriteNum ~= #self.anim.quads then
-    self.spriteNum = math.floor(self.anim.currentTime / self.anim.duration * #self.anim.quads) + 1
-  end
+    if self.health <= 0 and self.spriteNum ~= #self.anim.quads then
+        self.spriteNum = math.floor(self.anim.currentTime / self.anim.duration * #self.anim.quads) + 1
+    end
 
-  if self.num == 1 then
-    love.graphics.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 100, 330, 0)
-  elseif self.num == 2 then
-    love.graphics.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 700, 330, 0, - 1, 1)
-  end
+    if self.num == 1 then
+        love.graphics.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 100, 330, 0)
+    elseif self.num == 2 then
+        love.graphics.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 700, 330, 0, -1, 1)
+    end
 end
 
 function Player:DrawUI()
@@ -42,13 +42,21 @@ function Player:DrawUI()
     else
         x = 800 - (healthSize + 25)
     end
-    if self.health > 20 then
-        love.graphics.setColor(117 / 255, 142 / 255, 79 / 255)
+    if self.health <= 10 then
+        love.graphics.setColor(colors.red)
+    elseif self.health <= 20 then
+        love.graphics.setColor(colors.yellow)
     else
-        love.graphics.setColor(195 / 255, 60 / 255, 84 / 255)
+        love.graphics.setColor(colors.green)
     end
     love.graphics.rectangle("fill", x, 25, healthSize, 30)
-    love.graphics.setColor(255, 255, 255)
+    love.graphics.setColor(colors.black)
+    love.graphics.setFont(uiFont)
+    if self == player1 then
+        love.graphics.printf(self.health, 30, 20, 800, "left")
+    elseif self == opp then
+        love.graphics.printf(self.health, -25, 20, 800, "right")
+    end
 end
 
 function Player:Cast(index)
@@ -67,7 +75,7 @@ end
 
 function Player:Other()
     if self == player1 then
-        return player2
+        return opp
     else
         return player1
     end

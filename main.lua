@@ -4,11 +4,11 @@ require "player"
 
 cards = {}
 colors = {
-    player1 = {226 / 255, 132 / 255, 19 / 255},
-    player2 = {55 / 255, 18 / 255, 60 / 255},
-    red = {195 / 255, 60 / 255, 84 / 255},
-    green = {117 / 255, 142 / 255, 79 / 255},
-    blue = {30 / 255, 56 / 255, 136 / 255},
+    red = {229 / 255, 89 / 255, 52 / 255},
+    orange = {250 / 255, 121 / 255, 33 / 255},
+    yellow = {253 / 255, 231 / 255, 76 / 255},
+    green = {155 / 255, 197 / 255, 61 / 255},
+    blue = {91 / 255, 192 / 255, 235 / 255},
     grey = {77 / 255, 80 / 255, 87 / 255},
     white = {1, 1, 1},
     black = {0, 0, 0}
@@ -26,7 +26,7 @@ function love.load()
     gameStage = "menu"
 
     --opponent stats
-    oppPickSpeed = 4
+    oppPickSpeed = 5
     oppCastSpeed = 2
     oppPickCooldown = oppPickSpeed
     oppCastCooldown = oppCastSpeed
@@ -40,7 +40,7 @@ function love.load()
     io.close()
 
     player1 = Player:Create(1)
-    player2 = Player:Create(2)
+    opp = Player:Create(2)
 
     --allow repeating input
     love.keyboard.setKeyRepeat(true)
@@ -93,8 +93,8 @@ function love.keypressed(key)
             elseif input == "start" or input == "p" then
                 if player1.picks > 0 then -- switch gamestage to game when both are done picking
                     message = "You stil have " .. player1.picks .. " picks left"
-                elseif player2.picks > 0 then
-                    message = "Opponent stil has " .. player2.picks .. " picks left"
+                elseif opp.picks > 0 then
+                    message = "Opponent stil has " .. opp.picks .. " picks left"
                 else
                     message = "Game Started"
                     gameStage = "game"
@@ -146,9 +146,9 @@ function love.update(dt)
     if player1.anim.currentTime >= player1.anim.duration then
         player1.anim.currentTime = player1.anim.currentTime - player1.anim.duration
     end
-    player2.anim.currentTime = player2.anim.currentTime + dt
-    if player2.anim.currentTime >= player2.anim.duration then
-        player2.anim.currentTime = player2.anim.currentTime - player2.anim.duration
+    opp.anim.currentTime = opp.anim.currentTime + dt
+    if opp.anim.currentTime >= opp.anim.duration then
+        opp.anim.currentTime = opp.anim.currentTime - opp.anim.duration
     end
 
     --scrolling
@@ -166,15 +166,13 @@ function love.update(dt)
 
     --opponent logic stuff
     if gameStage == "cardSelect" then
-        if player1.picks == 0 then
-            oppPickSpeed = 1
-        end
+        oppPickSpeed = player1.picks + 1
         oppPickCooldown = oppPickCooldown - dt
         if oppPickCooldown <= 0 then
             local cardToPick = math.random(1, numCards)
-            if cards[cardToPick].deck == 0 and player2.picks > 0 then
+            if cards[cardToPick].deck == 0 and opp.picks > 0 then
                 cards[cardToPick].deck = 2
-                player2.picks = player2.picks - 1
+                opp.picks = opp.picks - 1
                 oppPickCooldown = oppPickCooldown + oppPickSpeed
             end
         end
@@ -184,7 +182,7 @@ function love.update(dt)
         if oppCastCooldown <= 0 then
             local cardToPick = math.random(1, numCards)
             if cards[cardToPick].deck == 2 then
-                player2:Cast(cardToPick)
+                opp:Cast(cardToPick)
                 oppCastCooldown = oppCastCooldown + oppCastSpeed
             end
         end
@@ -198,7 +196,7 @@ function love.draw()
     love.graphics.setFont(font)
     --players
     player1:Draw()
-    player2:Draw()
+    opp:Draw()
 
     if gameStage == "menu" then
         --title
@@ -226,21 +224,18 @@ function love.draw()
         end
     elseif gameStage == "game" then
         player1:DrawUI()
-        player2:DrawUI()
-        love.graphics.setFont(uiFont)
-        love.graphics.printf(player1.health, 25, 20, 800, "left")
-        love.graphics.printf(player2.health, -25, 20, 800, "right")
+        opp:DrawUI()
         love.graphics.printf(message, -5, 570, 800, "right")
-        if player1.health <= 0 or player2.health <= 0 then
+        if player1.health <= 0 or opp.health <= 0 then
             gameStage = "over"
         end
     elseif gameStage == "over" then
         love.graphics.setFont(titleFont)
-        if player1.health <= 0 and player2.health <= 0 then
+        if player1.health <= 0 and opp.health <= 0 then
             gameOverMessage = "Tie"
         elseif player1.health <= 0 then
             gameOverMessage = "Player2 Wins"
-        elseif player2.health <= 0 then
+        elseif opp.health <= 0 then
             gameOverMessage = "Player1 Wins"
         end
         love.graphics.printf(gameOverMessage, 0, 200, 800, "center")
