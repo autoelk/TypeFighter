@@ -12,7 +12,7 @@ function Player:Create(number)
         mana = 0,
         manaRegen = 0,
         spriteNum = 1,
-        anim = newAnimation(love.graphics.newImage("Assets/Wizard.png"), 160, 160, 2)
+        anim = newAnimation(love.graphics.newImage("Assets/Wizard.png"), 160, 160, 1)
     }
     setmetatable(player, self)
     return player

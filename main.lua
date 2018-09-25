@@ -142,13 +142,16 @@ function love.update(dt)
             cards[i].anim.currentTime = cards[i].anim.currentTime - cards[i].anim.duration
         end
     end
-    player1.anim.currentTime = player1.anim.currentTime + dt
-    if player1.anim.currentTime >= player1.anim.duration then
-        player1.anim.currentTime = player1.anim.currentTime - player1.anim.duration
-    end
-    opp.anim.currentTime = opp.anim.currentTime + dt
-    if opp.anim.currentTime >= opp.anim.duration then
-        opp.anim.currentTime = opp.anim.currentTime - opp.anim.duration
+    if player1.health <= 0 then
+        player1.anim.currentTime = player1.anim.currentTime + dt
+        if player1.anim.currentTime >= player1.anim.duration then
+            player1.anim.currentTime = player1.anim.currentTime - player1.anim.duration
+        end
+    elseif opp.health <= 0 then
+        opp.anim.currentTime = opp.anim.currentTime + dt
+        if opp.anim.currentTime >= opp.anim.duration then
+            opp.anim.currentTime = opp.anim.currentTime - opp.anim.duration
+        end
     end
 
     --scrolling
@@ -200,8 +203,6 @@ function love.draw()
 
     if gameStage == "menu" then
         --title
-        love.graphics.setColor(0, 0, 0, 0.75)
-        love.graphics.rectangle("fill", 0, 205, 800, 160)
         love.graphics.setColor(colors.white)
         love.graphics.setFont(titleFont) --set font to title font
         love.graphics.printf("TypeFighter", 0, 200, 800, "center")
