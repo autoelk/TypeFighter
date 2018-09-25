@@ -11,6 +11,7 @@ function Player:Create(number)
         health = 50,
         mana = 0,
         manaRegen = 0,
+        spriteNum = 1,
         anim = newAnimation(love.graphics.newImage("Assets/Wizard.png"), 160, 160, 1)
     }
     setmetatable(player, self)
@@ -19,6 +20,18 @@ end
 
 function Player:Damage(amtDamage)
     self.health = self.health - amtDamage
+end
+
+function Player:Draw()
+  if self.health <= 0 and self.spriteNum ~= #self.anim.quads then
+    self.spriteNum = math.floor(self.anim.currentTime / self.anim.duration * #self.anim.quads) + 1
+  end
+
+  if self.num == 1 then
+    love.graphics.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 100, 330, 0)
+  elseif self.num == 2 then
+    love.graphics.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 700, 330, 0, - 1, 1)
+  end
 end
 
 function Player:DrawUI()

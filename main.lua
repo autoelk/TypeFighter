@@ -119,6 +119,13 @@ function love.keypressed(key)
             else
                 message = "Type card names to cast them"
             end
+        elseif gameStage == "over" then
+            if input == "q" or input == "quit" then
+                love.event.quit()
+            elseif input == "r" or input == "restart" then
+                --TODO Reset the game
+                gameStage = "menu"
+            end
         else
             message = "invalid input" --error message
         end
@@ -159,6 +166,9 @@ function love.update(dt)
 
     --opponent logic stuff
     if gameStage == "cardSelect" then
+        if player1.picks == 0 then
+            oppPickSpeed = 1
+        end
         oppPickCooldown = oppPickCooldown - dt
         if oppPickCooldown <= 0 then
             local cardToPick = math.random(1, numCards)
@@ -187,10 +197,9 @@ function love.draw()
     love.graphics.draw(background, 0, 0)
     love.graphics.setFont(font)
     --players
-    -- local player1SpriteNum = math.floor(player1.anim.currentTime / player1.anim.duration * #player1.anim.quads) + 1
-    love.graphics.draw(player1.anim.spriteSheet, player1.anim.quads[1], 100, 330, 0)
-    -- local player2SpriteNum = math.floor(player2.anim.currentTime / player2.anim.duration * #player2.anim.quads) + 1
-    love.graphics.draw(player2.anim.spriteSheet, player2.anim.quads[1], 700, 330, 0, -1, 1)
+    player1:Draw()
+    player2:Draw()
+
     if gameStage == "menu" then
         --title
         love.graphics.setColor(0, 0, 0, 0.75)
@@ -221,6 +230,23 @@ function love.draw()
         love.graphics.setFont(uiFont)
         love.graphics.printf(player1.health, 25, 20, 800, "left")
         love.graphics.printf(player2.health, -25, 20, 800, "right")
+        love.graphics.printf(message, -5, 570, 800, "right")
+        if player1.health <= 0 or player2.health <= 0 then
+            gameStage = "over"
+        end
+    elseif gameStage == "over" then
+        love.graphics.setFont(titleFont)
+        if player1.health <= 0 and player2.health <= 0 then
+            gameOverMessage = "Tie"
+        elseif player1.health <= 0 then
+            gameOverMessage = "Player2 Wins"
+        elseif player2.health <= 0 then
+            gameOverMessage = "Player1 Wins"
+        end
+        love.graphics.printf(gameOverMessage, 0, 200, 800, "center")
+        --menu
+        love.graphics.setFont(font)
+        love.graphics.printf("[R]estart Game\n[Q]uit", 0, 300, 800, "center")
     end
 
     --input box at bottom of screen
@@ -228,9 +254,7 @@ function love.draw()
     love.graphics.rectangle("fill", 0, 570, 800, 30)
     love.graphics.setFont(font)
     love.graphics.setColor(colors.white) -- reset colors
-    if gameStage == "game" then
-        love.graphics.printf(message, -5, 570, 800, "right")
-    else
+    if gameStage ~= "game" then
         love.graphics.printf(message, 5, 570, 800, "left")
     end
     love.graphics.printf(input, 5, 570, 800, "left")
