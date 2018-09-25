@@ -3,6 +3,16 @@ require "cards"
 require "player"
 
 cards = {}
+colors = {
+    player1 = {226 / 255, 132 / 255, 19 / 255},
+    player2 = {55 / 255, 18 / 255, 60 / 255},
+    red = {195 / 255, 60 / 255, 84 / 255},
+    green = {117 / 255, 142 / 255, 79 / 255},
+    blue = {30 / 255, 56 / 255, 136 / 255},
+    grey = {77 / 255, 80 / 255, 87 / 255},
+    white = {1, 1, 1},
+    black = {0, 0, 0}
+}
 
 function love.load()
     math.randomseed(os.time())
@@ -185,7 +195,7 @@ function love.draw()
         --title
         love.graphics.setColor(0, 0, 0, 0.75)
         love.graphics.rectangle("fill", 0, 205, 800, 160)
-        love.graphics.setColor(255, 255, 255)
+        love.graphics.setColor(colors.white)
         love.graphics.setFont(titleFont) --set font to title font
         love.graphics.printf("TypeFighter", 0, 200, 800, "center")
         --menu
@@ -214,10 +224,10 @@ function love.draw()
     end
 
     --input box at bottom of screen
-    love.graphics.setColor(0, 0, 0)
+    love.graphics.setColor(colors.black)
     love.graphics.rectangle("fill", 0, 570, 800, 30)
     love.graphics.setFont(font)
-    love.graphics.setColor(255, 255, 255) -- reset colors
+    love.graphics.setColor(colors.white) -- reset colors
     if gameStage == "game" then
         love.graphics.printf(message, -5, 570, 800, "right")
     else

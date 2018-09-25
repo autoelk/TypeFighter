@@ -26,24 +26,24 @@ function Card:Display(cardIndex)
     end
     local cardX, cardY = 245 * (colNum - 1) + 65, 317 * (rowNum - 1) + posy
     if cards[cardIndex].deck == 1 then
-        love.graphics.setColor(226 / 255, 132 / 255, 19 / 255) -- player 1 color
+        love.graphics.setColor(colors.player1)
         love.graphics.rectangle("fill", cardX - 10, cardY - 10, 200, 272, 5)
     elseif cards[cardIndex].deck == 2 then
-        love.graphics.setColor(55 / 255, 18 / 255, 60 / 255) -- player 2 color
+        love.graphics.setColor(colors.player2)
         love.graphics.rectangle("fill", cardX - 10, cardY - 10, 200, 272, 5)
     end
     if cards[cardIndex].elem == "fire" then
-        love.graphics.setColor(195 / 255, 60 / 255, 84 / 255)
+        love.graphics.setColor(colors.red)
     elseif cards[cardIndex].elem == "earth" then
-        love.graphics.setColor(117 / 255, 142 / 255, 79 / 255)
+        love.graphics.setColor(colors.green)
     elseif cards[cardIndex].elem == "water" then
-        love.graphics.setColor(30 / 255, 56 / 255, 136 / 255)
+        love.graphics.setColor(colors.blue)
     else
-        love.graphics.setColor(77 / 255, 80 / 255, 87 / 255)
+        love.graphics.setColor(colors.grey)
     end
     love.graphics.rectangle("fill", cardX, cardY, 180, 252)
-    --print image
-    love.graphics.setColor(255, 255, 255)
+    --print images
+    love.graphics.setColor(colors.white)
     love.graphics.rectangle("fill", cardX + 10, cardY + 25, 160, 160)
     local spriteNum = math.floor(cards[cardIndex].anim.currentTime / cards[cardIndex].anim.duration * #cards[cardIndex].anim.quads) + 1
     love.graphics.draw(cards[cardIndex].anim.spriteSheet, cards[cardIndex].anim.quads[spriteNum], cardX + 10, cardY + 25, 0, 1)
