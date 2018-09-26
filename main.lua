@@ -21,12 +21,11 @@ function love.load()
     uiFont = love.graphics.newFont("Assets/munro.ttf", 36)
     font = love.graphics.newFont("Assets/munro-narrow.ttf", 24)
 
-
     --read each card into array cards
     io.input("Assets/Cards/cards.txt")
     numCards = io.read()
     for i = 1, numCards do
-        cards[i] = Card:Create()
+        cards[i] = Card:Create(i)
     end
     io.close()
 
@@ -39,36 +38,36 @@ function love.load()
 end
 
 function Setup()
-  --initialize variables
-  input = ""
-  message = "Type P to Start"
-  gameStage = "menu"
+    --initialize variables
+    input = ""
+    message = "Type P to Start"
+    gameStage = "menu"
 
-  --opponent stats
-  oppPickSpeed = 5
-  oppCastSpeed = 2
-  oppPickCooldown = oppPickSpeed
-  oppCastCooldown = oppCastSpeed
+    --opponent stats
+    oppPickSpeed = 5
+    oppCastSpeed = 2
+    oppPickCooldown = oppPickSpeed
+    oppCastCooldown = oppCastSpeed
 
-  --scrolling
-  scrollSpeed = 30
-  posx, posy = 800 * 0.5, 200
-  velx, vely = 0, 0 -- The scroll velocity
+    --scrolling
+    scrollSpeed = 30
+    posx, posy = 800 * 0.5, 200
+    velx, vely = 0, 0 -- The scroll velocity
 
-  --reset decks
-  for i=1,numCards do
-    cards[i].deck = 0
-  end
+    --reset decks
+    for i = 1, numCards do
+        cards[i].deck = 0
+    end
 
-  --reset players
-  player1.health = player1.maxHealth
-  player1.spriteNum = 1
-  player1.picks = 5
-  player1.anim.currentTime = 0
-  opp.health = opp.maxHealth
-  opp.spriteNum = 1
-  opp.picks = 5
-  opp.anim.currentTime = 0
+    --reset players
+    player1.health = player1.maxHealth
+    player1.spriteNum = 1
+    player1.picks = 5
+    player1.anim.currentTime = 0
+    opp.health = opp.maxHealth
+    opp.spriteNum = 1
+    opp.picks = 5
+    opp.anim.currentTime = 0
 end
 
 function love.keypressed(key)
@@ -236,7 +235,7 @@ function love.draw()
         love.graphics.printf("Select Cards", 0, posy - 135, 580, "center")
 
         for i = 1, numCards do
-            Card:Display(i)
+            cards[i]:Display()
         end
     elseif gameStage == "game" then
         player1:DrawUI()
