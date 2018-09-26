@@ -4,7 +4,7 @@ require "player"
 
 cards = {}
 colors = {
-    red = {229 / 255, 89 / 255, 52 / 255},
+    red = {250 / 255, 89 / 255, 52 / 255},
     orange = {250 / 255, 121 / 255, 33 / 255},
     yellow = {253 / 255, 231 / 255, 76 / 255},
     green = {155 / 255, 197 / 255, 61 / 255},
@@ -20,16 +20,7 @@ function love.load()
     titleFont = love.graphics.newFont("Assets/munro.ttf", 96)
     uiFont = love.graphics.newFont("Assets/munro.ttf", 36)
     font = love.graphics.newFont("Assets/munro-narrow.ttf", 24)
-    --initialize variables
-    input = ""
-    message = "Type P to Start"
-    gameStage = "menu"
 
-    --opponent stats
-    oppPickSpeed = 5
-    oppCastSpeed = 2
-    oppPickCooldown = oppPickSpeed
-    oppCastCooldown = oppCastSpeed
 
     --read each card into array cards
     io.input("Assets/Cards/cards.txt")
@@ -44,10 +35,40 @@ function love.load()
 
     --allow repeating input
     love.keyboard.setKeyRepeat(true)
-    --scrolling
-    scrollSpeed = 30
-    posx, posy = 800 * 0.5, 200
-    velx, vely = 0, 0 -- The scroll velocity
+    Setup()
+end
+
+function Setup()
+  --initialize variables
+  input = ""
+  message = "Type P to Start"
+  gameStage = "menu"
+
+  --opponent stats
+  oppPickSpeed = 5
+  oppCastSpeed = 2
+  oppPickCooldown = oppPickSpeed
+  oppCastCooldown = oppCastSpeed
+
+  --scrolling
+  scrollSpeed = 30
+  posx, posy = 800 * 0.5, 200
+  velx, vely = 0, 0 -- The scroll velocity
+
+  --reset decks
+  for i=1,numCards do
+    cards[i].deck = 0
+  end
+
+  --reset players
+  player1.health = player1.maxHealth
+  player1.spriteNum = 1
+  player1.picks = 5
+  player1.anim.currentTime = 0
+  opp.health = opp.maxHealth
+  opp.spriteNum = 1
+  opp.picks = 5
+  opp.anim.currentTime = 0
 end
 
 function love.keypressed(key)
@@ -71,7 +92,7 @@ function love.keypressed(key)
                 --start game
                 gameStage = "cardSelect"
                 input = ""
-                message = 'Type "deck" to view current deck and type "start" when you are done'
+                message = "Type P to start"
             elseif input == "q" or input == "quit" then
                 love.event.quit()
             end
@@ -87,7 +108,7 @@ function love.keypressed(key)
                     message = "You have no picks remaining"
                 else
                     cards[location].deck = 1
-                    message = cards[location].name .. " was added to you deck"
+                    message = cards[location].name .. " was added to your deck"
                     player1.picks = player1.picks - 1
                 end
             elseif input == "start" or input == "p" then
@@ -101,10 +122,6 @@ function love.keypressed(key)
                 end
             elseif input == "q" or input == "quit" then
                 gameStage = "menu"
-            elseif player1.picks == 0 then
-                message = 'Type "start" to start'
-            elseif input == "deck" then
-                message = printDeck()
             else
                 message = "Type card names to choose them"
             end
@@ -114,8 +131,6 @@ function love.keypressed(key)
                 player1:Cast(location)
             elseif input == "q" or input == "quit" then
                 gameStage = "cardSelect"
-            elseif input == "deck" then
-                message = printDeck()
             else
                 message = "Type card names to cast them"
             end
@@ -123,7 +138,7 @@ function love.keypressed(key)
             if input == "q" or input == "quit" then
                 love.event.quit()
             elseif input == "r" or input == "restart" then
-                --TODO Reset the game
+                Setup()
                 gameStage = "menu"
             end
         else
@@ -218,7 +233,7 @@ function love.draw()
     elseif gameStage == "cardSelect" then --Stage of card selection
         --Display card select title
         love.graphics.setFont(titleFont) --set font to title font
-        love.graphics.printf("Select Cards", 0, posy - 135, 800, "center")
+        love.graphics.printf("Select Cards", 0, posy - 135, 580, "center")
 
         for i = 1, numCards do
             Card:Display(i)
@@ -256,18 +271,13 @@ function love.draw()
     love.graphics.printf(input, 5, 570, 800, "left")
 end
 
-function printDeck()
-    local deck = ""
-    for i = 1, numCards do
-        if cards[i].deck == 1 then
-            deck = deck .. cards[i].name .. " "
-        end
-    end
-    if deck == "" then
-        deck = "Your deck is currently empty, add cards by typing their names"
-    end
-    return deck
-end
+-- function notification(notif)
+--   love.graphics.setColor(colors.black)
+--   love.graphics.rectangle("fill", 0, 540, 800, 30)
+--   love.graphics.setColor(colors.white)
+--   love.graphics.setFont(font)
+--   love.graphics.printf(notif, 5, 540, 800, "left")
+-- end
 
 function newAnimation(image, width, height, duration)
     local animation = {}
