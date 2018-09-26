@@ -35,7 +35,6 @@ function Card:Color()
 end
 
 function Card:Display()
-  love.graphics.setFont(font)
   local colNum, rowNum = self.index % 3, math.ceil(self.index / 3)
   if colNum == 0 then
     colNum = 3
@@ -59,6 +58,7 @@ function Card:Display()
     love.graphics.rectangle("fill", cardX + 10, cardY + 25, 160, 160)
   end
   --print text
+  love.graphics.setFont(font)
   love.graphics.printf(self.name, cardX + 10, cardY, 180, "left")
   love.graphics.printf(self.mana, cardX - 10, cardY, 180, "right")
   local cardText = ""
@@ -73,6 +73,10 @@ function Card:Display()
   local spriteNum = math.floor(self.anim.currentTime / self.anim.duration * #self.anim.quads) + 1
   love.graphics.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], cardX + 10, cardY + 25, 0, 1)
 end
+
+-- function Card:InDeck()
+
+-- end
 
 function findCard(cardToFind)
   cardToFind = string.lower(cardToFind)
