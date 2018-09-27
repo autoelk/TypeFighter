@@ -16,7 +16,7 @@ function Card:Create(cardIndex)
   if fileCheck("Assets/Cards/" .. card.name .. ".png") then
     card.anim = newAnimation(love.graphics.newImage("Assets/Cards/" .. card.name .. ".png"), 160, 160, 1)
   else
-    card.anim = newAnimation(love.graphics.newImage("Assets/Placeholder.png"), 160, 160, 1)
+    card.anim = newAnimation(love.graphics.newImage("Assets/Placeholder.png"), 160, 160, 4)
   end
   setmetatable(card, self)
   return card
@@ -34,23 +34,18 @@ function Card:Color()
   end
 end
 
-function Card:Display()
-  local colNum, rowNum = self.index % 3, math.ceil(self.index / 3)
-  if colNum == 0 then
-    colNum = 3
-  end
-  local cardX, cardY = 190 * (colNum - 1) + 10, 262 * (rowNum - 1) + posy
+function Card:Display(cardX, cardY)
 
-  if self.deck == 1 then
+  if self.deck == 2 then
     love.graphics.setColor(colors.black)
     love.graphics.rectangle("fill", cardX, cardY, 180, 252)
     love.graphics.setColor(self:Color())
     love.graphics.rectangle("fill", cardX + 10, cardY + 25, 160, 160)
-  elseif self.deck == 2 then
-    love.graphics.setColor(self:Color())
-    love.graphics.rectangle("fill", cardX, cardY, 180, 252)
-    love.graphics.setColor(colors.black)
-    love.graphics.rectangle("fill", cardX + 10, cardY + 25, 160, 160)
+  -- elseif self.deck == 1 then
+  --     love.graphics.setColor(self:Color())
+  --     love.graphics.rectangle("fill", cardX, cardY, 180, 252)
+  --     love.graphics.setColor(colors.black)
+  --     love.graphics.rectangle("fill", cardX + 10, cardY + 25, 160, 160)
   else
     love.graphics.setColor(self:Color())
     love.graphics.rectangle("fill", cardX, cardY, 180, 252)
@@ -60,7 +55,7 @@ function Card:Display()
   --print text
   love.graphics.setFont(font)
   love.graphics.printf(self.name, cardX + 10, cardY, 180, "left")
-  love.graphics.printf(self.mana, cardX - 10, cardY, 180, "right")
+  love.graphics.printf("mana " .. self.mana, cardX - 10, cardY, 180, "right")
   local cardText = ""
   if self.type == "attack" then
     cardText = "Deal " .. self.damage .. " damage."
@@ -73,10 +68,6 @@ function Card:Display()
   local spriteNum = math.floor(self.anim.currentTime / self.anim.duration * #self.anim.quads) + 1
   love.graphics.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], cardX + 10, cardY + 25, 0, 1)
 end
-
--- function Card:InDeck()
-
--- end
 
 function findCard(cardToFind)
   cardToFind = string.lower(cardToFind)
