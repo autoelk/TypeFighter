@@ -16,7 +16,7 @@ function Card:Create(cardIndex)
   if fileCheck("Assets/Cards/" .. card.name .. ".png") then
     card.anim = newAnimation(love.graphics.newImage("Assets/Cards/" .. card.name .. ".png"), 160, 160, 1)
   else
-    card.anim = newAnimation(love.graphics.newImage("Assets/Placeholder.png"), 160, 160, 4)
+    card.anim = newAnimation(love.graphics.newImage("Assets/Placeholder.png"), 160, 160, 10)
   end
   setmetatable(card, self)
   return card
@@ -35,17 +35,16 @@ function Card:Color()
 end
 
 function Card:Display(cardX, cardY)
-
   if self.deck == 2 then
+    -- elseif self.deck == 1 then
+    --     love.graphics.setColor(self:Color())
+    --     love.graphics.rectangle("fill", cardX, cardY, 180, 252)
+    --     love.graphics.setColor(colors.black)
+    --     love.graphics.rectangle("fill", cardX + 10, cardY + 25, 160, 160)
     love.graphics.setColor(colors.black)
     love.graphics.rectangle("fill", cardX, cardY, 180, 252)
     love.graphics.setColor(self:Color())
     love.graphics.rectangle("fill", cardX + 10, cardY + 25, 160, 160)
-  -- elseif self.deck == 1 then
-  --     love.graphics.setColor(self:Color())
-  --     love.graphics.rectangle("fill", cardX, cardY, 180, 252)
-  --     love.graphics.setColor(colors.black)
-  --     love.graphics.rectangle("fill", cardX + 10, cardY + 25, 160, 160)
   else
     love.graphics.setColor(self:Color())
     love.graphics.rectangle("fill", cardX, cardY, 180, 252)

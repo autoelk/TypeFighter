@@ -74,8 +74,8 @@ end
 function love.keypressed(key)
   --textbox
   if key == "backspace" then
-    if utf8.offset(input, - 1) then
-      input = string.sub(input, 1, utf8.offset(input, - 1) - 1)
+    if utf8.offset(input, -1) then
+      input = string.sub(input, 1, utf8.offset(input, -1) - 1)
     end
   end
   --erase message
@@ -170,7 +170,9 @@ function love.update(dt)
     end
   end
 
-  for k, v in pairs(deck) do deck[k] = nil end
+  for k, v in pairs(deck) do
+    deck[k] = nil
+  end
   for i = 1, numCards do
     if cards[i].deck == 1 then
       table.insert(deck, i)
@@ -180,8 +182,8 @@ function love.update(dt)
   --scrolling
   if posy >= 200 then
     posy = 200
-  elseif posy <= (math.ceil(numCards / 3) - 1) * - 317 + 25 then
-    posy = (math.ceil(numCards / 3) - 1) * - 317 + 25
+  elseif posy <= (math.ceil(numCards / 3) - 1) * -317 + 25 then
+    posy = (math.ceil(numCards / 3) - 1) * -317 + 25
   end
   posx = posx + velx * scrollSpeed * dt
   posy = posy + vely * scrollSpeed * dt
@@ -261,11 +263,14 @@ function love.draw()
       cards[deck[i]]:Display(595, 25 * i)
     end
     --display instructions
-    love.graphics.rectangle("fill", 595, 400, 180, 145)
+    love.graphics.setColor(colors.black)
+    love.graphics.rectangle("fill", 595, 400, 180, 145, 10)
+    love.graphics.setColor(colors.white)
+    love.graphics.printf("Choose 5 cards by typing their names to use in the battle. When you are done, type P to start.", 600, 400, 180, "left")
   elseif gameStage == "game" then
     player1:DrawUI()
     opp:DrawUI()
-    love.graphics.printf(message, - 5, 570, 800, "right")
+    love.graphics.printf(message, -5, 570, 800, "right")
     if player1.health <= 0 or opp.health <= 0 then
       gameStage = "over"
     end
