@@ -44,13 +44,17 @@ function Player:DrawUI()
     end
     if self.health <= 10 then
         love.graphics.setColor(colors.red)
+        love.graphics.rectangle("fill", x, 25, healthSize, 30)
+        love.graphics.setColor(colors.white)
     elseif self.health <= 20 then
         love.graphics.setColor(colors.yellow)
+        love.graphics.rectangle("fill", x, 25, healthSize, 30)
+        love.graphics.setColor(colors.black)
     else
         love.graphics.setColor(colors.green)
+        love.graphics.rectangle("fill", x, 25, healthSize, 30)
+        love.graphics.setColor(colors.white)
     end
-    love.graphics.rectangle("fill", x, 25, healthSize, 30)
-    love.graphics.setColor(colors.black)
     love.graphics.setFont(uiFont)
     if self == player1 then
         love.graphics.printf(self.health, 30, 20, 800, "left")
