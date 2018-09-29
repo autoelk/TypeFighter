@@ -18,9 +18,11 @@ colors = {
 function love.load()
   math.randomseed(os.time())
   background = love.graphics.newImage("Assets/Background.png")
-  titleFont = love.graphics.newFont("Assets/munro.ttf", 96)
-  uiFont = love.graphics.newFont("Assets/munro.ttf", 36)
-  font = love.graphics.newFont("Assets/munro-narrow.ttf", 24)
+  titleFont = love.graphics.newFont("Assets/munro-small.ttf", 96)
+  uiFont = love.graphics.newFont("Assets/munro-small.ttf", 36)
+  font = love.graphics.newFont("Assets/munro-small.ttf", 24)
+  cardTextFont = love.graphics.newFont("Assets/munro-small.ttf", 18)
+  miniTextFont = love.graphics.newFont("Assets/munro-small.ttf", 15)
 
   --read each card into array cards
   io.input("Assets/Cards/cards.txt")
@@ -61,11 +63,17 @@ function Setup()
   end
 
   --reset players
-  player1.health = player1.maxHealth
+  player1.health = 50
+  player1.healthRegen = 0
+  player1.mana = 0
+  player1.manaRegen = 1
   player1.spriteNum = 1
   player1.picks = 5
   player1.anim.currentTime = 0
-  opp.health = opp.maxHealth
+  opp.health = 50
+  opp.healthRegen = 0
+  opp.mana = 0
+  opp.manaRegen = 1
   opp.spriteNum = 1
   opp.picks = 5
   opp.anim.currentTime = 0
@@ -74,14 +82,15 @@ end
 function love.keypressed(key)
   --textbox
   if key == "backspace" then
-    if utf8.offset(input, -1) then
-      input = string.sub(input, 1, utf8.offset(input, -1) - 1)
+    if utf8.offset(input, - 1) then
+      input = string.sub(input, 1, utf8.offset(input, - 1) - 1)
     end
   end
   --erase message
   if gameStage ~= "game" then
     message = ""
   end
+
   if key == "return" then
     --take input
     input = string.gsub(string.lower(input), "%s+", "")
@@ -122,6 +131,7 @@ function love.keypressed(key)
           gameStage = "game"
         end
       elseif input == "q" or input == "quit" then
+        Setup()
         gameStage = "menu"
       else
         message = "Type card names to choose them"
@@ -182,8 +192,8 @@ function love.update(dt)
   --scrolling
   if posy >= 200 then
     posy = 200
-  elseif posy <= (math.ceil(numCards / 3) - 1) * -317 + 25 then
-    posy = (math.ceil(numCards / 3) - 1) * -317 + 25
+  elseif posy <= (math.ceil(numCards / 3) - 1) * - 317 + 25 then
+    posy = (math.ceil(numCards / 3) - 1) * - 317 + 25
   end
   posx = posx + velx * scrollSpeed * dt
   posy = posy + vely * scrollSpeed * dt
@@ -191,6 +201,14 @@ function love.update(dt)
   -- Gradually reduce the velocity to create smooth scrolling effect.
   velx = velx - velx * math.min(dt * 10, 1)
   vely = vely - vely * math.min(dt * 10, 1)
+
+  --health and mana regen
+  if gameStage == "game" then
+    player1.mana = player1.mana + dt * player1.manaRegen
+    opp.mana = opp.mana + dt * opp.manaRegen
+    player1.health = player1.health + dt * player1.healthRegen
+    opp.health = opp.health + dt * opp.healthRegen
+  end
 
   --opponent logic stuff
   if gameStage == "cardSelect" then
@@ -209,7 +227,8 @@ function love.update(dt)
     oppCastCooldown = oppCastCooldown - dt
     if oppCastCooldown <= 0 then
       local cardToPick = math.random(1, numCards)
-      if cards[cardToPick].deck == 2 then
+      local castChance = math.random(1, 100)
+      if cards[cardToPick].deck == 2 and cards[cardToPick].mana <= opp.mana and castChance < 10 then
         opp:Cast(cardToPick)
         oppCastCooldown = oppCastCooldown + oppCastSpeed
       end
@@ -254,23 +273,26 @@ function love.draw()
         if colNum == 0 then
           colNum = 3
         end
-        local x, y = 190 * (colNum - 1) + 10, 262 * (rowNum - 1) + posy
-        cards[i]:Display(x, y)
+        cards[i]:Display(190 * (colNum - 1) + 10, 262 * (rowNum - 1) + posy)
       end
     end
-    --display deck
+    --display deck for card selection
     for i = 1, #deck do
       cards[deck[i]]:Display(595, 25 * i)
     end
     --display instructions
+    love.graphics.setFont(cardTextFont)
     love.graphics.setColor(colors.black)
-    love.graphics.rectangle("fill", 595, 400, 180, 145, 10)
+    love.graphics.rectangle("fill", 595, 400, 180, 145)
     love.graphics.setColor(colors.white)
-    love.graphics.printf("Choose 5 cards by typing their names to use in the battle. When you are done, type P to start.", 600, 400, 180, "left")
+    love.graphics.printf("Choose 5 cards by typing their names to use in the battle. When you are done, type P to start.", 600, 400, 160, "left")
   elseif gameStage == "game" then
     player1:DrawUI()
     opp:DrawUI()
-    love.graphics.printf(message, -5, 570, 800, "right")
+    --display deck
+    for i = 1, #deck do
+      cards[deck[i]]:DisplayMini(155 * (i - 1) + 25, 500)
+    end
     if player1.health <= 0 or opp.health <= 0 then
       gameStage = "over"
     end
@@ -294,7 +316,9 @@ function love.draw()
   love.graphics.rectangle("fill", 0, 570, 800, 30)
   love.graphics.setFont(font)
   love.graphics.setColor(colors.white) -- reset colors
-  if gameStage ~= "game" then
+  if gameStage == "game" then
+    love.graphics.printf(message, - 5, 570, 800, "right")
+  else
     love.graphics.printf(message, 5, 570, 800, "left")
   end
   love.graphics.printf(input, 5, 570, 800, "left")

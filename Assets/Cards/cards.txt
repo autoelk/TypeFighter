@@ -1,12 +1,13 @@
-10
-bolt 5 2 attack fire
-fireball 7 5 attack fire
-torrent 10 6 attack water
-heal 5 5 heal earth
-win 100 100 attack water
-fill1 6 6 attack earth
-fill2 4 3 attack water
-fill3 3 1 heal fire
-fill4 6 5 heal water
-fill5 2 6 attack earth
-fill6 1 2 heal fire
+12
+bolt 4 1 attack fire
+fireball 8 3 attack fire
+torrent 15 5 attack water
+heal 10 5 heal earth
+win 100 50 attack water
+punch 2 0 attack earth
+gem 0.5 10 misc water Gain 0.5 Mana Regen
+doubleedge 100 0 misc fire Deal 100 Cast With Over 100 Health
+blessing 0.75 10 misc earth Gain 0.75 Health Regen
+poison 1 15 misc fire Poison Opp For 1
+manatide 0 10 misc water Double Your Mana
+force 10 20 misc fire Gain 10 Hp Regen But Lose 10 Mana Regen
