@@ -96,6 +96,11 @@ function Player:Cast(i)
         elseif cards[i].name == "force" then
           self.manaRegen = self.manaRegen - cards[i].damage
           self.healthRegen = self.healthRegen + cards[i].damage
+        elseif cards[i].name == "ritual" then
+          self.mana = self.mana + 20
+          self.health = self.health - cards[i].damage
+        elseif cards[i].name == "rage" then
+          self:Other():Damage(50 - self.health)
         end
       end
     else

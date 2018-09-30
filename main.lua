@@ -228,7 +228,7 @@ function love.update(dt)
     if oppCastCooldown <= 0 then
       local cardToPick = math.random(1, numCards)
       local castChance = math.random(1, 100)
-      if cards[cardToPick].deck == 2 and cards[cardToPick].mana <= opp.mana and castChance < 10 then
+      if cards[cardToPick].deck == 2 and cards[cardToPick].mana <= opp.mana and castChance >= 80 then
         opp:Cast(cardToPick)
         oppCastCooldown = oppCastCooldown + oppCastSpeed
       end
