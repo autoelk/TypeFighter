@@ -77,13 +77,16 @@ function Setup()
   opp.spriteNum = 1
   opp.picks = 5
   opp.anim.currentTime = 0
+
+  --reset time
+  gameTime = 0
 end
 
 function love.keypressed(key)
   --textbox
   if key == "backspace" then
-    if utf8.offset(input, - 1) then
-      input = string.sub(input, 1, utf8.offset(input, - 1) - 1)
+    if utf8.offset(input, -1) then
+      input = string.sub(input, 1, utf8.offset(input, -1) - 1)
     end
   end
   --erase message
@@ -98,12 +101,21 @@ function love.keypressed(key)
     --find location of card
     if gameStage == "menu" then
       if input == "p" or input == "play game" then
-        --start game
-        gameStage = "cardSelect"
+        --show instructions
+        gameStage = "instructions"
+        endInstruct = gameTime + 20
         input = ""
-        message = "Type P to start"
+        message = "Type P to skip"
       elseif input == "q" or input == "quit" then
         love.event.quit()
+      end
+    elseif gameStage == "instructions" then
+      if input == "p" or input == "play game" then
+        gameStage = "cardSelect"
+        endInstruct = 0
+      elseif input == "q" then
+        gameStage = "menu"
+        Setup()
       end
     elseif gameStage == "cardSelect" then
       if location > 0 then
@@ -192,8 +204,8 @@ function love.update(dt)
   --scrolling
   if posy >= 200 then
     posy = 200
-  elseif posy <= (math.ceil(numCards / 3) - 1) * - 317 + 25 then
-    posy = (math.ceil(numCards / 3) - 1) * - 317 + 25
+  elseif posy <= (math.ceil(numCards / 3) - 1) * -317 + 25 then
+    posy = (math.ceil(numCards / 3) - 1) * -317 + 25
   end
   posx = posx + velx * scrollSpeed * dt
   posy = posy + vely * scrollSpeed * dt
@@ -201,6 +213,12 @@ function love.update(dt)
   -- Gradually reduce the velocity to create smooth scrolling effect.
   velx = velx - velx * math.min(dt * 10, 1)
   vely = vely - vely * math.min(dt * 10, 1)
+
+  gameTime = gameTime + dt
+  if gameStage == "instructions" and gameTime >= endInstruct then
+    gameStage = "cardSelect"
+    message = "Type P to start"
+  end
 
   --health and mana regen
   if gameStage == "game" then
@@ -210,7 +228,7 @@ function love.update(dt)
     opp.health = opp.health + dt * opp.healthRegen
   end
 
-  --opponent logic stuff
+  --opponent action
   if gameStage == "cardSelect" then
     oppPickSpeed = player1.picks + 1
     oppPickCooldown = oppPickCooldown - dt
@@ -259,6 +277,13 @@ function love.draw()
     local spriteNum1 = math.floor(cards[findCard("fireball")].anim.currentTime / cards[findCard("fireball")].anim.duration * #cards[findCard("fireball")].anim.quads) + 1
     love.graphics.draw(cards[findCard("torrent")].anim.spriteSheet, cards[findCard("torrent")].anim.quads[spriteNum0], 50, 180, 0, 1)
     love.graphics.draw(cards[findCard("fireball")].anim.spriteSheet, cards[findCard("fireball")].anim.quads[spriteNum1], 750, 345, 3.14159, 1)
+  elseif gameStage == "instructions" then
+    --display instructions
+    love.graphics.setFont(font)
+    love.graphics.setColor(colors.black)
+    love.graphics.rectangle("fill", 200, 150, 400, 300)
+    love.graphics.setColor(colors.white)
+    love.graphics.printf("Choose 5 cards by typing their names before your opponent can chose them. When you are done, type P to start.", 210, 160, 380, "center")
   elseif gameStage == "cardSelect" then --Stage of card selection
     --Display card select title
     love.graphics.setFont(titleFont) --set font to title font
@@ -280,12 +305,6 @@ function love.draw()
     for i = 1, #deck do
       cards[deck[i]]:Display(595, 25 * i)
     end
-    --display instructions
-    love.graphics.setFont(cardTextFont)
-    love.graphics.setColor(colors.black)
-    love.graphics.rectangle("fill", 595, 400, 180, 145)
-    love.graphics.setColor(colors.white)
-    love.graphics.printf("Choose 5 cards by typing their names to use in the battle. When you are done, type P to start.", 600, 400, 160, "left")
   elseif gameStage == "game" then
     player1:DrawUI()
     opp:DrawUI()
@@ -317,7 +336,7 @@ function love.draw()
   love.graphics.setFont(font)
   love.graphics.setColor(colors.white) -- reset colors
   if gameStage == "game" then
-    love.graphics.printf(message, - 5, 570, 800, "right")
+    love.graphics.printf(message, -5, 570, 800, "right")
   else
     love.graphics.printf(message, 5, 570, 800, "left")
   end
