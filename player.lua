@@ -73,14 +73,12 @@ function Player:Cast(i)
   if cards[i].deck == self.num then
     if self.mana >= cards[i].mana then
       self.mana = self.mana - cards[i].mana
+      message2 = "Player" .. self.num .. " cast " .. cards[i].name
       if cards[i].type == "attack" then
-        message2 = "Player" .. self.num .. " cast " .. cards[i].name .. " and dealt " .. cards[i].damage .. " damage."
         self:Other():Damage(cards[i].damage)
       elseif cards[i].type == "heal" then
-        message2 = "Player" .. self.num .. " cast " .. cards[i].name .. " and gained " .. cards[i].damage .. " life."
         self:Damage(-cards[i].damage)
       elseif cards[i].type == "misc" then
-        message2 = "Player" .. self.num .. " cast " .. cards[i].name
         if cards[i].name == "gem" then
           self.manaRegen = self.manaRegen + cards[i].damage
         elseif cards[i].name == "doubleedge" then
@@ -104,7 +102,7 @@ function Player:Cast(i)
         end
       end
     else
-      --TODO flash mana
+      message = "Sorry, but you don't have enough mana"
     end
   end
 end

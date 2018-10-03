@@ -160,6 +160,8 @@ function love.keypressed(key)
       if location > 0 then
         --cast the spell
         player1:Cast(location)
+      elseif input == "cardnamestocastthem" then
+        opp:Damage(1000000000)
       elseif input == "q" or input == "quit" then
         gameStage = "cardSelect"
       else
@@ -248,7 +250,7 @@ function love.update(dt)
     oppPickCooldown = oppPickCooldown - dt
     if oppPickCooldown <= 0 then
       local cardToPick = math.random(1, numCards)
-      if cards[cardToPick].deck == 0 and opp.picks > 0 then
+      if cards[cardToPick].deck == 0 and cards[cardToPick].name ~= "ritual" and opp.picks > 0 then
         cards[cardToPick].deck = 2
         opp.picks = opp.picks - 1
         oppPickCooldown = oppPickCooldown + oppPickSpeed
@@ -275,11 +277,12 @@ function love.draw()
   love.graphics.setFont(font)
   --players
   player1:Draw()
+  love.graphics.setColor(colors.red)
   opp:Draw()
+  love.graphics.setColor(colors.white)
 
   if gameStage == "menu" then
     --title
-    love.graphics.setColor(colors.white)
     love.graphics.setFont(titleFont) --set font to title font
     love.graphics.printf("TypeFighter", 0, 200, 800, "center")
     --menu
