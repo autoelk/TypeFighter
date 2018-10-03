@@ -104,9 +104,10 @@ function love.keypressed(key)
         gameStage = "instructions"
         endInstruct = gameTime + 20
         input = ""
-        message2 = "Type P to skip"
+        message2 = "[P] to Skip [Q] to go back"
       elseif input == "b" then
         gameStage = "cardBrowse"
+        message2 = "[Q] to go back"
       elseif input == "q" or input == "quit" then
         love.event.quit()
       end
@@ -119,6 +120,7 @@ function love.keypressed(key)
       if input == "p" or input == "play game" then
         gameStage = "cardSelect"
         endInstruct = 0
+        message2 = "[P]lay [Q] to go back"
       elseif input == "q" then
         gameStage = "menu"
         Setup()
@@ -229,7 +231,13 @@ function love.update(dt)
   --health and mana regen
   if gameStage == "game" then
     player1.mana = player1.mana + dt * player1.manaRegen
+    if player1.mana < 0 then
+      player1.mana = 0
+    end
     opp.mana = opp.mana + dt * opp.manaRegen
+    if opp.mana < 0 then
+      opp.mana = 0
+    end
     player1.health = player1.health + dt * player1.healthRegen
     opp.health = opp.health + dt * opp.healthRegen
   end
@@ -293,7 +301,6 @@ function love.draw()
       end
       cards[i]:Display(196 * (colNum - 1) + 16, 268 * (rowNum - 1) + posy)
     end
-    message2 = "Type Q to go back"
   elseif gameStage == "instructions" then
     --display instructions
     love.graphics.setFont(font)
@@ -308,7 +315,6 @@ function love.draw()
       "center"
     )
   elseif gameStage == "cardSelect" then --Stage of card selection
-    message2 = "Type P to start"
     --Display card select title
     love.graphics.setFont(titleFont) --set font to title font
     love.graphics.printf("Select Cards", 0, posy - 135, 580, "center")
