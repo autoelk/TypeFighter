@@ -29,7 +29,7 @@ function Player:Draw()
   if self.num == 1 then
     love.graphics.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 100, 330, 0)
   elseif self.num == 2 then
-    love.graphics.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 700, 330, 0, - 1, 1)
+    love.graphics.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 700, 330, 0, -1, 1)
   end
 end
 
@@ -63,9 +63,9 @@ function Player:DrawUI()
     love.graphics.setColor(colors.white)
     love.graphics.printf(math.floor(self.mana), 30, 65, 800, "left")
   elseif self == opp then
-    love.graphics.printf(math.floor(self.health), - 25, 15, 800, "right")
+    love.graphics.printf(math.floor(self.health), -25, 15, 800, "right")
     love.graphics.setColor(colors.white)
-    love.graphics.printf(math.floor(self.mana), - 25, 65, 800, "right")
+    love.graphics.printf(math.floor(self.mana), -25, 65, 800, "right")
   end
 end
 
@@ -74,13 +74,13 @@ function Player:Cast(i)
     if self.mana >= cards[i].mana then
       self.mana = self.mana - cards[i].mana
       if cards[i].type == "attack" then
-        message = "Player" .. self.num .. " cast " .. cards[i].name .. " and dealt " .. cards[i].damage .. " damage."
+        message2 = "Player" .. self.num .. " cast " .. cards[i].name .. " and dealt " .. cards[i].damage .. " damage."
         self:Other():Damage(cards[i].damage)
       elseif cards[i].type == "heal" then
-        message = "Player" .. self.num .. " cast " .. cards[i].name .. " and gained " .. cards[i].damage .. " life."
+        message2 = "Player" .. self.num .. " cast " .. cards[i].name .. " and gained " .. cards[i].damage .. " life."
         self:Damage(-cards[i].damage)
       elseif cards[i].type == "misc" then
-        message = "Player" .. self.num .. " cast " .. cards[i].name
+        message2 = "Player" .. self.num .. " cast " .. cards[i].name
         if cards[i].name == "gem" then
           self.manaRegen = self.manaRegen + cards[i].damage
         elseif cards[i].name == "doubleedge" then

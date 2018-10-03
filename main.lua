@@ -44,6 +44,7 @@ function Setup()
   --initialize variables
   input = ""
   message = "Type P to Start"
+  message2 = "[P]lay [B]rowse [Q]uit"
   gameStage = "menu"
 
   --opponent stats
@@ -85,14 +86,12 @@ end
 function love.keypressed(key)
   --textbox
   if key == "backspace" then
-    if utf8.offset(input, -1) then
-      input = string.sub(input, 1, utf8.offset(input, -1) - 1)
+    if utf8.offset(input, - 1) then
+      input = string.sub(input, 1, utf8.offset(input, - 1) - 1)
     end
   end
   --erase message
-  if gameStage ~= "game" then
-    message = ""
-  end
+  message = ""
 
   if key == "return" then
     --take input
@@ -105,9 +104,16 @@ function love.keypressed(key)
         gameStage = "instructions"
         endInstruct = gameTime + 20
         input = ""
-        message = "Type P to skip"
+        message2 = "Type P to skip"
+      elseif input == "b" then
+        gameStage = "cardBrowse"
       elseif input == "q" or input == "quit" then
         love.event.quit()
+      end
+    elseif gameStage == "cardBrowse" then
+      if input == "q" then
+        gameStage = "menu"
+        Setup()
       end
     elseif gameStage == "instructions" then
       if input == "p" or input == "play game" then
@@ -204,8 +210,8 @@ function love.update(dt)
   --scrolling
   if posy >= 200 then
     posy = 200
-  elseif posy <= (math.ceil(numCards / 3) - 1) * -317 + 25 then
-    posy = (math.ceil(numCards / 3) - 1) * -317 + 25
+  elseif posy <= (math.ceil(numCards / 3) - 1) * - 317 + 25 then
+    posy = (math.ceil(numCards / 3) - 1) * - 317 + 25
   end
   posx = posx + velx * scrollSpeed * dt
   posy = posy + vely * scrollSpeed * dt
@@ -217,7 +223,7 @@ function love.update(dt)
   gameTime = gameTime + dt
   if gameStage == "instructions" and gameTime >= endInstruct then
     gameStage = "cardSelect"
-    message = "Type P to start"
+    message2 = "[P]lay"
   end
 
   --health and mana regen
@@ -270,21 +276,39 @@ function love.draw()
     love.graphics.printf("TypeFighter", 0, 200, 800, "center")
     --menu
     love.graphics.setFont(font)
-    love.graphics.printf("[P]lay Game\n[Q]uit", 0, 300, 800, "center")
+    love.graphics.printf("[P]lay Game\n[B]rowse Cards\n[Q]uit", 0, 300, 800, "center")
     -- love.graphics.printf("Music by Eric Matyas www.soundimage.org", 0, 540, 800, "right")
     --animation
     local spriteNum0 = math.floor(cards[findCard("torrent")].anim.currentTime / cards[findCard("torrent")].anim.duration * #cards[findCard("torrent")].anim.quads) + 1
     local spriteNum1 = math.floor(cards[findCard("fireball")].anim.currentTime / cards[findCard("fireball")].anim.duration * #cards[findCard("fireball")].anim.quads) + 1
     love.graphics.draw(cards[findCard("torrent")].anim.spriteSheet, cards[findCard("torrent")].anim.quads[spriteNum0], 50, 180, 0, 1)
     love.graphics.draw(cards[findCard("fireball")].anim.spriteSheet, cards[findCard("fireball")].anim.quads[spriteNum1], 750, 345, 3.14159, 1)
+  elseif gameStage == "cardBrowse" then
+    love.graphics.setFont(titleFont) --set font to title font
+    love.graphics.printf("Browse Cards", 0, posy - 135, 800, "center")
+    for i = 1, numCards do
+      local colNum, rowNum = i % 4, math.ceil(i / 4)
+      if colNum == 0 then
+        colNum = 4
+      end
+      cards[i]:Display(196 * (colNum - 1) + 16, 268 * (rowNum - 1) + posy)
+    end
+    message2 = "Type Q to go back"
   elseif gameStage == "instructions" then
     --display instructions
     love.graphics.setFont(font)
     love.graphics.setColor(colors.black)
     love.graphics.rectangle("fill", 200, 150, 400, 300)
     love.graphics.setColor(colors.white)
-    love.graphics.printf("Choose 5 cards by typing their names before your opponent can chose them. When you are done, type P to start.", 210, 160, 380, "center")
+    love.graphics.printf(
+      "Choose 5 cards by typing their names before your opponent can chose them. You can remove cards from your deck by typing their name again. When you are done, type P to start.",
+      210,
+      160,
+      380,
+      "center"
+    )
   elseif gameStage == "cardSelect" then --Stage of card selection
+    message2 = "Type P to start"
     --Display card select title
     love.graphics.setFont(titleFont) --set font to title font
     love.graphics.printf("Select Cards", 0, posy - 135, 580, "center")
@@ -335,11 +359,8 @@ function love.draw()
   love.graphics.rectangle("fill", 0, 570, 800, 30)
   love.graphics.setFont(font)
   love.graphics.setColor(colors.white) -- reset colors
-  if gameStage == "game" then
-    love.graphics.printf(message, -5, 570, 800, "right")
-  else
-    love.graphics.printf(message, 5, 570, 800, "left")
-  end
+  love.graphics.printf(message, 5, 570, 800, "left")
+  love.graphics.printf(message2, - 5, 570, 800, "right")
   love.graphics.printf(input, 5, 570, 800, "left")
 end
 
