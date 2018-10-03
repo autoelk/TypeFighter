@@ -130,22 +130,22 @@ function love.keypressed(key)
         --add card to deck
         if cards[location].deck == 1 then
           cards[location].deck = 0
-          message = cards[location].name .. " was removed from your deck"
+          message = "removed " .. cards[location].name
           player1.picks = player1.picks + 1
         elseif cards[location].deck == 2 then
-          message = "Sorry, but " .. cards[location].name .. " is already in your opponent's deck"
+          message = cards[location].name .. " is in opp's deck"
         elseif player1.picks <= 0 then
-          message = "You have no picks remaining"
+          message = "no picks remaining"
         else
           cards[location].deck = 1
-          message = cards[location].name .. " was added to your deck"
+          message = "added " .. cards[location].name
           player1.picks = player1.picks - 1
         end
       elseif input == "start" or input == "p" then
         if player1.picks > 0 then -- switch gamestage to game when both are done picking
-          message = "You stil have " .. player1.picks .. " picks left"
+          message = "you have " .. player1.picks .. " picks left"
         elseif opp.picks > 0 then
-          message = "Opponent stil has " .. opp.picks .. " picks left"
+          message = "opp has " .. opp.picks .. " picks left"
         else
           message = "Game Started"
           gameStage = "game"
