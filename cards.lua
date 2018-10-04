@@ -5,6 +5,8 @@ Card.__index = Card
 function Card:Create(cardIndex)
   local inputTable = split(io.read(), " ")
   local card = {
+    x = 0,
+    y = 0,
     name = inputTable[1],
     damage = tonumber(inputTable[2]),
     mana = tonumber(inputTable[3]),
@@ -39,15 +41,15 @@ function Card:Color()
   end
 end
 
-function Card:DisplayMini(cardX, cardY)
+function Card:DisplayMini()
   miniTextFont:setLineHeight(0.6)
   love.graphics.setColor(self:Color())
-  love.graphics.rectangle("fill", cardX, cardY, 130, 60)
+  love.graphics.rectangle("fill", self.x, self.y, 130, 60)
   --print text
   love.graphics.setColor(colors.black)
   love.graphics.setFont(cardTextFont)
-  love.graphics.printf(self.name, cardX + 5, cardY, 130, "left")
-  love.graphics.printf(self.mana, cardX - 5, cardY, 130, "right")
+  love.graphics.printf(self.name, self.x + 5, self.y, 130, "left")
+  love.graphics.printf(self.mana, self.x - 5, self.y, 130, "right")
   love.graphics.setFont(miniTextFont)
   local cardText = ""
   if self.type == "attack" then
@@ -57,30 +59,30 @@ function Card:DisplayMini(cardX, cardY)
   elseif self.type == "misc" then
     cardText = self.text
   end
-  love.graphics.printf(cardText, cardX + 5, cardY + 15, 110, "left")
+  love.graphics.printf(cardText, self.x + 5, self.y + 15, 110, "left")
 end
 
-function Card:Display(cardX, cardY)
+function Card:Display()
   if self.deck == 2 then
     -- elseif self.deck == 1 then
     --     love.graphics.setColor(self:Color())
-    --     love.graphics.rectangle("fill", cardX, cardY, 180, 252)
+    --     love.graphics.rectangle("fill", self.x, self.y, 180, 252)
     --     love.graphics.setColor(colors.black)
-    --     love.graphics.rectangle("fill", cardX + 10, cardY + 25, 160, 160)
+    --     love.graphics.rectangle("fill", self.x + 10, self.y + 25, 160, 160)
     love.graphics.setColor(colors.black)
-    love.graphics.rectangle("fill", cardX, cardY, 180, 252)
+    love.graphics.rectangle("fill", self.x, self.y, 180, 252)
     love.graphics.setColor(self:Color())
-    love.graphics.rectangle("fill", cardX + 10, cardY + 25, 160, 160)
+    love.graphics.rectangle("fill", self.x + 10, self.y + 25, 160, 160)
   else
     love.graphics.setColor(self:Color())
-    love.graphics.rectangle("fill", cardX, cardY, 180, 252)
+    love.graphics.rectangle("fill", self.x, self.y, 180, 252)
     love.graphics.setColor(colors.white)
-    love.graphics.rectangle("fill", cardX + 10, cardY + 25, 160, 160)
+    love.graphics.rectangle("fill", self.x + 10, self.y + 25, 160, 160)
   end
   --print text
   love.graphics.setFont(cardTextFont)
-  love.graphics.printf(self.name, cardX + 10, cardY, 180, "left")
-  love.graphics.printf("mana " .. self.mana, cardX - 10, cardY, 180, "right")
+  love.graphics.printf(self.name, self.x + 10, self.y, 180, "left")
+  love.graphics.printf("mana " .. self.mana, self.x - 10, self.y, 180, "right")
   local cardText = ""
   if self.type == "attack" then
     cardText = "Deal " .. self.damage .. " damage."
@@ -89,16 +91,23 @@ function Card:Display(cardX, cardY)
   elseif self.type == "misc" then
     cardText = self.text
   end
-  love.graphics.printf(cardText, cardX + 10, cardY + 190, 160, "left")
+  love.graphics.printf(cardText, self.x + 10, self.y + 190, 160, "left")
   --print images
   love.graphics.setColor(colors.white)
   local spriteNum = math.floor(self.anim.currentTime / self.anim.duration * #self.anim.quads) + 1
-  love.graphics.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], cardX + 10, cardY + 25, 0, 1)
+  love.graphics.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], self.x + 10, self.y + 25, 0, 1)
+end
+
+function Card:Move(dx, dy)
+  if self.x ~= dx or self.y ~= dy then
+    self.x = self.x + ((dx - self.x) / 50)
+    self.y = self.y + ((dy - self.y) / 50)
+  end
 end
 
 function findCard(cardToFind)
   cardToFind = string.lower(cardToFind)
-  for i = 1, numCards do
+  for i = 1, #cards do
     if cards[i].name == cardToFind then
       return i
     end

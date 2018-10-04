@@ -26,7 +26,7 @@ function love.load()
 
   --read each card into array cards
   io.input("Assets/Cards/cards.txt")
-  numCards = io.read()
+  local numCards = io.read()
   for i = 1, numCards do
     cards[i] = Card:Create(i)
   end
@@ -55,11 +55,10 @@ function Setup()
 
   --scrolling
   scrollSpeed = 30
-  posx, posy = 800 * 0.5, 200
-  velx, vely = 0, 0 -- The scroll velocity
+  posy = 10
 
   --reset decks
-  for i = 1, numCards do
+  for i = 1, #cards do
     cards[i].deck = 0
   end
 
@@ -86,8 +85,8 @@ end
 function love.keypressed(key)
   --textbox
   if key == "backspace" then
-    if utf8.offset(input, - 1) then
-      input = string.sub(input, 1, utf8.offset(input, - 1) - 1)
+    if utf8.offset(input, -1) then
+      input = string.sub(input, 1, utf8.offset(input, -1) - 1)
     end
   end
   --erase message
@@ -184,7 +183,7 @@ end
 
 function love.update(dt)
   --animations
-  for i = 1, numCards do
+  for i = 1, #cards do
     cards[i].anim.currentTime = cards[i].anim.currentTime + dt
     if cards[i].anim.currentTime >= cards[i].anim.duration then
       cards[i].anim.currentTime = cards[i].anim.currentTime - cards[i].anim.duration
@@ -205,24 +204,27 @@ function love.update(dt)
   for k, v in pairs(deck) do
     deck[k] = nil
   end
-  for i = 1, numCards do
+  local cardsGone = 0
+  for i = 1, #cards do
     if cards[i].deck == 1 then
+      cardsGone = cardsGone + 1
       table.insert(deck, i)
+      cards[i]:Move(595, 25 * #deck)
+    else
+      local colNum, rowNum = (i - cardsGone) % 3, math.ceil((i - cardsGone) / 3)
+      if colNum == 0 then
+        colNum = 3
+      end
+      cards[i]:Move(190 * (colNum - 1) + 10, 262 * (rowNum - 1) + posy)
     end
   end
 
-  --scrolling
+  --scrolling boundries
   if posy >= 200 then
     posy = 200
-  elseif posy <= (math.ceil(numCards / 3) - 1) * - 317 + 25 then
-    posy = (math.ceil(numCards / 3) - 1) * - 317 + 25
+  elseif posy <= (math.ceil(#cards / 3) - 1) * -317 + 25 then
+    posy = (math.ceil(#cards / 3) - 1) * -317 + 25
   end
-  posx = posx + velx * scrollSpeed * dt
-  posy = posy + vely * scrollSpeed * dt
-
-  -- Gradually reduce the velocity to create smooth scrolling effect.
-  velx = velx - velx * math.min(dt * 10, 1)
-  vely = vely - vely * math.min(dt * 10, 1)
 
   gameTime = gameTime + dt
   if gameStage == "instructions" and gameTime >= endInstruct then
@@ -249,7 +251,7 @@ function love.update(dt)
     oppPickSpeed = player1.picks + 1
     oppPickCooldown = oppPickCooldown - dt
     if oppPickCooldown <= 0 then
-      local cardToPick = math.random(1, numCards)
+      local cardToPick = math.random(1, #cards)
       if cards[cardToPick].deck == 0 and cards[cardToPick].name ~= "ritual" and opp.picks > 0 then
         cards[cardToPick].deck = 2
         opp.picks = opp.picks - 1
@@ -260,7 +262,7 @@ function love.update(dt)
   elseif gameStage == "game" then
     oppCastCooldown = oppCastCooldown - dt
     if oppCastCooldown <= 0 then
-      local cardToPick = math.random(1, numCards)
+      local cardToPick = math.random(1, #cards)
       local castChance = math.random(1, 100)
       if cards[cardToPick].deck == 2 and cards[cardToPick].mana <= opp.mana and castChance >= 80 then
         opp:Cast(cardToPick)
@@ -297,12 +299,14 @@ function love.draw()
   elseif gameStage == "cardBrowse" then
     love.graphics.setFont(titleFont) --set font to title font
     love.graphics.printf("Browse Cards", 0, posy - 135, 800, "center")
-    for i = 1, numCards do
+    for i = 1, #cards do
       local colNum, rowNum = i % 4, math.ceil(i / 4)
       if colNum == 0 then
         colNum = 4
       end
-      cards[i]:Display(196 * (colNum - 1) + 16, 268 * (rowNum - 1) + posy)
+      cards[i].x = 196 * (colNum - 1) + 16
+      cards[i].y = 268 * (rowNum - 1) + posy
+      cards[i]:Display()
     end
   elseif gameStage == "instructions" then
     --display instructions
@@ -318,32 +322,25 @@ function love.draw()
       "center"
     )
   elseif gameStage == "cardSelect" then --Stage of card selection
-    --Display card select title
-    love.graphics.setFont(titleFont) --set font to title font
-    love.graphics.printf("Select Cards", 0, posy - 135, 580, "center")
-
-    local cardsGone = 0
-    for i = 1, numCards do
-      if cards[i].deck == 1 then
-        cardsGone = cardsGone + 1
-      else
-        local colNum, rowNum = (i - cardsGone) % 3, math.ceil((i - cardsGone) / 3)
-        if colNum == 0 then
-          colNum = 3
-        end
-        cards[i]:Display(190 * (colNum - 1) + 10, 262 * (rowNum - 1) + posy)
+    for i = 1, #cards do
+      if cards[i].deck ~= 1 then
+        cards[i]:Display()
       end
     end
-    --display deck for card selection
-    for i = 1, #deck do
-      cards[deck[i]]:Display(595, 25 * i)
+    --draw cards in deck on top
+    for i = 1, #cards do
+      if cards[i].deck == 1 then
+        cards[i]:Display()
+      end
     end
   elseif gameStage == "game" then
     player1:DrawUI()
     opp:DrawUI()
     --display deck
     for i = 1, #deck do
-      cards[deck[i]]:DisplayMini(155 * (i - 1) + 25, 500)
+      cards[i].x = 155 * (i - 1) + 25
+      cards[i].y = 500
+      cards[deck[i]]:DisplayMini()
     end
     if player1.health <= 0 or opp.health <= 0 then
       gameStage = "over"
@@ -369,7 +366,7 @@ function love.draw()
   love.graphics.setFont(font)
   love.graphics.setColor(colors.white) -- reset colors
   love.graphics.printf(message, 5, 570, 800, "left")
-  love.graphics.printf(message2, - 5, 570, 800, "right")
+  love.graphics.printf(message2, -5, 570, 800, "right")
   love.graphics.printf(input, 5, 570, 800, "left")
 end
 
@@ -425,6 +422,5 @@ function fileCheck(file_name)
 end
 
 function love.wheelmoved(dx, dy)
-  velx = velx + dx * 20
-  vely = vely + dy * 20
+  posy = posy + dy * 75
 end
