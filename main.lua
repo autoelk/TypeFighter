@@ -201,21 +201,36 @@ function love.update(dt)
     end
   end
 
-  for k, v in pairs(deck) do
-    deck[k] = nil
-  end
-  local cardsGone = 0
-  for i = 1, #cards do
-    if cards[i].deck == 1 then
-      cardsGone = cardsGone + 1
-      table.insert(deck, i)
-      cards[i]:Move(595, 25 * #deck)
-    else
-      local colNum, rowNum = (i - cardsGone) % 3, math.ceil((i - cardsGone) / 3)
+  --card display positions
+  if gameStage == "cardBrowse" then
+    for i = 1, #cards do
+      local colNum, rowNum = i % 4, math.ceil(i / 4)
       if colNum == 0 then
-        colNum = 3
+        colNum = 4
       end
-      cards[i]:Move(190 * (colNum - 1) + 10, 262 * (rowNum - 1) + posy)
+      cards[i]:Move(196 * (colNum - 1) + 16, 268 * (rowNum - 1) + posy)
+    end
+  elseif gameStage == "cardSelect" then
+    for k, v in pairs(deck) do
+      deck[k] = nil
+    end
+    local cardsGone = 0
+    for i = 1, #cards do
+      if cards[i].deck == 1 then
+        cardsGone = cardsGone + 1
+        table.insert(deck, i)
+        cards[i]:Move(595, 25 * #deck)
+      else
+        local colNum, rowNum = (i - cardsGone) % 3, math.ceil((i - cardsGone) / 3)
+        if colNum == 0 then
+          colNum = 3
+        end
+        cards[i]:Move(190 * (colNum - 1) + 10, 262 * (rowNum - 1) + posy)
+      end
+    end
+  elseif gameStage == "game" then
+    for i = 1, #deck do
+      cards[deck[i]]:Move(155 * (i - 1) + 25, 500)
     end
   end
 
@@ -297,15 +312,7 @@ function love.draw()
     love.graphics.draw(cards[findCard("torrent")].anim.spriteSheet, cards[findCard("torrent")].anim.quads[spriteNum0], 50, 180, 0, 1)
     love.graphics.draw(cards[findCard("fireball")].anim.spriteSheet, cards[findCard("fireball")].anim.quads[spriteNum1], 750, 345, 3.14159, 1)
   elseif gameStage == "cardBrowse" then
-    love.graphics.setFont(titleFont) --set font to title font
-    love.graphics.printf("Browse Cards", 0, posy - 135, 800, "center")
     for i = 1, #cards do
-      local colNum, rowNum = i % 4, math.ceil(i / 4)
-      if colNum == 0 then
-        colNum = 4
-      end
-      cards[i].x = 196 * (colNum - 1) + 16
-      cards[i].y = 268 * (rowNum - 1) + posy
       cards[i]:Display()
     end
   elseif gameStage == "instructions" then
@@ -338,8 +345,6 @@ function love.draw()
     opp:DrawUI()
     --display deck
     for i = 1, #deck do
-      cards[i].x = 155 * (i - 1) + 25
-      cards[i].y = 500
       cards[deck[i]]:DisplayMini()
     end
     if player1.health <= 0 or opp.health <= 0 then
