@@ -11,7 +11,7 @@ function Player:Create(number)
     mana = 0,
     manaRegen = 1,
     spriteNum = 1,
-    anim = newAnimation(love.graphics.newImage("Assets/Wizard.png"), 160, 160, 1)
+    anim = newAnimation(love.graphics.newImage("Assets/Wizard.png"), 160, 160, 2)
   }
   setmetatable(player, self)
   return player
@@ -29,7 +29,7 @@ function Player:Draw()
   if self.num == 1 then
     love.graphics.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 100, 330, 0)
   elseif self.num == 2 then
-    love.graphics.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 700, 330, 0, -1, 1)
+    love.graphics.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 700, 330, 0, - 1, 1)
   end
 end
 
@@ -59,13 +59,13 @@ function Player:DrawUI()
   end
   love.graphics.setFont(uiFont)
   if self == player1 then
-    love.graphics.printf(math.floor(self.health), 30, 15, 800, "left")
+    love.graphics.printf(math.floor(self.health + 0.5), 30, 15, 800, "left")
     love.graphics.setColor(colors.white)
     love.graphics.printf(math.floor(self.mana), 30, 65, 800, "left")
   elseif self == opp then
-    love.graphics.printf(math.floor(self.health), -25, 15, 800, "right")
+    love.graphics.printf(math.floor(self.health + 0.5), - 25, 15, 800, "right")
     love.graphics.setColor(colors.white)
-    love.graphics.printf(math.floor(self.mana), -25, 65, 800, "right")
+    love.graphics.printf(math.floor(self.mana), - 25, 65, 800, "right")
   end
 end
 
@@ -95,14 +95,14 @@ function Player:Cast(i)
           self.manaRegen = self.manaRegen - cards[i].damage
           self.healthRegen = self.healthRegen + cards[i].damage
         elseif cards[i].name == "ritual" then
-          self.mana = self.mana + 20
+          self.mana = self.mana + 30
           self.health = self.health - cards[i].damage
         elseif cards[i].name == "rage" then
           self:Other():Damage(50 - self.health)
         end
       end
     else
-      message = "Sorry, but you don't have enough mana"
+      message = "you don't have enough mana"
     end
   end
 end

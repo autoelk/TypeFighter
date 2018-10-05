@@ -64,15 +64,14 @@ end
 
 function Card:Display()
   if self.deck == 2 then
-    -- elseif self.deck == 1 then
-    --     love.graphics.setColor(self:Color())
-    --     love.graphics.rectangle("fill", self.x, self.y, 180, 252)
-    --     love.graphics.setColor(colors.black)
-    --     love.graphics.rectangle("fill", self.x + 10, self.y + 25, 160, 160)
-    love.graphics.setColor(colors.black)
-    love.graphics.rectangle("fill", self.x, self.y, 180, 252)
     love.graphics.setColor(self:Color())
+    love.graphics.rectangle("fill", self.x, self.y, 180, 252)
+    love.graphics.setColor(colors.black)
     love.graphics.rectangle("fill", self.x + 10, self.y + 25, 160, 160)
+    -- love.graphics.setColor(colors.black)
+    -- love.graphics.rectangle("fill", self.x, self.y, 180, 252)
+    -- love.graphics.setColor(self:Color())
+    -- love.graphics.rectangle("fill", self.x + 10, self.y + 25, 160, 160)
   else
     love.graphics.setColor(self:Color())
     love.graphics.rectangle("fill", self.x, self.y, 180, 252)
@@ -100,8 +99,8 @@ end
 
 function Card:Move(dx, dy)
   if self.x ~= dx or self.y ~= dy then
-    self.x = self.x + ((dx - self.x) / 50)
-    self.y = self.y + ((dy - self.y) / 50)
+    self.x = self.x + ((dx - self.x) / 20)
+    self.y = self.y + ((dy - self.y) / 20)
   end
 end
 

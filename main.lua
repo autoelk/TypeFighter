@@ -85,8 +85,8 @@ end
 function love.keypressed(key)
   --textbox
   if key == "backspace" then
-    if utf8.offset(input, -1) then
-      input = string.sub(input, 1, utf8.offset(input, -1) - 1)
+    if utf8.offset(input, - 1) then
+      input = string.sub(input, 1, utf8.offset(input, - 1) - 1)
     end
   end
   --erase message
@@ -237,8 +237,8 @@ function love.update(dt)
   --scrolling boundries
   if posy >= 200 then
     posy = 200
-  elseif posy <= (math.ceil(#cards / 3) - 1) * -317 + 25 then
-    posy = (math.ceil(#cards / 3) - 1) * -317 + 25
+  elseif posy <= (math.ceil(#cards / 3) - 1) * - 317 + 25 then
+    posy = (math.ceil(#cards / 3) - 1) * - 317 + 25
   end
 
   gameTime = gameTime + dt
@@ -371,7 +371,7 @@ function love.draw()
   love.graphics.setFont(font)
   love.graphics.setColor(colors.white) -- reset colors
   love.graphics.printf(message, 5, 570, 800, "left")
-  love.graphics.printf(message2, -5, 570, 800, "right")
+  love.graphics.printf(message2, - 5, 570, 800, "right")
   love.graphics.printf(input, 5, 570, 800, "left")
 end
 
@@ -385,7 +385,6 @@ function newAnimation(image, width, height, duration)
       table.insert(animation.quads, love.graphics.newQuad(x, y, width, height, image:getDimensions()))
     end
   end
-
   animation.duration = duration or 1
   animation.currentTime = 0
 
