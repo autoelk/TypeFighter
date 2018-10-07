@@ -17,9 +17,6 @@ function Player:Create(number)
   return player
 end
 
-function Player:Damage(amtDamage)
-  self.health = self.health - amtDamage
-end
 
 function Player:Draw()
   if self.health <= 0 and self.spriteNum ~= #self.anim.quads then
@@ -34,10 +31,14 @@ function Player:Draw()
 end
 
 function Player:DrawUI()
+  local x = 0
   local heatlhX = 25
   local manaX = 25
   local healthSize = self.health * 2
   local manaSize = self.mana * 2
+  if damagedPerson == 2 then
+    x = 440
+  end
   if self.num == 2 then
     heatlhX = 800 - (healthSize + 25)
     manaX = 800 - (manaSize + 25)
@@ -67,6 +68,31 @@ function Player:DrawUI()
     love.graphics.setColor(colors.white)
     love.graphics.printf(math.floor(self.mana), - 25, 65, 800, "right")
   end
+  --display damage numbers
+  if gameTime < timeEnd then
+    if damageNum > 0 then
+      if damageNum > 20 then
+        love.graphics.setFont(titleFont)
+      elseif damageNum > 10 then
+        love.graphics.setFont(uiFont)
+      elseif damageNum > 5 then
+        love.graphics.setFont(font)
+      else
+        love.graphics.setFont(miniTextFont)
+      end
+      love.graphics.printf(damageNum, x, 230 - (gameTime - timeEnd) * 25, 360, "center")
+    end
+  end
+end
+
+damagedPerson = 0
+damageNum = 0
+timeEnd = 0
+function Player:Damage(amtDamage)
+  damagedPerson = self.num
+  damageNum = amtDamage
+  timeEnd = gameTime + 1
+  self.health = self.health - amtDamage
 end
 
 function Player:Cast(i)

@@ -18,6 +18,7 @@ colors = {
 function love.load()
   math.randomseed(os.time())
   background = love.graphics.newImage("Assets/Background.png")
+  --fonts
   titleFont = love.graphics.newFont("Assets/munro-small.ttf", 96)
   uiFont = love.graphics.newFont("Assets/munro-small.ttf", 36)
   font = love.graphics.newFont("Assets/munro-small.ttf", 24)
@@ -341,8 +342,6 @@ function love.draw()
       end
     end
   elseif gameStage == "game" then
-    player1:DrawUI()
-    opp:DrawUI()
     --display deck
     for i = 1, #deck do
       cards[deck[i]]:DisplayMini()
@@ -363,6 +362,11 @@ function love.draw()
     --menu
     love.graphics.setFont(font)
     love.graphics.printf("[R]estart Game\n[Q]uit", 0, 300, 800, "center")
+  end
+
+  if gameStage == "game" or gameStage == "over" then
+    player1:DrawUI()
+    opp:DrawUI()
   end
 
   --input box at bottom of screen
