@@ -18,12 +18,12 @@ colors = {
 function love.load()
   math.randomseed(os.time())
   background = love.graphics.newImage("Assets/Background.png")
-  --fonts
-  titleFont = love.graphics.newFont("Assets/munro-small.ttf", 96)
-  uiFont = love.graphics.newFont("Assets/munro-small.ttf", 36)
-  font = love.graphics.newFont("Assets/munro-small.ttf", 24)
-  cardTextFont = love.graphics.newFont("Assets/munro-small.ttf", 18)
-  miniTextFont = love.graphics.newFont("Assets/munro-small.ttf", 15)
+  --Fonts
+  XLFont = love.graphics.newFont("Assets/munro-small.ttf", 96)
+  LFont = love.graphics.newFont("Assets/munro-small.ttf", 36)
+  MFont = love.graphics.newFont("Assets/munro-small.ttf", 24)
+  SFont = love.graphics.newFont("Assets/munro-small.ttf", 18)
+  XSFont = love.graphics.newFont("Assets/munro-small.ttf", 15)
 
   --read each card into array cards
   io.input("cards.txt")
@@ -292,7 +292,7 @@ end
 function love.draw()
   --background
   love.graphics.draw(background, 0, 0)
-  love.graphics.setFont(font)
+  love.graphics.setFont(MFont)
   --players
   player1:Draw()
   love.graphics.setColor(colors.red)
@@ -301,10 +301,10 @@ function love.draw()
 
   if gameStage == "menu" then
     --title
-    love.graphics.setFont(titleFont) --set font to title font
+    love.graphics.setFont(XLFont) --set Font to title Font
     love.graphics.printf("TypeFighter", 0, 200, 800, "center")
     --menu
-    love.graphics.setFont(font)
+    love.graphics.setFont(MFont)
     love.graphics.printf("[P]lay Game\n[B]rowse Cards\n[Q]uit", 0, 300, 800, "center")
     -- love.graphics.printf("Music by Eric Matyas www.soundimage.org", 0, 540, 800, "right")
     --animation
@@ -318,7 +318,7 @@ function love.draw()
     end
   elseif gameStage == "instructions" then
     --display instructions
-    love.graphics.setFont(font)
+    love.graphics.setFont(MFont)
     love.graphics.setColor(colors.black)
     love.graphics.rectangle("fill", 200, 150, 400, 300)
     love.graphics.setColor(colors.white)
@@ -350,7 +350,7 @@ function love.draw()
       gameStage = "over"
     end
   elseif gameStage == "over" then
-    love.graphics.setFont(titleFont)
+    love.graphics.setFont(XLFont)
     if player1.health <= 0 and opp.health <= 0 then
       gameOverMessage = "Tie"
     elseif player1.health <= 0 then
@@ -360,7 +360,7 @@ function love.draw()
     end
     love.graphics.printf(gameOverMessage, 0, 200, 800, "center")
     --menu
-    love.graphics.setFont(font)
+    love.graphics.setFont(MFont)
     love.graphics.printf("[R]estart Game\n[Q]uit", 0, 300, 800, "center")
   end
 
@@ -372,7 +372,7 @@ function love.draw()
   --input box at bottom of screen
   love.graphics.setColor(colors.black)
   love.graphics.rectangle("fill", 0, 570, 800, 30)
-  love.graphics.setFont(font)
+  love.graphics.setFont(MFont)
   love.graphics.setColor(colors.white) -- reset colors
   love.graphics.printf(message, 5, 570, 800, "left")
   love.graphics.printf(message2, - 5, 570, 800, "right")

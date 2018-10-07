@@ -42,15 +42,15 @@ function Card:Color()
 end
 
 function Card:DisplayMini()
-  miniTextFont:setLineHeight(0.6)
+  XSFont:setLineHeight(0.6)
   love.graphics.setColor(self:Color())
   love.graphics.rectangle("fill", self.x, self.y, 130, 60)
   --print text
   love.graphics.setColor(colors.black)
-  love.graphics.setFont(cardTextFont)
+  love.graphics.setFont(SFont)
   love.graphics.printf(self.name, self.x + 5, self.y, 130, "left")
   love.graphics.printf(self.mana, self.x - 5, self.y, 130, "right")
-  love.graphics.setFont(miniTextFont)
+  love.graphics.setFont(XSFont)
   local cardText = ""
   if self.type == "attack" then
     cardText = "Deal " .. self.damage .. " damage."
@@ -79,7 +79,7 @@ function Card:Display()
     love.graphics.rectangle("fill", self.x + 10, self.y + 25, 160, 160)
   end
   --print text
-  love.graphics.setFont(cardTextFont)
+  love.graphics.setFont(SFont)
   love.graphics.printf(self.name, self.x + 10, self.y, 180, "left")
   love.graphics.printf("mana " .. self.mana, self.x - 10, self.y, 180, "right")
   local cardText = ""

@@ -36,10 +36,8 @@ function Player:DrawUI()
   local manaX = 25
   local healthSize = self.health * 2
   local manaSize = self.mana * 2
-  if damagedPerson == 2 then
-    x = 440
-  end
   if self.num == 2 then
+    x = 440
     heatlhX = 800 - (healthSize + 25)
     manaX = 800 - (manaSize + 25)
   end
@@ -58,7 +56,7 @@ function Player:DrawUI()
     love.graphics.rectangle("fill", heatlhX, 25, healthSize, 30)
     love.graphics.setColor(colors.white)
   end
-  love.graphics.setFont(uiFont)
+  love.graphics.setFont(LFont)
   if self == player1 then
     love.graphics.printf(math.floor(self.health + 0.5), 30, 15, 800, "left")
     love.graphics.setColor(colors.white)
@@ -69,29 +67,27 @@ function Player:DrawUI()
     love.graphics.printf(math.floor(self.mana), - 25, 65, 800, "right")
   end
   --display damage numbers
-  if gameTime < timeEnd then
-    if damageNum > 0 then
-      if damageNum > 20 then
-        love.graphics.setFont(titleFont)
-      elseif damageNum > 10 then
-        love.graphics.setFont(uiFont)
-      elseif damageNum > 5 then
-        love.graphics.setFont(font)
+  if gameTime < timeEnd[self.num] then
+    if damageNum[self.num] > 0 then
+      if damageNum[self.num] > 20 then
+        love.graphics.setFont(XLFont)
+      elseif damageNum[self.num] > 10 then
+        love.graphics.setFont(LFont)
+      elseif damageNum[self.num] > 5 then
+        love.graphics.setFont(MFont)
       else
-        love.graphics.setFont(miniTextFont)
+        love.graphics.setFont(SFont)
       end
-      love.graphics.printf(damageNum, x, 230 - (gameTime - timeEnd) * 25, 360, "center")
+      love.graphics.printf(damageNum[self.num], x, 230 - (gameTime - timeEnd[self.num]) * 25, 360, "center")
     end
   end
 end
 
-damagedPerson = 0
-damageNum = 0
-timeEnd = 0
+damageNum = {0, 0}
+timeEnd = {0, 0}
 function Player:Damage(amtDamage)
-  damagedPerson = self.num
-  damageNum = amtDamage
-  timeEnd = gameTime + 1
+  damageNum[self.num] = amtDamage
+  timeEnd[self.num] = gameTime + 1
   self.health = self.health - amtDamage
 end
 
