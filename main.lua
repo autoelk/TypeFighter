@@ -25,7 +25,7 @@ function love.load()
   miniTextFont = love.graphics.newFont("Assets/munro-small.ttf", 15)
 
   --read each card into array cards
-  io.input("Assets/Cards/cards.txt")
+  io.input("cards.txt")
   local numCards = io.read()
   for i = 1, numCards do
     cards[i] = Card:Create(i)

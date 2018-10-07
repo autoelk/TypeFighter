@@ -1,12 +1,12 @@
 14
 bolt 4 1 attack fire
-fireball 8 3 attack fire
-torrent 15 5 attack water
+fireball 7 3 attack fire
+torrent 15 7 attack water
 heal 10 5 heal earth
 typhoon 1000 50 attack water
 punch 2 0 attack earth
 gem 0.5 10 misc water Gain 0.5 Mana Regen
-doubleedge 100 0 misc fire Deal 100 Cast With Over 100 Health
+slice 100 0 misc fire Deal 100 Cast With Over 100 Health
 blessing 0.75 10 misc earth Gain 0.75 Health Regen
 poison 1 15 misc fire Poison Opp For 1
 manatide 0 10 misc water Double Your Mana

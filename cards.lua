@@ -16,7 +16,7 @@ function Card:Create(cardIndex)
     deck = 0
   }
   if fileCheck("Assets/Cards/" .. card.name .. ".png") then
-    card.anim = newAnimation(love.graphics.newImage("Assets/Cards/" .. card.name .. ".png"), 160, 160, 1)
+    card.anim = newAnimation(love.graphics.newImage("Assets/Cards/" .. card.name .. ".png"), 160, 160, 2)
   else
     card.anim = newAnimation(love.graphics.newImage("Assets/Placeholder.png"), 160, 160, 10)
   end
