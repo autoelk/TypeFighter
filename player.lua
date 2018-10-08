@@ -69,17 +69,18 @@ function Player:DrawUI()
   --display damage numbers
   if gameTime < timeEnd[self.num] then
     if damageNum[self.num] > 0 then
-      if damageNum[self.num] > 20 then
-        love.graphics.setFont(XLFont)
-      elseif damageNum[self.num] > 10 then
-        love.graphics.setFont(LFont)
-      elseif damageNum[self.num] > 5 then
-        love.graphics.setFont(MFont)
-      else
-        love.graphics.setFont(SFont)
-      end
-      love.graphics.printf(damageNum[self.num], x, 230 - (gameTime - timeEnd[self.num]) * 25, 360, "center")
+      love.graphics.setColor(colors.red)
+    else
+      love.graphics.setColor(colors.green)
     end
+    if math.abs(damageNum[self.num]) > 20 then
+      love.graphics.setFont(XLFont)
+    elseif math.abs(damageNum[self.num]) > 10 then
+      love.graphics.setFont(LFont)
+    else
+      love.graphics.setFont(MFont)
+    end
+    love.graphics.printf(math.abs(damageNum[self.num]), x, 230 - (gameTime - timeEnd[self.num]) * 25, 360, "center")
   end
 end
 
