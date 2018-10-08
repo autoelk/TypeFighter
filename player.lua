@@ -104,7 +104,7 @@ function Player:Cast(i)
       elseif cards[i].type == "misc" then
         if cards[i].name == "gem" then
           self.manaRegen = self.manaRegen + cards[i].damage
-        elseif cards[i].name == "doubleedge" then
+        elseif cards[i].name == "slice" then
           if self.health > cards[i].damage then
             self:Other():Damage(cards[i].damage)
           end
@@ -119,7 +119,7 @@ function Player:Cast(i)
           self.healthRegen = self.healthRegen + cards[i].damage
         elseif cards[i].name == "ritual" then
           self.mana = self.mana + 30
-          self.health = self.health - cards[i].damage
+          self:Damage(cards[i].damage)
         elseif cards[i].name == "rage" then
           self:Other():Damage(50 - self.health)
         end
