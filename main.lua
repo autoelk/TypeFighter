@@ -90,24 +90,32 @@ function love.keypressed(key)
       input = string.sub(input, 1, utf8.offset(input, - 1) - 1)
     end
   end
+  --pause
+  if gameStage ~= "pause" then
+    if key == "escape" then
+      lastGameStage = gameStage
+      gameStage = "pause"
+    end
+  else
+    if key == "escape" then
+      gameStage = lastGameStage
+    end
+  end
   --erase message
   message = ""
 
   if key == "return" then
     --take input
     input = string.gsub(string.lower(input), "%s+", "")
-    local location = findCard(input)
-    --find location of card
+    local location = findCard(input) --find location of card
     if gameStage == "menu" then
       if input == "p" or input == "play game" then
         --show instructions
         gameStage = "instructions"
         endInstruct = gameTime + 20
         input = ""
-        message2 = "[P] to Skip [Q] to go back"
       elseif input == "b" then
         gameStage = "cardBrowse"
-        message2 = "[Q] to go back"
       elseif input == "q" or input == "quit" then
         love.event.quit()
       end
@@ -120,7 +128,6 @@ function love.keypressed(key)
       if input == "p" or input == "play game" then
         gameStage = "cardSelect"
         endInstruct = 0
-        message2 = "[P]lay [Q] to go back"
       elseif input == "q" then
         gameStage = "menu"
         Setup()
@@ -167,6 +174,9 @@ function love.keypressed(key)
       else
         message = "Type card names to cast them"
       end
+    elseif gameStage == "pause" then
+      gameStage = "menu"
+      Setup()
     elseif gameStage == "over" then
       if input == "q" or input == "quit" then
         love.event.quit()
@@ -245,7 +255,6 @@ function love.update(dt)
   gameTime = gameTime + dt
   if gameStage == "instructions" and gameTime >= endInstruct then
     gameStage = "cardSelect"
-    message2 = "[P]lay"
   end
 
   --health and mana regen
@@ -313,10 +322,12 @@ function love.draw()
     love.graphics.draw(cards[findCard("torrent")].anim.spriteSheet, cards[findCard("torrent")].anim.quads[spriteNum0], 50, 180, 0, 1)
     love.graphics.draw(cards[findCard("fireball")].anim.spriteSheet, cards[findCard("fireball")].anim.quads[spriteNum1], 750, 345, 3.14159, 1)
   elseif gameStage == "cardBrowse" then
+    message2 = "[Q] to go back"
     for i = 1, #cards do
       cards[i]:Display()
     end
   elseif gameStage == "instructions" then
+    message2 = "[P] to Skip [Q] to go back"
     --display instructions
     love.graphics.setFont(MFont)
     love.graphics.setColor(colors.black)
@@ -330,6 +341,7 @@ function love.draw()
       "center"
     )
   elseif gameStage == "cardSelect" then --Stage of card selection
+    message2 = "[P]lay [Q] to go back"
     for i = 1, #cards do
       if cards[i].deck ~= 1 then
         cards[i]:Display()
@@ -349,8 +361,14 @@ function love.draw()
     if player1.health <= 0 or opp.health <= 0 then
       gameStage = "over"
     end
-  elseif gameStage == "over" then
+  elseif gameStage == "pause" then
+    message2 = "[Q] menu [ESC] to return"
     love.graphics.setFont(XLFont)
+    love.graphics.printf("Pause", 0, 200, 800, "center")
+    --menu
+    love.graphics.setFont(MFont)
+    love.graphics.printf("[ESC] to return", 0, 300, 800, "center")
+  elseif gameStage == "over" then
     if player1.health <= 0 and opp.health <= 0 then
       gameOverMessage = "Tie"
     elseif player1.health <= 0 then
@@ -358,6 +376,7 @@ function love.draw()
     elseif opp.health <= 0 then
       gameOverMessage = "Player1 Wins"
     end
+    love.graphics.setFont(XLFont)
     love.graphics.printf(gameOverMessage, 0, 200, 800, "center")
     --menu
     love.graphics.setFont(MFont)
