@@ -17,7 +17,6 @@ function Player:Create(number)
   return player
 end
 
-
 function Player:Draw()
   if self.health <= 0 and self.spriteNum ~= #self.anim.quads then
     self.spriteNum = math.floor(self.anim.currentTime / self.anim.duration * #self.anim.quads) + 1
@@ -26,7 +25,7 @@ function Player:Draw()
   if self.num == 1 then
     love.graphics.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 100, 330, 0)
   elseif self.num == 2 then
-    love.graphics.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 700, 330, 0, - 1, 1)
+    love.graphics.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 700, 330, 0, -1, 1)
   end
 end
 
@@ -61,13 +60,13 @@ function Player:DrawUI()
     love.graphics.printf(math.floor(self.health + 0.5), 30, 15, 800, "left")
     love.graphics.setColor(colors.white)
     love.graphics.printf(math.floor(self.mana), 30, 65, 800, "left")
-  elseif self == opp then
-    love.graphics.printf(math.floor(self.health + 0.5), - 25, 15, 800, "right")
+  elseif self == player2 then
+    love.graphics.printf(math.floor(self.health + 0.5), -25, 15, 800, "right")
     love.graphics.setColor(colors.white)
-    love.graphics.printf(math.floor(self.mana), - 25, 65, 800, "right")
+    love.graphics.printf(math.floor(self.mana), -25, 65, 800, "right")
   end
   --display damage numbers
-  if gameTime < timeEnd[self.num] then
+  if gameTime < timeEnd[self.num] and damageNum[self.num] ~= 0 then
     if damageNum[self.num] > 0 then
       love.graphics.setColor(colors.red)
     else
@@ -95,6 +94,30 @@ end
 function Player:Cast(i)
   if cards[i].deck == self.num then
     if self.mana >= cards[i].mana then
+      --animate the spell
+      local x
+      if cards[i].loc == "self" then
+        if self.num == 1 then
+          x = 100
+        elseif self.num == 2 then
+          x = 540
+        end
+      elseif cards[i].loc == "proj" then
+        if self:Other().num == 1 then
+          cards[i].x = 100
+          cards[i].y = 300
+        elseif self:Other().num == 2 then
+          cards[i].x = 540
+          cards[i].y = 300
+        end
+      elseif cards[i].loc == "other" then
+        if self:Other().num == 1 then
+          x = 100
+        elseif self:Other().num == 2 then
+          x = 540
+        end
+      end
+      cards[i]:StartAnimate(x, 300)
       self.mana = self.mana - cards[i].mana
       message2 = "Player" .. self.num .. " cast " .. cards[i].name
       if cards[i].type == "attack" then
@@ -132,7 +155,7 @@ end
 
 function Player:Other()
   if self == player1 then
-    return opp
+    return player2
   else
     return player1
   end

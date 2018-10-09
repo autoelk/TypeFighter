@@ -34,7 +34,7 @@ function love.load()
   io.close()
 
   player1 = Player:Create(1)
-  opp = Player:Create(2)
+  player2 = Player:Create(2)
 
   --allow repeating input
   love.keyboard.setKeyRepeat(true)
@@ -48,11 +48,11 @@ function Setup()
   message2 = "[P]lay [B]rowse [Q]uit"
   gameStage = "menu"
 
-  --opponent stats
-  oppPickSpeed = 5
-  oppCastSpeed = 2
-  oppPickCooldown = oppPickSpeed
-  oppCastCooldown = oppCastSpeed
+  --player2 stats
+  player2PickSpeed = 5
+  player2CastSpeed = 2
+  player2PickCooldown = player2PickSpeed
+  player2CastCooldown = player2CastSpeed
 
   --scrolling
   scrollSpeed = 30
@@ -71,13 +71,13 @@ function Setup()
   player1.spriteNum = 1
   player1.picks = 5
   player1.anim.currentTime = 0
-  opp.health = 50
-  opp.healthRegen = 0
-  opp.mana = 0
-  opp.manaRegen = 1
-  opp.spriteNum = 1
-  opp.picks = 5
-  opp.anim.currentTime = 0
+  player2.health = 50
+  player2.healthRegen = 0
+  player2.mana = 0
+  player2.manaRegen = 1
+  player2.spriteNum = 1
+  player2.picks = 5
+  player2.anim.currentTime = 0
 
   --reset time
   gameTime = 0
@@ -86,8 +86,8 @@ end
 function love.keypressed(key)
   --textbox
   if key == "backspace" then
-    if utf8.offset(input, - 1) then
-      input = string.sub(input, 1, utf8.offset(input, - 1) - 1)
+    if utf8.offset(input, -1) then
+      input = string.sub(input, 1, utf8.offset(input, -1) - 1)
     end
   end
   --pause
@@ -140,7 +140,7 @@ function love.keypressed(key)
           message = "removed " .. cards[location].name
           player1.picks = player1.picks + 1
         elseif cards[location].deck == 2 then
-          message = cards[location].name .. " is in opp's deck"
+          message = cards[location].name .. " is in player2's deck"
         elseif player1.picks <= 0 then
           message = "no picks remaining"
         else
@@ -151,8 +151,8 @@ function love.keypressed(key)
       elseif input == "start" or input == "p" then
         if player1.picks > 0 then -- switch gamestage to game when both are done picking
           message = "you have " .. player1.picks .. " picks left"
-        elseif opp.picks > 0 then
-          message = "opp has " .. opp.picks .. " picks left"
+        elseif player2.picks > 0 then
+          message = "player2 has " .. player2.picks .. " picks left"
         else
           message = "Game Started"
           gameStage = "game"
@@ -168,7 +168,7 @@ function love.keypressed(key)
         --cast the spell
         player1:Cast(location)
       elseif input == "cardnamestocastthem" then
-        opp:Damage(1000000000)
+        player2:Damage(1000000000)
       elseif input == "q" or input == "quit" then
         gameStage = "cardSelect"
       else
@@ -193,22 +193,27 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
-  --animations
+  --card animations
   for i = 1, #cards do
+    cards[i].t = cards[i].t - dt
+    if cards[i].t < 0 then
+      cards[i].t = 0
+    end
     cards[i].anim.currentTime = cards[i].anim.currentTime + dt
     if cards[i].anim.currentTime >= cards[i].anim.duration then
       cards[i].anim.currentTime = cards[i].anim.currentTime - cards[i].anim.duration
     end
   end
+  --death animations
   if player1.health <= 0 then
     player1.anim.currentTime = player1.anim.currentTime + dt
     if player1.anim.currentTime >= player1.anim.duration then
       player1.anim.currentTime = player1.anim.currentTime - player1.anim.duration
     end
-  elseif opp.health <= 0 then
-    opp.anim.currentTime = opp.anim.currentTime + dt
-    if opp.anim.currentTime >= opp.anim.duration then
-      opp.anim.currentTime = opp.anim.currentTime - opp.anim.duration
+  elseif player2.health <= 0 then
+    player2.anim.currentTime = player2.anim.currentTime + dt
+    if player2.anim.currentTime >= player2.anim.duration then
+      player2.anim.currentTime = player2.anim.currentTime - player2.anim.duration
     end
   end
 
@@ -239,17 +244,26 @@ function love.update(dt)
         cards[i]:Move(190 * (colNum - 1) + 10, 262 * (rowNum - 1) + posy)
       end
     end
-  elseif gameStage == "game" then
-    for i = 1, #deck do
-      cards[deck[i]]:Move(155 * (i - 1) + 25, 500)
+  elseif gameStage == "game" or gameStage == "over" then
+    -- move projectile animations
+    for i = 1, #cards do
+      if cards[i].loc == "proj" then
+        if cards[i].deck == 1 and cards[i].t > 0 then
+          cards[i].x = 540 - 280 * cards[i].t
+          cards[i].y = 300
+        elseif cards[i].deck == 2 and cards[i].t > 0 then
+          cards[i].x = 100 + 280 * cards[i].t
+          cards[i].y = 300
+        end
+      end
     end
   end
 
   --scrolling boundries
   if posy >= 200 then
     posy = 200
-  elseif posy <= (math.ceil(#cards / 3) - 1) * - 317 + 25 then
-    posy = (math.ceil(#cards / 3) - 1) * - 317 + 25
+  elseif posy <= (math.ceil(#cards / 3) - 1) * -317 + 25 then
+    posy = (math.ceil(#cards / 3) - 1) * -317 + 25
   end
 
   gameTime = gameTime + dt
@@ -263,38 +277,38 @@ function love.update(dt)
     if player1.mana < 0 then
       player1.mana = 0
     end
-    opp.mana = opp.mana + dt * opp.manaRegen
-    if opp.mana < 0 then
-      opp.mana = 0
+    player2.mana = player2.mana + dt * player2.manaRegen
+    if player2.mana < 0 then
+      player2.mana = 0
     end
     player1.health = player1.health + dt * player1.healthRegen
-    opp.health = opp.health + dt * opp.healthRegen
+    player2.health = player2.health + dt * player2.healthRegen
   end
 
-  --opponent action
+  --player2 action
   if gameStage == "cardSelect" then
-    oppPickSpeed = player1.picks + 1
-    oppPickCooldown = oppPickCooldown - dt
-    if oppPickCooldown <= 0 then
+    player2PickSpeed = player1.picks + 1
+    player2PickCooldown = player2PickCooldown - dt
+    if player2PickCooldown <= 0 then
       local cardToPick = math.random(1, #cards)
-      if cards[cardToPick].deck == 0 and cards[cardToPick].name ~= "ritual" and opp.picks > 0 then
+      if cards[cardToPick].deck == 0 and cards[cardToPick].name ~= "ritual" and player2.picks > 0 then
         cards[cardToPick].deck = 2
-        opp.picks = opp.picks - 1
-        oppPickCooldown = oppPickCooldown + oppPickSpeed
+        player2.picks = player2.picks - 1
+        player2PickCooldown = player2PickCooldown + player2PickSpeed
       end
     end
-    oppPickCooldown = math.max(oppPickCooldown, 0)
+    player2PickCooldown = math.max(player2PickCooldown, 0)
   elseif gameStage == "game" then
-    oppCastCooldown = oppCastCooldown - dt
-    if oppCastCooldown <= 0 then
+    player2CastCooldown = player2CastCooldown - dt
+    if player2CastCooldown <= 0 then
       local cardToPick = math.random(1, #cards)
       local castChance = math.random(1, 100)
-      if cards[cardToPick].deck == 2 and cards[cardToPick].mana <= opp.mana and castChance >= 80 then
-        opp:Cast(cardToPick)
-        oppCastCooldown = oppCastCooldown + oppCastSpeed
+      if cards[cardToPick].deck == 2 and cards[cardToPick].mana <= player2.mana and castChance >= 80 then
+        player2:Cast(cardToPick)
+        player2CastCooldown = player2CastCooldown + player2CastSpeed
       end
     end
-    oppCastCooldown = math.max(oppCastCooldown, 0)
+    player2CastCooldown = math.max(player2CastCooldown, 0)
   end
 end
 
@@ -305,11 +319,10 @@ function love.draw()
   --players
   player1:Draw()
   love.graphics.setColor(colors.red)
-  opp:Draw()
+  player2:Draw()
   love.graphics.setColor(colors.white)
 
   if gameStage == "menu" then
-    --title
     love.graphics.setFont(XLFont) --set Font to title Font
     love.graphics.printf("TypeFighter", 0, 200, 800, "center")
     --menu
@@ -317,10 +330,8 @@ function love.draw()
     love.graphics.printf("[P]lay Game\n[B]rowse Cards\n[Q]uit", 0, 300, 800, "center")
     -- love.graphics.printf("Music by Eric Matyas www.soundimage.org", 0, 540, 800, "right")
     --animation
-    local spriteNum0 = math.floor(cards[findCard("torrent")].anim.currentTime / cards[findCard("torrent")].anim.duration * #cards[findCard("torrent")].anim.quads) + 1
-    local spriteNum1 = math.floor(cards[findCard("fireball")].anim.currentTime / cards[findCard("fireball")].anim.duration * #cards[findCard("fireball")].anim.quads) + 1
-    love.graphics.draw(cards[findCard("torrent")].anim.spriteSheet, cards[findCard("torrent")].anim.quads[spriteNum0], 50, 180, 0, 1)
-    love.graphics.draw(cards[findCard("fireball")].anim.spriteSheet, cards[findCard("fireball")].anim.quads[spriteNum1], 750, 345, 3.14159, 1)
+    cards[findCard("torrent")]:Animate(50, 180, 0)
+    cards[findCard("fireball")]:Animate(750, 345, 3.14159)
   elseif gameStage == "cardBrowse" then
     message2 = "[Q] to go back"
     for i = 1, #cards do
@@ -334,7 +345,7 @@ function love.draw()
     love.graphics.rectangle("fill", 200, 150, 400, 300)
     love.graphics.setColor(colors.white)
     love.graphics.printf(
-      "Choose 5 cards by typing their names before your opponent can chose them. You can remove cards from your deck by typing their name again. When you are done, type P to start.",
+      "Choose 5 cards by typing their names before player2 can chose them. You can remove cards from your deck by typing their name again. When you are done, type P to start.",
       210,
       160,
       380,
@@ -356,9 +367,9 @@ function love.draw()
   elseif gameStage == "game" then
     --display deck
     for i = 1, #deck do
-      cards[deck[i]]:DisplayMini()
+      cards[deck[i]]:DisplayMini((155 * (i - 1)) + 25, 500)
     end
-    if player1.health <= 0 or opp.health <= 0 then
+    if player1.health <= 0 or player2.health <= 0 then
       gameStage = "over"
     end
   elseif gameStage == "pause" then
@@ -369,11 +380,11 @@ function love.draw()
     love.graphics.setFont(MFont)
     love.graphics.printf("[ESC] to return", 0, 300, 800, "center")
   elseif gameStage == "over" then
-    if player1.health <= 0 and opp.health <= 0 then
+    if player1.health <= 0 and player2.health <= 0 then
       gameOverMessage = "Tie"
     elseif player1.health <= 0 then
       gameOverMessage = "Player2 Wins"
-    elseif opp.health <= 0 then
+    elseif player2.health <= 0 then
       gameOverMessage = "Player1 Wins"
     end
     love.graphics.setFont(XLFont)
@@ -384,8 +395,18 @@ function love.draw()
   end
 
   if gameStage == "game" or gameStage == "over" then
+    --animations for game
+    for i = 1, #cards do
+      if cards[i].t > 0 then
+        if cards[i].deck == 1 then
+          cards[i]:Animate()
+        elseif cards[i].deck == 2 then
+          cards[i]:Animate()
+        end
+      end
+    end
     player1:DrawUI()
-    opp:DrawUI()
+    player2:DrawUI()
   end
 
   --input box at bottom of screen
@@ -394,7 +415,7 @@ function love.draw()
   love.graphics.setFont(MFont)
   love.graphics.setColor(colors.white) -- reset colors
   love.graphics.printf(message, 5, 570, 800, "left")
-  love.graphics.printf(message2, - 5, 570, 800, "right")
+  love.graphics.printf(message2, -5, 570, 800, "right")
   love.graphics.printf(input, 5, 570, 800, "left")
 end
 
