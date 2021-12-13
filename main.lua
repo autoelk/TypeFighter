@@ -18,7 +18,7 @@ colors = {
 
 function love.load()
   math.randomseed(os.time())
-  background = love.graphics.newImage("assets/Background.png")
+  background = love.graphics.newImage("assets/background.png")
   -- fonts
   XLFont = love.graphics.newFont("assets/munro-small.ttf", 96)
   LFont = love.graphics.newFont("assets/munro-small.ttf", 36)
