@@ -7,7 +7,7 @@ function Card:Create(cardIndex)
   local card = {
     x = 0,
     y = 0,
-    r = 0,
+    r = 0, -- rotation of the card
     s = 1,
     t = 0, -- time
     name = inputTable[1],
@@ -18,17 +18,21 @@ function Card:Create(cardIndex)
     index = cardIndex,
     deck = 0
   }
-  if fileCheck("Assets/Cards/" .. card.name .. ".png") then
-    card.anim = newAnimation(love.graphics.newImage("Assets/Cards/" .. card.name .. ".png"), 160, 160, 1)
+  -- find and create card animation
+  if fileCheck("assets/Cards/" .. card.name .. ".png") then
+    card.anim = newAnimation(love.graphics.newImage("assets/Cards/" .. card.name .. ".png"), 160, 160, 1)
   else
-    card.anim = newAnimation(love.graphics.newImage("Assets/Placeholder.png"), 160, 160, 10)
+    card.anim = newAnimation(love.graphics.newImage("assets/placeholder.png"), 160, 160, 10)
   end
-  card.loc = inputTable[6]
+
+  card.loc = inputTable[6] -- where the card is animated (proj, other, self)
+
   local cardText = ""
   for i = 7, #inputTable do
     cardText = cardText .. " " .. inputTable[i]
   end
   card.text = cardText
+
   setmetatable(card, self)
   return card
 end
@@ -45,6 +49,7 @@ function Card:Color()
   end
 end
 
+-- display mini version of card during gameplay
 function Card:DisplayMini(x, y)
   x = x or self.x
   y = y or self.y
@@ -68,6 +73,7 @@ function Card:DisplayMini(x, y)
   love.graphics.printf(cardText, x + 5, y + 15, 110, "left")
 end
 
+-- display large version of card during card selection
 function Card:Display()
   if self.deck == 2 then
     love.graphics.setColor(self:Color())
@@ -117,6 +123,7 @@ function Card:Animate(x, y, r, s)
   love.graphics.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], x, y, r, s, 1)
 end
 
+-- calculate the location the card should be at
 function Card:Move(dx, dy)
   if self.x ~= dx or self.y ~= dy then
     self.x = self.x + ((dx - self.x) / 20)
@@ -124,6 +131,7 @@ function Card:Move(dx, dy)
   end
 end
 
+-- find card in cards table, returns index
 function findCard(cardToFind)
   cardToFind = string.lower(cardToFind)
   for i = 1, #cards do
