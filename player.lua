@@ -11,7 +11,7 @@ function Player:Create(number)
     mana = 0,
     manaRegen = 1,
     spriteNum = 1,
-    anim = newAnimation(love.graphics.newImage("assets/wizard.png"), 160, 160, 2)
+    anim = newAnimation(lg.newImage("assets/wizard.png"), 160, 160, 2)
   }
   setmetatable(player, self)
   return player
@@ -23,9 +23,9 @@ function Player:Draw()
   end
 
   if self.num == 1 then
-    love.graphics.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 100, 330, 0)
+    lg.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 100, 330, 0)
   elseif self.num == 2 then
-    love.graphics.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 700, 330, 0, -1, 1)
+    lg.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], 700, 330, 0, -1, 1)
   end
 end
 
@@ -40,46 +40,46 @@ function Player:DrawUI()
     heatlhX = 800 - (healthSize + 25)
     manaX = 800 - (manaSize + 25)
   end
-  love.graphics.setColor(colors.blue)
-  love.graphics.rectangle("fill", manaX, 75, manaSize, 30)
+  lg.setColor(colors.blue)
+  lg.rectangle("fill", manaX, 75, manaSize, 30)
   if self.health <= 10 then
-    love.graphics.setColor(colors.red)
-    love.graphics.rectangle("fill", heatlhX, 25, healthSize, 30)
-    love.graphics.setColor(colors.white)
+    lg.setColor(colors.red)
+    lg.rectangle("fill", heatlhX, 25, healthSize, 30)
+    lg.setColor(colors.white)
   elseif self.health <= 20 then
-    love.graphics.setColor(colors.yellow)
-    love.graphics.rectangle("fill", heatlhX, 25, healthSize, 30)
-    love.graphics.setColor(colors.black)
+    lg.setColor(colors.yellow)
+    lg.rectangle("fill", heatlhX, 25, healthSize, 30)
+    lg.setColor(colors.black)
   else
-    love.graphics.setColor(colors.green)
-    love.graphics.rectangle("fill", heatlhX, 25, healthSize, 30)
-    love.graphics.setColor(colors.white)
+    lg.setColor(colors.green)
+    lg.rectangle("fill", heatlhX, 25, healthSize, 30)
+    lg.setColor(colors.white)
   end
-  love.graphics.setFont(LFont)
+  lg.setFont(fontL)
   if self == player1 then
-    love.graphics.printf(math.floor(self.health + 0.5), 30, 15, 800, "left")
-    love.graphics.setColor(colors.white)
-    love.graphics.printf(math.floor(self.mana), 30, 65, 800, "left")
+    lg.printf(math.floor(self.health + 0.5), 30, 15, 800, "left")
+    lg.setColor(colors.white)
+    lg.printf(math.floor(self.mana), 30, 65, 800, "left")
   elseif self == player2 then
-    love.graphics.printf(math.floor(self.health + 0.5), -25, 15, 800, "right")
-    love.graphics.setColor(colors.white)
-    love.graphics.printf(math.floor(self.mana), -25, 65, 800, "right")
+    lg.printf(math.floor(self.health + 0.5), -25, 15, 800, "right")
+    lg.setColor(colors.white)
+    lg.printf(math.floor(self.mana), -25, 65, 800, "right")
   end
-  --display damage numbers
+  -- display damage numbers
   if gameTime < timeEnd[self.num] and damageNum[self.num] ~= 0 then
     if damageNum[self.num] > 0 then
-      love.graphics.setColor(colors.red)
+      lg.setColor(colors.red)
     else
-      love.graphics.setColor(colors.green)
+      lg.setColor(colors.green)
     end
     if math.abs(damageNum[self.num]) > 20 then
-      love.graphics.setFont(XLFont)
+      lg.setFont(fontXL)
     elseif math.abs(damageNum[self.num]) > 10 then
-      love.graphics.setFont(LFont)
+      lg.setFont(fontL)
     else
-      love.graphics.setFont(MFont)
+      lg.setFont(fontM)
     end
-    love.graphics.printf(math.abs(damageNum[self.num]), x, 230 - (gameTime - timeEnd[self.num]) * 25, 360, "center")
+    lg.printf(math.abs(damageNum[self.num]), x, 230 - (gameTime - timeEnd[self.num]) * 25, 360, "center")
   end
 end
 
@@ -94,7 +94,7 @@ end
 function Player:Cast(i)
   if cards[i].deck == self.num then
     if self.mana >= cards[i].mana then
-      --animate the spell
+      -- animate the spell
       local x
       if cards[i].loc == "self" then
         if self.num == 1 then
@@ -118,6 +118,8 @@ function Player:Cast(i)
         end
       end
       cards[i]:StartAnimate(x, 300)
+
+      -- card effects
       self.mana = self.mana - cards[i].mana
       message2 = "Player" .. self.num .. " cast " .. cards[i].name
       if cards[i].type == "attack" then

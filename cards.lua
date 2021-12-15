@@ -20,9 +20,9 @@ function Card:Create(cardIndex)
   }
   -- find and create card animation
   if fileCheck("assets/cards/" .. card.name .. ".png") then
-    card.anim = newAnimation(love.graphics.newImage("assets/cards/" .. card.name .. ".png"), 160, 160, 1)
+    card.anim = newAnimation(lg.newImage("assets/cards/" .. card.name .. ".png"), 160, 160, 1)
   else
-    card.anim = newAnimation(love.graphics.newImage("assets/placeholder.png"), 160, 160, 10)
+    card.anim = newAnimation(lg.newImage("assets/placeholder.png"), 160, 160, 10)
   end
 
   card.loc = inputTable[6] -- where the card is animated (proj, other, self)
@@ -53,15 +53,15 @@ end
 function Card:DisplayMini(x, y)
   x = x or self.x
   y = y or self.y
-  XSFont:setLineHeight(0.6)
-  love.graphics.setColor(self:Color())
-  love.graphics.rectangle("fill", x, y, 130, 60)
+  fontXS:setLineHeight(0.6)
+  lg.setColor(self:Color())
+  lg.rectangle("fill", x, y, 130, 60)
   --print text
-  love.graphics.setColor(colors.black)
-  love.graphics.setFont(SFont)
-  love.graphics.printf(self.name, x + 5, y, 130, "left")
-  love.graphics.printf(self.mana, x - 5, y, 130, "right")
-  love.graphics.setFont(XSFont)
+  lg.setColor(colors.black)
+  lg.setFont(fontS)
+  lg.printf(self.name, x + 5, y, 130, "left")
+  lg.printf(self.mana, x - 5, y, 130, "right")
+  lg.setFont(fontXS)
   local cardText = ""
   if self.type == "attack" then
     cardText = "Deal " .. self.damage .. " damage."
@@ -70,26 +70,27 @@ function Card:DisplayMini(x, y)
   elseif self.type == "misc" then
     cardText = self.text
   end
-  love.graphics.printf(cardText, x + 5, y + 15, 110, "left")
+  lg.printf(cardText, x + 5, y + 15, 110, "left")
 end
 
 -- display large version of card during card selection
 function Card:Display()
   if self.deck == 2 then
-    love.graphics.setColor(self:Color())
-    love.graphics.rectangle("fill", self.x, self.y, 180, 252)
-    love.graphics.setColor(colors.black)
-    love.graphics.rectangle("fill", self.x + 10, self.y + 25, 160, 160)
+    lg.setColor(self:Color())
+    lg.rectangle("fill", self.x, self.y, 180, 252)
+    lg.setColor(colors.black)
+    lg.rectangle("fill", self.x + 10, self.y + 25, 160, 160)
   else
-    love.graphics.setColor(self:Color())
-    love.graphics.rectangle("fill", self.x, self.y, 180, 252)
-    love.graphics.setColor(colors.white)
-    love.graphics.rectangle("fill", self.x + 10, self.y + 25, 160, 160)
+    lg.setColor(self:Color())
+    lg.rectangle("fill", self.x, self.y, 180, 252)
+    lg.setColor(colors.white)
+    lg.rectangle("fill", self.x + 10, self.y + 25, 160, 160)
   end
+  
   --print text
-  love.graphics.setFont(SFont)
-  love.graphics.printf(self.name, self.x + 10, self.y, 180, "left")
-  love.graphics.printf("mana " .. self.mana, self.x - 10, self.y, 180, "right")
+  lg.setFont(fontS)
+  lg.printf(self.name, self.x + 10, self.y, 180, "left")
+  lg.printf("mana " .. self.mana, self.x - 10, self.y, 180, "right")
   local cardText = ""
   if self.type == "attack" then
     cardText = "Deal " .. self.damage .. " damage."
@@ -98,7 +99,7 @@ function Card:Display()
   elseif self.type == "misc" then
     cardText = self.text
   end
-  love.graphics.printf(cardText, self.x + 10, self.y + 190, 160, "left")
+  lg.printf(cardText, self.x + 10, self.y + 190, 160, "left")
   self:Animate(self.x + 10, self.y + 25)
 end
 
@@ -118,9 +119,9 @@ function Card:Animate(x, y, r, s)
   end
   r = r or 0
   s = s or 1
-  love.graphics.setColor(colors.white)
+  lg.setColor(colors.white)
   local spriteNum = math.floor(self.anim.currentTime / self.anim.duration * #self.anim.quads) + 1
-  love.graphics.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], x, y, r, s, 1)
+  lg.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], x, y, r, s, 1)
 end
 
 -- calculate the location the card should be at

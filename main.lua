@@ -17,14 +17,17 @@ colors = {
 }
 
 function love.load()
+  lg = love.graphics
+  lk = love.keyboard
   math.randomseed(os.time())
-  background = love.graphics.newImage("assets/background.png")
+
+  background = lg.newImage("assets/background.png")
   -- fonts
-  XLFont = love.graphics.newFont("assets/munro-small.ttf", 96)
-  LFont = love.graphics.newFont("assets/munro-small.ttf", 36)
-  MFont = love.graphics.newFont("assets/munro-small.ttf", 24)
-  SFont = love.graphics.newFont("assets/munro-small.ttf", 18)
-  XSFont = love.graphics.newFont("assets/munro-small.ttf", 15)
+  fontXL = lg.newFont("assets/munro-small.ttf", 96)
+  fontL = lg.newFont("assets/munro-small.ttf", 36)
+  fontM = lg.newFont("assets/munro-small.ttf", 24)
+  fontS = lg.newFont("assets/munro-small.ttf", 18)
+  fontXS = lg.newFont("assets/munro-small.ttf", 15)
 
   -- read each card into array cards
   io.input("./cards.txt")
@@ -312,21 +315,24 @@ function love.update(dt)
 end
 
 function love.draw()
+  -- scale
+  scale = math.min(lg.getWidth() / 800, lg.getHeight() / 600)
+  lg.scale(scale, scale)
   -- background
-  love.graphics.draw(background, 0, 0)
-  love.graphics.setFont(MFont)
+  lg.draw(background, 0, 0)
+  lg.setFont(fontM)
   -- players
-  love.graphics.setColor(colors.red)
+  lg.setColor(colors.red)
   player2:Draw()
-  love.graphics.setColor(colors.white)
+  lg.setColor(colors.white)
   player1:Draw()
 
   if gameState == "menu" then
-    love.graphics.setFont(XLFont)
-    love.graphics.printf("TypeFighter", 0, 200, 800, "center")
+    lg.setFont(fontXL)
+    lg.printf("TypeFighter", 0, 200, 800, "center")
     -- menu
-    love.graphics.setFont(MFont)
-    love.graphics.printf("[P]lay Game\n[B]rowse Cards\n[Q]uit", 0, 300, 800, "center")
+    lg.setFont(fontM)
+    lg.printf("[P]lay Game\n[B]rowse Cards\n[Q]uit", 0, 300, 800, "center")
     -- animation
     cards[findCard("torrent")]:Animate(50, 180, 0)
     cards[findCard("fireball")]:Animate(750, 345, 3.14159)
@@ -338,17 +344,11 @@ function love.draw()
   elseif gameState == "instructions" then
     message2 = "[P] to Skip [Q] to go back"
     -- display instructions
-    love.graphics.setFont(MFont)
-    love.graphics.setColor(colors.black)
-    love.graphics.rectangle("fill", 200, 150, 400, 300)
-    love.graphics.setColor(colors.white)
-    love.graphics.printf(
-      "Choose 5 cards by typing their names before player2 can chose them. You can remove cards from your deck by typing their name again. When you are done, type P to start.",
-      210,
-      160,
-      380,
-      "center"
-    )
+    lg.setFont(fontM)
+    lg.setColor(colors.black)
+    lg.rectangle("fill", 200, 150, 400, 300)
+    lg.setColor(colors.white)
+    lg.printf("Choose 5 cards by typing their names before player2 can chose them. You can remove cards from your deck by typing their name again. When you are done, type P to start.", 210, 160, 380, "center")
   elseif gameState == "cardSelect" then --Stage of card selection
     message2 = "[P]lay [Q] to go back"
     for i = 1, #cards do
@@ -372,11 +372,11 @@ function love.draw()
     end
   elseif gameState == "pause" then
     message2 = "[Q] menu [ESC] to return"
-    love.graphics.setFont(XLFont)
-    love.graphics.printf("Pause", 0, 200, 800, "center")
+    lg.setFont(fontXL)
+    lg.printf("Pause", 0, 200, 800, "center")
     -- menu
-    love.graphics.setFont(MFont)
-    love.graphics.printf("[ESC] to return", 0, 300, 800, "center")
+    lg.setFont(fontM)
+    lg.printf("[ESC] to return", 0, 300, 800, "center")
   elseif gameState == "over" then
     if player1.health <= 0 and player2.health <= 0 then
       gameOverMessage = "Tie"
@@ -385,11 +385,11 @@ function love.draw()
     elseif player2.health <= 0 then
       gameOverMessage = "Player1 Wins"
     end
-    love.graphics.setFont(XLFont)
-    love.graphics.printf(gameOverMessage, 0, 200, 800, "center")
+    lg.setFont(fontXL)
+    lg.printf(gameOverMessage, 0, 200, 800, "center")
     -- menu
-    love.graphics.setFont(MFont)
-    love.graphics.printf("[R]estart Game\n[Q]uit", 0, 300, 800, "center")
+    lg.setFont(fontM)
+    lg.printf("[R]estart Game\n[Q]uit", 0, 300, 800, "center")
   end
 
   if gameState == "game" or gameState == "over" then
@@ -408,13 +408,13 @@ function love.draw()
   end
 
   -- input box at bottom of screen
-  love.graphics.setColor(colors.black)
-  love.graphics.rectangle("fill", 0, 570, 800, 30)
-  love.graphics.setFont(MFont)
-  love.graphics.setColor(colors.white) -- reset colors
-  love.graphics.printf(message, 5, 570, 800, "left")
-  love.graphics.printf(message2, -5, 570, 800, "right")
-  love.graphics.printf(input, 5, 570, 800, "left")
+  lg.setColor(colors.black)
+  lg.rectangle("fill", 0, 570, 800, 30)
+  lg.setFont(fontM)
+  lg.setColor(colors.white) -- reset colors
+  lg.printf(message, 5, 570, 800, "left")
+  lg.printf(message2, -5, 570, 800, "right")
+  lg.printf(input, 5, 570, 800, "left")
 end
 
 function newAnimation(image, width, height, duration)
@@ -424,7 +424,7 @@ function newAnimation(image, width, height, duration)
 
   for y = 0, image:getHeight() - height, height do
     for x = 0, image:getWidth() - width, width do
-      table.insert(animation.quads, love.graphics.newQuad(x, y, width, height, image:getDimensions()))
+      table.insert(animation.quads, lg.newQuad(x, y, width, height, image:getDimensions()))
     end
   end
   animation.duration = duration or 1
