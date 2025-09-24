@@ -2,41 +2,6 @@ Card = {}
 
 Card.__index = Card
 
-function Card:Create(cardIndex)
-    local inputTable = split(io.read(), " ")
-    local card = {
-        x = 0,
-        y = 0,
-        r = 0, -- rotation of the card
-        s = 1,
-        t = 0, -- time
-        name = inputTable[1],
-        damage = tonumber(inputTable[2]),
-        mana = tonumber(inputTable[3]),
-        type = inputTable[4],
-        elem = inputTable[5],
-        index = cardIndex,
-        deck = 0
-    }
-    -- find and create card animation
-    if fileCheck("assets/cards/" .. card.name .. ".png") then
-        card.anim = newAnimation(lg.newImage("assets/cards/" .. card.name .. ".png"), 160, 160, 1)
-    else
-        card.anim = newAnimation(lg.newImage("assets/placeholder.png"), 160, 160, 10)
-    end
-
-    card.loc = inputTable[6] -- where the card is animated (proj, other, self)
-
-    local cardText = ""
-    for i = 7, #inputTable do
-        cardText = cardText .. " " .. inputTable[i]
-    end
-    card.text = cardText
-
-    setmetatable(card, self)
-    return card
-end
-
 function Card:Color()
     if self.elem == "fire" then
         return colors.red
