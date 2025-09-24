@@ -11,20 +11,26 @@ end
 
 function GameState:enter()
     -- Initialize players for gameplay
-    player1.health = 50
-    player1.healthRegen = 0
-    player1.mana = 0
-    player1.manaRegen = 1
-    player1.spriteNum = 1
-    player1.anim.currentTime = 0
-    player2.health = 50
-    player2.healthRegen = 0
-    player2.mana = 0
-    player2.manaRegen = 1
-    player2.spriteNum = 1
-    player2.anim.currentTime = 0
-    player2PickCooldown = player2PickSpeed
-    player2CastCooldown = player2CastSpeed
+    local player1 = gameManager:getPlayer(1)
+    local player2 = gameManager:getPlayer(2)
+    
+    if player1 then
+        player1.health = 50
+        player1.healthRegen = 0
+        player1.mana = 0
+        player1.manaRegen = 1
+        player1.spriteNum = 1
+        player1.anim.currentTime = 0
+    end
+    
+    if player2 then
+        player2.health = 50
+        player2.healthRegen = 0
+        player2.mana = 0
+        player2.manaRegen = 1
+        player2.spriteNum = 1
+        player2.anim.currentTime = 0
+    end
     
     -- Set game interface messages
     message = "type card names to cast them"
@@ -46,31 +52,32 @@ function GameState:update(dt)
     end
 
     -- Health and mana regen
-    player1.mana = player1.mana + dt * player1.manaRegen
-    if player1.mana < 0 then
-        player1.mana = 0
-    end
-    player2.mana = player2.mana + dt * player2.manaRegen
-    if player2.mana < 0 then
-        player2.mana = 0
-    end
-    player1.health = player1.health + dt * player1.healthRegen
-    player2.health = player2.health + dt * player2.healthRegen
-
-    -- Player2 AI casting
-    player2CastCooldown = player2CastCooldown - dt
-    if player2CastCooldown <= 0 then
-        local cardToPick = math.random(1, #cards)
-        local castChance = math.random(1, 100)
-        if cards[cardToPick].deck == 2 and cards[cardToPick].mana <= player2.mana and castChance >= 80 then
-            player2:Cast(cardToPick)
-            player2CastCooldown = player2CastCooldown + player2CastSpeed
+    local player1 = gameManager:getPlayer(1)
+    local player2 = gameManager:getPlayer(2)
+    
+    if player1 then
+        player1.mana = player1.mana + dt * player1.manaRegen
+        if player1.mana < 0 then
+            player1.mana = 0
         end
+        player1.health = player1.health + dt * player1.healthRegen
     end
-    player2CastCooldown = math.max(player2CastCooldown, 0)
+    
+    if player2 then
+        player2.mana = player2.mana + dt * player2.manaRegen
+        if player2.mana < 0 then
+            player2.mana = 0
+        end
+        player2.health = player2.health + dt * player2.healthRegen
+    end
+
+    -- Player2 AI update
+    if player2 and player2.update then
+        player2:update(dt)
+    end
 
     -- Check for game over
-    if player1.health <= 0 or player2.health <= 0 then
+    if (player1 and player1.health <= 0) or (player2 and player2.health <= 0) then
         self.stateManager:changeState("gameOver")
     end
 end
@@ -92,8 +99,15 @@ function GameState:draw()
         end
     end
     
-    player1:DrawUI()
-    player2:DrawUI()
+    local player1 = gameManager:getPlayer(1)
+    local player2 = gameManager:getPlayer(2)
+    
+    if player1 then
+        player1:DrawUI()
+    end
+    if player2 then
+        player2:DrawUI()
+    end
 end
 
 function GameState:keypressed(key)
@@ -101,14 +115,15 @@ function GameState:keypressed(key)
         self.stateManager:changeState("pause")
     elseif key == "return" then
         local userInput = self:processInput()
-        local location = findCard(userInput)
-        
-        if location > 0 then
-            player1:Cast(location)
-        elseif userInput == "q" or userInput == "quit" then
-            self.stateManager:changeState("menu")
-        else
-            message = "type card names to cast them"
+        local humanPlayer = gameManager:getHumanPlayer()
+        if humanPlayer then
+            local result = humanPlayer:handleInput(userInput)
+            
+            if result == "quit" then
+                self.stateManager:changeState("menu")
+            elseif result == false then
+                message = "type card names to cast them"
+            end
         end
         input = ""
     end

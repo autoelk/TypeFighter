@@ -18,8 +18,10 @@ function CardSelectState:enter()
         cards[i].deck = 0
     end
     -- Reset player picks for card selection
-    player1.picks = 5
-    player2.picks = 5
+    local humanPlayer = gameManager:getHumanPlayer()
+    local aiPlayer = gameManager:getAIPlayer()
+    if humanPlayer then humanPlayer.picks = 5 end
+    if aiPlayer then aiPlayer.picks = 5 end
 end
 
 function CardSelectState:update(dt)
@@ -43,17 +45,11 @@ function CardSelectState:update(dt)
     end
 
     -- Player2 AI picking
-    player2PickSpeed = player1.picks + 1
-    player2PickCooldown = player2PickCooldown - dt
-    if player2PickCooldown <= 0 then
-        local cardToPick = math.random(1, #cards)
-        if cards[cardToPick].deck == 0 and cards[cardToPick].name ~= "ritual" and player2.picks > 0 then
-            cards[cardToPick].deck = 2
-            player2.picks = player2.picks - 1
-            player2PickCooldown = player2PickCooldown + player2PickSpeed
-        end
+    local humanPlayer = gameManager:getHumanPlayer()
+    local aiPlayer = gameManager:getAIPlayer()
+    if aiPlayer and humanPlayer then
+        aiPlayer:updateCardSelection(dt, humanPlayer.picks)
     end
-    player2PickCooldown = math.max(player2PickCooldown, 0)
 end
 
 function CardSelectState:draw()
@@ -89,26 +85,32 @@ function CardSelectState:keypressed(key)
 end
 
 function CardSelectState:handleCardSelection(location)
+    local humanPlayer = gameManager:getHumanPlayer()
+    if not humanPlayer then return end
+    
     if cards[location].deck == 1 then
         cards[location].deck = 0
         message = "removed " .. cards[location].name
-        player1.picks = player1.picks + 1
+        humanPlayer.picks = humanPlayer.picks + 1
     elseif cards[location].deck == 2 then
         message = cards[location].name .. " is in player2's deck"
-    elseif player1.picks <= 0 then
+    elseif humanPlayer.picks <= 0 then
         message = "no picks remaining"
     else
         cards[location].deck = 1
         message = "added " .. cards[location].name
-        player1.picks = player1.picks - 1
+        humanPlayer.picks = humanPlayer.picks - 1
     end
 end
 
 function CardSelectState:handleGameStart()
-    if player1.picks > 0 then
-        message = "you have " .. player1.picks .. " picks left"
-    elseif player2.picks > 0 then
-        message = "player2 has " .. player2.picks .. " picks left"
+    local humanPlayer = gameManager:getHumanPlayer()
+    local aiPlayer = gameManager:getAIPlayer()
+    
+    if humanPlayer and humanPlayer.picks > 0 then
+        message = "you have " .. humanPlayer.picks .. " picks left"
+    elseif aiPlayer and aiPlayer.picks > 0 then
+        message = "player2 has " .. aiPlayer.picks .. " picks left"
     else
         message = "game started"
         self.stateManager:changeState("game")

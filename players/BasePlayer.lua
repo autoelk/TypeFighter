@@ -1,0 +1,200 @@
+BasePlayer = {}
+BasePlayer.__index = BasePlayer
+
+-- Player positioning constants
+local PLAYER_POSITIONS = {
+    [1] = { x = 100, y = 330, uiHealthX = 25, uiManaX = 25, textAlign = "left", textOffsetX = 30, animX = 100 },
+    [2] = { x = 700, y = 330, uiHealthX = 775, uiManaX = 775, textAlign = "right", textOffsetX = -25, mirror = true, animX = 540 }
+}
+
+function BasePlayer:new(playerNumber)
+    local player = {
+        num = playerNumber,
+        picks = 5,
+        health = 50,
+        healthRegen = 0,
+        mana = 0,
+        manaRegen = 1,
+        spriteNum = 1,
+        anim = newAnimation(lg.newImage("assets/wizard.png"), 160, 160, 2),
+        
+        damageDisplay = {
+            amount = 0,
+            endTime = 0,
+            isActive = false
+        }
+    }
+    setmetatable(player, self)
+    return player
+end
+
+function BasePlayer:Draw()
+    if self.health <= 0 and self.spriteNum ~= #self.anim.quads then
+        self.spriteNum = math.floor(self.anim.currentTime / self.anim.duration * #self.anim.quads) + 1
+    end
+
+    local pos = PLAYER_POSITIONS[self.num]
+    if pos.mirror then
+        lg.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], pos.x, pos.y, 0, -1, 1)
+    else
+        lg.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], pos.x, pos.y, 0)
+    end
+end
+
+function BasePlayer:DrawUI()
+    local pos = PLAYER_POSITIONS[self.num]
+    local healthSize = self.health * 2
+    local manaSize = self.mana * 2
+    
+    -- Player 1 is left aligned
+    -- Player 2 is right aligned
+    local healthX = pos.uiHealthX
+    local manaX = pos.uiManaX
+    if self.num == 2 then
+        healthX = healthX - healthSize
+        manaX = manaX - manaSize
+    end
+    
+    -- Draw mana bar
+    lg.setColor(colors.blue)
+    lg.rectangle("fill", manaX, 75, manaSize, 30)
+    
+    -- Draw health bar with color based on health level
+    if self.health <= 10 then
+        lg.setColor(colors.red)
+        lg.rectangle("fill", healthX, 25, healthSize, 30)
+        lg.setColor(colors.white)
+    elseif self.health <= 20 then
+        lg.setColor(colors.yellow)
+        lg.rectangle("fill", healthX, 25, healthSize, 30)
+        lg.setColor(colors.black)
+    else
+        lg.setColor(colors.green)
+        lg.rectangle("fill", healthX, 25, healthSize, 30)
+        lg.setColor(colors.white)
+    end
+    
+    -- Draw health and mana text
+    lg.setFont(fontL)
+    lg.printf(math.floor(self.health + 0.5), pos.textOffsetX, 15, 800, pos.textAlign)
+    lg.setColor(colors.white)
+    lg.printf(math.floor(self.mana), pos.textOffsetX, 65, 800, pos.textAlign)
+    
+    -- Draw damage numbers
+    self:drawDamageNumbers()
+end
+
+function BasePlayer:drawDamageNumbers()
+    if self.damageDisplay.isActive and gameTime < self.damageDisplay.endTime and self.damageDisplay.amount ~= 0 then
+        if self.damageDisplay.amount > 0 then
+            lg.setColor(colors.red)
+        else
+            lg.setColor(colors.green)
+        end
+        
+        local absAmount = math.abs(self.damageDisplay.amount)
+        if absAmount > 20 then
+            lg.setFont(fontXL)
+        elseif absAmount > 10 then
+            lg.setFont(fontL)
+        else
+            lg.setFont(fontM)
+        end
+        
+        local pos = PLAYER_POSITIONS[self.num]
+        local damageX, damageWidth
+        if self.num == 1 then
+            damageX = 70
+            damageWidth = 200
+        else
+            damageX = 500
+            damageWidth = 200
+        end
+        local damageY = 230 - (gameTime - self.damageDisplay.endTime) * 25
+        
+        lg.printf(absAmount, damageX, damageY, damageWidth, "center")
+    end
+end
+
+function BasePlayer:Opponent()
+    return gameManager:getOpponent(self)
+end
+
+function BasePlayer:Cast(cardIndex)
+    local card = cards[cardIndex]
+    if card.deck ~= self.num then
+        return false
+    end
+    
+    if self.mana < card.mana then
+        message = "you don't have enough mana"
+        return false
+    end
+    
+    -- Calculate animation position
+    local x
+    if card.loc == "self" then
+        x = PLAYER_POSITIONS[self.num].animX
+    elseif card.loc == "proj" then
+        x = PLAYER_POSITIONS[self:Opponent().num].animX
+        card.x = x
+        card.y = 300
+    elseif card.loc == "other" then
+        x = PLAYER_POSITIONS[self:Opponent().num].animX
+    end
+    card:StartAnimate(x, 300)
+
+    -- Apply card effects
+    self.mana = self.mana - card.mana
+    message2 = "player " .. self.num .. " cast " .. card.name
+    
+    if card.type == "attack" then
+        self:Opponent():Damage(card.damage)
+    elseif card.type == "heal" then
+        self:Damage(-card.damage)
+    elseif card.type == "misc" then
+        self:applyMiscCardEffect(card)
+    end
+    
+    return true
+end
+
+function BasePlayer:applyMiscCardEffect(card)
+    if card.name == "gem" then
+        self.manaRegen = self.manaRegen + card.damage
+    elseif card.name == "slice" then
+        if self.health > card.damage then
+            self:Opponent():Damage(card.damage)
+        end
+    elseif card.name == "blessing" then
+        self.healthRegen = self.healthRegen + card.damage
+    elseif card.name == "poison" then
+        self:Opponent().healthRegen = self:Opponent().healthRegen - card.damage
+    elseif card.name == "manatide" then
+        self.mana = self.mana * 2
+    elseif card.name == "force" then
+        self.manaRegen = self.manaRegen - card.damage
+        self.healthRegen = self.healthRegen + card.damage
+    elseif card.name == "ritual" then
+        self.mana = self.mana + 30
+        self:Damage(card.damage)
+    elseif card.name == "rage" then
+        self:Opponent():Damage(50 - self.health)
+    end
+end
+
+function BasePlayer:Damage(amtDamage)
+    -- Update damage display state
+    self.damageDisplay.amount = amtDamage
+    self.damageDisplay.endTime = gameTime + 1
+    self.damageDisplay.isActive = true
+    
+    -- Apply damage to health
+    self.health = self.health - amtDamage
+end
+
+function BasePlayer:update(dt) end
+
+function BasePlayer:canAfford(manaCost)
+    return self.mana >= manaCost
+end

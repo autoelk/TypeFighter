@@ -1,6 +1,9 @@
 local utf8 = require("utf8")
 require "cards"
-require "player"
+require "players.BasePlayer"
+require "players.HumanPlayer"
+require "players.AIPlayer"
+require "GameManager"
 require "ResourceManager"
 require "GameStateManager"
 require "states.BaseState"
@@ -23,14 +26,6 @@ input = "" -- player input
 message = "" -- left side text
 message2 = "" -- right side text
 gameTime = 0
-player1 = nil
-player2 = nil
-
--- Player2 AI variables
-player2PickSpeed = 5
-player2CastSpeed = 2
-player2PickCooldown = 5
-player2CastCooldown = 2
 
 -- Colors
 colors = {
@@ -63,8 +58,8 @@ function love.load()
     background = resourceManager:getImage("background")
 
     -- Load cards and players
-    player1 = Player:Create(1)
-    player2 = Player:Create(2)
+    gameManager:addPlayer(HumanPlayer:new(1))
+    gameManager:addPlayer(AIPlayer:new(2, "normal"))
     
     -- Initialize and start game
     initializeStates()
@@ -108,12 +103,15 @@ function love.update(dt)
     end
 
     -- Update player death animations
-    if player1.health <= 0 then
+    local player1 = gameManager:getPlayer(1)
+    local player2 = gameManager:getPlayer(2)
+    if player1 and player1.health <= 0 then
         player1.anim.currentTime = player1.anim.currentTime + dt
         if player1.anim.currentTime >= player1.anim.duration then
             player1.anim.currentTime = player1.anim.currentTime - player1.anim.duration
         end
-    elseif player2.health <= 0 then
+    end
+    if player2 and player2.health <= 0 then
         player2.anim.currentTime = player2.anim.currentTime + dt
         if player2.anim.currentTime >= player2.anim.duration then
             player2.anim.currentTime = player2.anim.currentTime - player2.anim.duration
@@ -132,10 +130,17 @@ function love.draw()
     lg.setFont(fontM)
     
     -- Draw players
-    lg.setColor(colors.red)
-    player2:Draw()
+    local player1 = gameManager:getPlayer(1)
+    local player2 = gameManager:getPlayer(2)
+    if player1 then
+        lg.setColor(colors.white)
+        player1:Draw()
+    end
+    if player2 then
+        lg.setColor(colors.red)
+        player2:Draw()
+    end
     lg.setColor(colors.white)
-    player1:Draw()
 
     -- Draw current state
     stateManager:draw()
