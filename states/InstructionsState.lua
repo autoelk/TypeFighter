@@ -12,7 +12,7 @@ function InstructionsState:new()
 end
 
 function InstructionsState:enter()
-    message2 = "[P] to Skip [Q] to go back"
+    message2 = "[p] to skip [q] to go back"
     self.endTime = gameTime + 20
 end
 
@@ -28,7 +28,7 @@ function InstructionsState:draw()
     lg.rectangle("fill", 200, 150, 400, 300)
     lg.setColor(colors.white)
     lg.printf(
-        "Choose 5 cards by typing their names before player2 can chose them. You can remove cards from your deck by typing their name again. When you are done, type P to start.",
+        "choose 5 cards by typing their names before player2 can chose them. you can remove cards from your deck by typing their name again. when you are done, type p to start.",
         210, 160, 380, "center")
 end
 

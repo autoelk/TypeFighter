@@ -29,9 +29,9 @@ function Card:DisplayMini(x, y)
     lg.setFont(fontXS)
     local cardText = ""
     if self.type == "attack" then
-        cardText = "Deal " .. self.damage .. " damage."
+        cardText = "deal " .. self.damage .. " damage."
     elseif self.type == "heal" then
-        cardText = "Gain " .. self.damage .. " life."
+        cardText = "gain " .. self.damage .. " life."
     elseif self.type == "misc" then
         cardText = self.text
     end
@@ -58,9 +58,9 @@ function Card:Display()
     lg.printf("mana " .. self.mana, self.x - 10, self.y, 180, "right")
     local cardText = ""
     if self.type == "attack" then
-        cardText = "Deal " .. self.damage .. " damage."
+        cardText = "deal " .. self.damage .. " damage."
     elseif self.type == "heal" then
-        cardText = "Gain " .. self.damage .. " life."
+        cardText = "gain " .. self.damage .. " life."
     elseif self.type == "misc" then
         cardText = self.text
     end

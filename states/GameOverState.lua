@@ -13,11 +13,11 @@ end
 
 function GameOverState:enter()
     if player1.health <= 0 and player2.health <= 0 then
-        self.gameOverMessage = "Tie"
+        self.gameOverMessage = "tie"
     elseif player1.health <= 0 then
-        self.gameOverMessage = "Player2 Wins"
+        self.gameOverMessage = "player 2 wins"
     elseif player2.health <= 0 then
-        self.gameOverMessage = "Player1 Wins"
+        self.gameOverMessage = "player 1 wins"
     end
 end
 
@@ -25,7 +25,7 @@ function GameOverState:draw()
     lg.setFont(fontXL)
     lg.printf(self.gameOverMessage, 0, 200, 800, "center")
     lg.setFont(fontM)
-    lg.printf("[R]estart Game\n[Q]uit", 0, 300, 800, "center")
+    lg.printf("[r]estart game\n[q]uit", 0, 300, 800, "center")
 end
 
 function GameOverState:keypressed(key)

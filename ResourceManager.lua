@@ -70,7 +70,7 @@ function ResourceManager:createCard(cardIndex, cardLine)
         r = 0, -- rotation of card
         s = 1, -- scale of card
         t = 0, -- time
-        name = inputTable[1],
+        name = string.lower(inputTable[1]),
         damage = tonumber(inputTable[2]),
         mana = tonumber(inputTable[3]),
         type = inputTable[4],
@@ -95,7 +95,7 @@ function ResourceManager:createCard(cardIndex, cardLine)
     for i = 7, #inputTable do
         cardText = cardText .. " " .. inputTable[i]
     end
-    card.text = cardText
+    card.text = string.lower(cardText)
 
     setmetatable(card, Card)
     return card

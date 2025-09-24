@@ -11,8 +11,8 @@ end
 
 function MenuState:enter()
     input = ""
-    message = "Type P to Start"
-    message2 = "[P]lay [B]rowse [Q]uit"
+    message = "type p to start"
+    message2 = "[p]lay [b]rowse [q]uit"
     
     -- Reset all card assignments when returning to menu
     for i = 1, #cards do
@@ -22,9 +22,9 @@ end
 
 function MenuState:draw()
     lg.setFont(fontXL)
-    lg.printf("TypeFighter", 0, 200, 800, "center")
+    lg.printf("typefighter", 0, 200, 800, "center")
     lg.setFont(fontM)
-    lg.printf("[P]lay Game\n[B]rowse Cards\n[Q]uit", 0, 300, 800, "center")
+    lg.printf("[p]lay game\n[b]rowse cards\n[q]uit", 0, 300, 800, "center")
     
     -- Animation
     cards[findCard("torrent")]:Animate(50, 180, 0)

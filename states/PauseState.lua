@@ -10,14 +10,14 @@ function PauseState:new()
 end
 
 function PauseState:enter()
-    message2 = "[Q]uit to menu [ESC] to return"
+    message2 = "[q]uit to menu [esc] to return"
 end
 
 function PauseState:draw()
     lg.setFont(fontXL)
-    lg.printf("Pause", 0, 200, 800, "center")
+    lg.printf("pause", 0, 200, 800, "center")
     lg.setFont(fontM)
-    lg.printf("[ESC] to return", 0, 300, 800, "center")
+    lg.printf("[esc] to return", 0, 300, 800, "center")
 end
 
 function PauseState:keypressed(key)

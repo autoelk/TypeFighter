@@ -27,8 +27,8 @@ function GameState:enter()
     player2CastCooldown = player2CastSpeed
     
     -- Set game interface messages
-    message = "Type card names to cast them"
-    message2 = "[ESC] Pause [Q]uit To Menu"
+    message = "type card names to cast them"
+    message2 = "[esc] pause [q]uit to menu"
 end
 
 function GameState:update(dt)
@@ -108,7 +108,7 @@ function GameState:keypressed(key)
         elseif userInput == "q" or userInput == "quit" then
             self.stateManager:changeState("menu")
         else
-            message = "Type card names to cast them"
+            message = "type card names to cast them"
         end
         input = ""
     end

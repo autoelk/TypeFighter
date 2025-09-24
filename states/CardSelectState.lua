@@ -82,7 +82,7 @@ function CardSelectState:keypressed(key)
         elseif userInput == "q" or userInput == "quit" then
             self.stateManager:changeState("menu")
         else
-            message = "Type card names to choose them"
+            message = "type card names to choose them"
         end
         input = ""
     end
@@ -110,7 +110,7 @@ function CardSelectState:handleGameStart()
     elseif player2.picks > 0 then
         message = "player2 has " .. player2.picks .. " picks left"
     else
-        message = "Game Started"
+        message = "game started"
         self.stateManager:changeState("game")
     end
 end
