@@ -5,7 +5,9 @@ function GameManager:new()
     local manager = {
         players = {},
         humanPlayer = nil,
-        aiPlayer = nil
+        aiPlayer = nil,
+        cards = {},
+        deck = {}
     }
     setmetatable(manager, self)
     return manager
@@ -45,6 +47,20 @@ function GameManager:reset()
     self.players = {}
     self.humanPlayer = nil
     self.aiPlayer = nil
+    self.cards = {}
+    self.deck = {}
+end
+
+function GameManager:getCards()
+    return self.cards
+end
+
+function GameManager:getDeck()
+    return self.deck
+end
+
+function GameManager:setCard(index, card)
+    self.cards[index] = card
 end
 
 -- Global instance

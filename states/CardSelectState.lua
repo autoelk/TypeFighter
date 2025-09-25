@@ -69,7 +69,7 @@ end
 function CardSelectState:keypressed(key)
     if key == "return" then
         local userInput = self:processInput()
-        local location = findCard(userInput)
+        local location = cardFactory:findCard(userInput)
         
         if location > 0 then
             self:handleCardSelection(location)

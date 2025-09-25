@@ -12,7 +12,7 @@ end
 
 function HumanPlayer:handleInput(userInput)
     -- Find and cast card based on user input
-    local cardIndex = findCard(userInput)
+    local cardIndex = cardFactory:findCard(userInput)
     if cardIndex > 0 then
         return self:Cast(cardIndex)
     else
@@ -20,6 +20,6 @@ function HumanPlayer:handleInput(userInput)
         if userInput == "q" or userInput == "quit" then
             return "quit"
         end
-        return false
+        return "unknown_card"  -- Return specific reason for failure
     end
 end

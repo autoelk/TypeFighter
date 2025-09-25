@@ -27,8 +27,8 @@ function MenuState:draw()
     lg.printf("[p]lay game\n[b]rowse cards\n[q]uit", 0, 300, 800, "center")
     
     -- Animation
-    cards[findCard("torrent")]:Animate(50, 180, 0)
-    cards[findCard("fireball")]:Animate(750, 345, 3.14159)
+    cards[cardFactory:findCard("torrent")]:Animate(50, 180, 0)
+    cards[cardFactory:findCard("fireball")]:Animate(750, 345, 3.14159)
 end
 
 function MenuState:keypressed(key)

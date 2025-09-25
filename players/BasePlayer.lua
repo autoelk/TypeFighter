@@ -16,7 +16,7 @@ function BasePlayer:new(playerNumber)
         mana = 0,
         manaRegen = 1,
         spriteNum = 1,
-        anim = newAnimation(lg.newImage("assets/wizard.png"), 160, 160, 2),
+        anim = resourceManager:newAnimation(resourceManager:getImage("wizard"), 160, 160, 2),
         
         damageDisplay = {
             amount = 0,
@@ -116,19 +116,25 @@ function BasePlayer:drawDamageNumbers()
     end
 end
 
-function BasePlayer:Opponent()
+function BasePlayer:Other()
     return gameManager:getOpponent(self)
 end
 
 function BasePlayer:Cast(cardIndex)
     local card = cards[cardIndex]
-    if card.deck ~= self.num then
-        return false
-    end
-    
-    if self.mana < card.mana then
-        message = "you don't have enough mana"
-        return false
+
+    -- Check if we are able to cast the card
+    local canCast, errorMessage = card:canCast(self, self:Other())
+    if not canCast then
+        message = errorMessage
+        if errorMessage == "that card is not in your deck" then
+            return "not_your_card"
+        elseif errorMessage == "you don't have enough mana" then
+            return "insufficient_mana"
+        else
+            -- For other conditions like health requirements
+            return "cannot_cast"
+        end
     end
     
     -- Calculate animation position
@@ -136,51 +142,21 @@ function BasePlayer:Cast(cardIndex)
     if card.loc == "self" then
         x = PLAYER_POSITIONS[self.num].animX
     elseif card.loc == "proj" then
-        x = PLAYER_POSITIONS[self:Opponent().num].animX
+        x = PLAYER_POSITIONS[self:Other().num].animX
         card.x = x
         card.y = 300
     elseif card.loc == "other" then
-        x = PLAYER_POSITIONS[self:Opponent().num].animX
+        x = PLAYER_POSITIONS[self:Other().num].animX
     end
     card:StartAnimate(x, 300)
 
-    -- Apply card effects
+    -- Deduct mana cost
     self.mana = self.mana - card.mana
     message2 = "player " .. self.num .. " cast " .. card.name
     
-    if card.type == "attack" then
-        self:Opponent():Damage(card.damage)
-    elseif card.type == "heal" then
-        self:Damage(-card.damage)
-    elseif card.type == "misc" then
-        self:applyMiscCardEffect(card)
-    end
-    
-    return true
-end
-
-function BasePlayer:applyMiscCardEffect(card)
-    if card.name == "gem" then
-        self.manaRegen = self.manaRegen + card.damage
-    elseif card.name == "slice" then
-        if self.health > card.damage then
-            self:Opponent():Damage(card.damage)
-        end
-    elseif card.name == "blessing" then
-        self.healthRegen = self.healthRegen + card.damage
-    elseif card.name == "poison" then
-        self:Opponent().healthRegen = self:Opponent().healthRegen - card.damage
-    elseif card.name == "manatide" then
-        self.mana = self.mana * 2
-    elseif card.name == "force" then
-        self.manaRegen = self.manaRegen - card.damage
-        self.healthRegen = self.healthRegen + card.damage
-    elseif card.name == "ritual" then
-        self.mana = self.mana + 30
-        self:Damage(card.damage)
-    elseif card.name == "rage" then
-        self:Opponent():Damage(50 - self.health)
-    end
+    -- Use the card's cast method
+    card:cast(self, self:Other())
+    return "success"
 end
 
 function BasePlayer:Damage(amtDamage)

@@ -121,8 +121,17 @@ function GameState:keypressed(key)
             
             if result == "quit" then
                 self.stateManager:changeState("menu")
-            elseif result == false then
+            elseif result == "unknown_card" then
                 message = "type card names to cast them"
+            elseif result == "insufficient_mana" then
+                -- Message already set by BasePlayer:Cast()
+                -- Don't override it
+            elseif result == "not_your_card" then
+                message = "that card is not in your deck"
+            elseif result == "cannot_cast" then
+                -- Message already set by BasePlayer:Cast() for specific condition
+                -- Don't override it
+            -- If result is "success", don't change the message
             end
         end
         input = ""

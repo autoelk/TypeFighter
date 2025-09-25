@@ -1,5 +1,5 @@
 local utf8 = require("utf8")
-require "cards"
+require "cards.CardFactory"
 require "players.BasePlayer"
 require "players.HumanPlayer"
 require "players.AIPlayer"
@@ -16,16 +16,12 @@ require "states.PauseState"
 require "states.GameOverState"
 
 -- Global game state
+gameTime = 0
 stateManager = nil
 resourceManager = nil
-cards = {}
-deck = {}
-
--- Game variables
 input = "" -- player input
 message = "" -- left side text
 message2 = "" -- right side text
-gameTime = 0
 
 -- Colors
 colors = {
@@ -44,12 +40,10 @@ function love.load()
     math.randomseed(os.time())
     love.keyboard.setKeyRepeat(true)
 
-    -- Initialize managers
     stateManager = GameStateManager:new()
     resourceManager = ResourceManager:new()
     resourceManager:loadAllAssets()
-    
-    -- Set font references
+
     fontXL = resourceManager:getFont("fontXL")
     fontL = resourceManager:getFont("fontL")
     fontM = resourceManager:getFont("fontM")
@@ -57,11 +51,11 @@ function love.load()
     fontXS = resourceManager:getFont("fontXS")
     background = resourceManager:getImage("background")
 
-    -- Load cards and players
+    cards = gameManager:getCards()
+    deck = gameManager:getDeck()
     gameManager:addPlayer(HumanPlayer:new(1))
     gameManager:addPlayer(AIPlayer:new(2, "normal"))
     
-    -- Initialize and start game
     initializeStates()
     stateManager:changeState("menu")
 end
@@ -77,13 +71,10 @@ function initializeStates()
 end
 
 function love.keypressed(key)
-    -- Handle backspace globally
     if key == "backspace" and utf8.offset(input, -1) then
         input = string.sub(input, 1, utf8.offset(input, -1) - 1)
         return
     end
-    
-    -- Pass to current state
     stateManager:keypressed(key)
 end
 
@@ -155,22 +146,6 @@ function love.draw()
     lg.printf(input, 5, 570, 800, "left")
 end
 
-function newAnimation(image, width, height, duration)
-    local animation = {}
-    animation.spriteSheet = image
-    animation.quads = {}
-
-    for y = 0, image:getHeight() - height, height do
-        for x = 0, image:getWidth() - width, width do
-            table.insert(animation.quads, lg.newQuad(x, y, width, height, image:getDimensions()))
-        end
-    end
-    animation.duration = duration or 1
-    animation.currentTime = 0
-
-    return animation
-end
-
 function love.textinput(t)
     input = input .. t
     message = "" -- Clear message when user starts typing
@@ -178,23 +153,4 @@ end
 
 function love.wheelmoved(dx, dy)
     stateManager:wheelmoved(dx, dy)
-end
-
-function split(pString, pPattern)
-    local Table = {}
-    local fpat = "(.-)" .. pPattern
-    local last_end = 1
-    local s, e, cap = pString:find(fpat, 1)
-    while s do
-        if s ~= 1 or cap ~= "" then
-            table.insert(Table, cap)
-        end
-        last_end = e + 1
-        s, e, cap = pString:find(fpat, last_end)
-    end
-    if last_end <= #pString then
-        cap = pString:sub(last_end)
-        table.insert(Table, cap)
-    end
-    return Table
 end

@@ -37,7 +37,7 @@ end
 function ResourceManager:loadAnimation(name, imagePath, frameWidth, frameHeight, duration)
     if not self.animations[name] then
         local image = self:loadImage(name .. "_sheet", imagePath)
-        self.animations[name] = newAnimation(image, frameWidth, frameHeight, duration)
+        self.animations[name] = self:newAnimation(image, frameWidth, frameHeight, duration)
     end
     return self.animations[name]
 end
@@ -62,70 +62,42 @@ function ResourceManager:loadAllAssets()
     self:loadCards()
 end
 
-function ResourceManager:createCard(cardIndex, cardLine)
-    local inputTable = split(cardLine, " ")
-    local card = {
-        x = 0,
-        y = 0,
-        r = 0, -- rotation of card
-        s = 1, -- scale of card
-        t = 0, -- time
-        name = string.lower(inputTable[1]),
-        damage = tonumber(inputTable[2]),
-        mana = tonumber(inputTable[3]),
-        type = inputTable[4],
-        elem = inputTable[5],
-        index = cardIndex,
-        deck = 0
-    }
-    
-    -- Load card animation
-    local cardImage = self:getImage("card_" .. card.name)
-    if cardImage then
-        card.anim = newAnimation(cardImage, 160, 160, 1)
-    else
-        local placeholderImage = self:getImage("placeholder")
-        card.anim = newAnimation(placeholderImage, 160, 160, 10)
-    end
-
-    -- Where the card is animated (proj, other, self)
-    card.loc = inputTable[6]
-
-    local cardText = ""
-    for i = 7, #inputTable do
-        cardText = cardText .. " " .. inputTable[i]
-    end
-    card.text = string.lower(cardText)
-
-    setmetatable(card, Card)
-    return card
-end
-
 function ResourceManager:loadCards()
-    local file = io.open("./cards.txt", "r")
-    if not file then 
-        error("Failed to open cards.txt - file not found")
-    end
+    -- Get all available card names from the CardFactory
+    local cardNames = cardFactory:getAllCardNames()
     
-    local numCards = tonumber(file:read())
-    
-    -- Read all card data, load images, and create cards in one pass
-    for i = 1, numCards do
-        local line = file:read()
-        if line then
-            local cardName = split(line, " ")[1]
-            local path = "assets/cards/" .. cardName .. ".png"
-            local cardImageFile = io.open(path, "r")
-            if cardImageFile then
-                cardImageFile:close()
-                self:loadImage("card_" .. cardName, path)
-            end
-            
-            -- Create the card object
-            cards[i] = self:createCard(i, line)
+    -- Create cards directly using CardFactory
+    for i, cardName in ipairs(cardNames) do
+        -- Load card image
+        local path = "assets/cards/" .. cardName .. ".png"
+        local cardImageFile = io.open(path, "r")
+        if cardImageFile then
+            cardImageFile:close()
+            self:loadImage("card_" .. cardName, path)
         end
+        
+        -- Create basic card data structure
+        local cardData = {
+            x = 0,
+            y = 0,
+            index = i,
+            name = cardName,
+            loc = "hand"  -- default location
+        }
+        
+        -- Create animation for the card
+        local cardImage = self:getImage("card_" .. cardName)
+        if cardImage then
+            cardData.anim = self:newAnimation(cardImage, 160, 160, 1)
+        else
+            local placeholderImage = self:getImage("placeholder")
+            cardData.anim = self:newAnimation(placeholderImage, 160, 160, 10)
+        end
+        
+        -- Use CardFactory to create the appropriate card class
+        local card = cardFactory:createCard(cardName, cardData)
+        gameManager:setCard(i, card)
     end
-    file:close()
 end
 
 function ResourceManager:cleanup()
@@ -134,4 +106,39 @@ function ResourceManager:cleanup()
     self.fonts = {}
     self.sounds = {}
     self.animations = {}
+end
+
+function ResourceManager:newAnimation(image, width, height, duration)
+    local animation = {}
+    animation.spriteSheet = image
+    animation.quads = {}
+
+    for y = 0, image:getHeight() - height, height do
+        for x = 0, image:getWidth() - width, width do
+            table.insert(animation.quads, lg.newQuad(x, y, width, height, image:getDimensions()))
+        end
+    end
+    animation.duration = duration or 1
+    animation.currentTime = 0
+
+    return animation
+end
+
+function ResourceManager:split(pString, pPattern)
+    local Table = {}
+    local fpat = "(.-)" .. pPattern
+    local last_end = 1
+    local s, e, cap = pString:find(fpat, 1)
+    while s do
+        if s ~= 1 or cap ~= "" then
+            table.insert(Table, cap)
+        end
+        last_end = e + 1
+        s, e, cap = pString:find(fpat, last_end)
+    end
+    if last_end <= #pString then
+        cap = pString:sub(last_end)
+        table.insert(Table, cap)
+    end
+    return Table
 end
