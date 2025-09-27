@@ -91,11 +91,17 @@ function GameState:draw()
     -- Animations for game
     for i = 1, #cards do
         if cards[i].t > 0 then
-            if cards[i].deck == 1 then
-                cards[i]:Animate()
-            elseif cards[i].deck == 2 then
-                cards[i]:Animate()
+            local card = cards[i]
+            local animX = card.x
+            local animS = card.scale
+            
+            -- Handle deck-specific positioning (mirroring for player 2)
+            if card.deck == 2 then
+                animS = animS * -1
+                animX = animX + 160
             end
+            
+            card:Animate(animX, card.y, card.rotation, animS, card.offsetX, card.offsetY)
         end
     end
     

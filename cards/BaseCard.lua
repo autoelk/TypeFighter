@@ -14,7 +14,14 @@ function BaseCard:new(cardData)
         index = cardData.index,
         deck = 0,
         loc = cardData.loc or "self", -- where card is animated (proj, other, self)
-        anim = cardData.anim
+        anim = cardData.anim,
+        
+        -- Animation configuration
+        animSpeed = cardData.animSpeed or 1.0,  -- Speed multiplier for animation playback
+        offsetX = cardData.offsetX or 0,        -- X offset for animation positioning
+        offsetY = cardData.offsetY or 0,        -- Y offset for animation positioning
+        rotation = cardData.rotation or 0,      -- Default rotation for the card
+        scale = cardData.scale or 1             -- Default scale for the card
     }
     setmetatable(card, self)
     return card
@@ -74,21 +81,33 @@ function BaseCard:StartAnimate(x, y)
     self.anim.currentTime = 0 -- reset Animation
     self.x = x or self.x
     self.y = y or self.y
-    self.t = self.anim.duration
+    -- Adjust animation duration based on speed (faster speed = shorter duration)
+    self.t = self.anim.duration / self.animSpeed
 end
 
-function BaseCard:Animate(x, y, r, s)
-    x = x or self.x
-    y = y or self.y
-    if self.deck == 2 then
-        s = -1
-        x = x + 160
-    end
-    r = r or 0
-    s = s or 1
+function BaseCard:Animate(x, y, r, s, offsetX, offsetY)
+    -- Use provided offsets or default to 0 (no offset)
+    offsetX = offsetX or 0
+    offsetY = offsetY or 0
+    
+    local finalX = (x or self.x) + offsetX
+    local finalY = (y or self.y) + offsetY
+    
+    r = r or self.rotation
+    s = s or self.scale
+    
     lg.setColor(colors.white)
-    local spriteNum = math.floor(self.anim.currentTime / self.anim.duration * #self.anim.quads) + 1
-    lg.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], x, y, r, s, 1)
+    
+    -- Calculate sprite frame based on animation speed
+    local effectiveTime = self.anim.currentTime * self.animSpeed
+    local spriteNum = math.floor(effectiveTime / self.anim.duration * #self.anim.quads) + 1
+    
+    -- Ensure spriteNum stays within bounds when using different animation speeds
+    if spriteNum > #self.anim.quads then
+        spriteNum = ((spriteNum - 1) % #self.anim.quads) + 1
+    end
+    
+    lg.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], finalX, finalY, r, s, 1)
 end
 
 -- Calculate the location the card should be at
