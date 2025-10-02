@@ -85,7 +85,7 @@ function BaseCard:StartAnimate(x, y)
     self.t = self.anim.duration / self.animSpeed
 end
 
-function BaseCard:Animate(x, y, r, s, offsetX, offsetY)
+function BaseCard:Animate(x, y, r, sx, sy, offsetX, offsetY)
     -- Use provided offsets or default to 0 (no offset)
     offsetX = offsetX or 0
     offsetY = offsetY or 0
@@ -94,7 +94,8 @@ function BaseCard:Animate(x, y, r, s, offsetX, offsetY)
     local finalY = (y or self.y) + offsetY
 
     r = r or self.rotation
-    s = s or self.scale
+    sx = sx or self.scale
+    sy = sy or self.scale
 
     lg.setColor(colors.white)
 
@@ -107,7 +108,7 @@ function BaseCard:Animate(x, y, r, s, offsetX, offsetY)
         spriteNum = ((spriteNum - 1) % #self.anim.quads) + 1
     end
 
-    lg.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], finalX, finalY, r, s, s)
+    lg.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], finalX, finalY, r, sx, sy)
 end
 
 -- Calculate the location the card should be at

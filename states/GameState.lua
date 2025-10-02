@@ -2,7 +2,9 @@ require "states.BaseState"
 
 -- Game State (main gameplay)
 GameState = {}
-setmetatable(GameState, {__index = BaseState})
+setmetatable(GameState, {
+    __index = BaseState
+})
 GameState.__index = GameState
 
 function GameState:new()
@@ -13,7 +15,7 @@ function GameState:enter()
     -- Initialize players for gameplay
     local player1 = gameManager:getPlayer(1)
     local player2 = gameManager:getPlayer(2)
-    
+
     if player1 then
         player1.health = 50
         player1.healthRegen = 0
@@ -22,7 +24,7 @@ function GameState:enter()
         player1.spriteNum = 1
         player1.anim.currentTime = 0
     end
-    
+
     if player2 then
         player2.health = 50
         player2.healthRegen = 0
@@ -31,7 +33,7 @@ function GameState:enter()
         player2.spriteNum = 1
         player2.anim.currentTime = 0
     end
-    
+
     -- Set game interface messages
     message = "type card names to cast them"
     message2 = "[esc] pause [q]uit to menu"
@@ -54,7 +56,7 @@ function GameState:update(dt)
     -- Health and mana regen
     local player1 = gameManager:getPlayer(1)
     local player2 = gameManager:getPlayer(2)
-    
+
     if player1 then
         player1.mana = player1.mana + dt * player1.manaRegen
         if player1.mana < 0 then
@@ -62,7 +64,7 @@ function GameState:update(dt)
         end
         player1.health = player1.health + dt * player1.healthRegen
     end
-    
+
     if player2 then
         player2.mana = player2.mana + dt * player2.manaRegen
         if player2.mana < 0 then
@@ -93,21 +95,22 @@ function GameState:draw()
         if cards[i].t > 0 then
             local card = cards[i]
             local animX = card.x
-            local animS = card.scale
-            
+            local animSx = card.scale
+            local animSy = card.scale
+
             -- Handle deck-specific positioning (mirroring for player 2)
             if card.deck == 2 then
-                animS = animS * -1
+                animSx = animSx * -1
                 animX = animX + 160
             end
-            
-            card:Animate(animX, card.y, card.rotation, animS, card.offsetX, card.offsetY)
+
+            card:Animate(animX, card.y, card.rotation, animSx, animSy, card.offsetX, card.offsetY)
         end
     end
-    
+
     local player1 = gameManager:getPlayer(1)
     local player2 = gameManager:getPlayer(2)
-    
+
     if player1 then
         player1:DrawUI()
     end
@@ -124,7 +127,7 @@ function GameState:keypressed(key)
         local humanPlayer = gameManager:getHumanPlayer()
         if humanPlayer then
             local result = humanPlayer:handleInput(userInput)
-            
+
             if result == "quit" then
                 self.stateManager:changeState("menu")
             elseif result == "unknown_card" then
@@ -137,7 +140,7 @@ function GameState:keypressed(key)
             elseif result == "cannot_cast" then
                 -- Message already set by BasePlayer:Cast() for specific condition
                 -- Don't override it
-            -- If result is "success", don't change the message
+                -- If result is "success", don't change the message
             end
         end
         input = ""
