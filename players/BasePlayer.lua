@@ -143,7 +143,9 @@ function BasePlayer:Cast(cardIndex)
     -- Check if we are able to cast the card
     local canCast, errorMessage = card:canCast(self, self:Other())
     if not canCast then
-        message = errorMessage
+        if not self.suppressMessages then
+            message = errorMessage
+        end
         if errorMessage == "that card is not in your deck" then
             return "not_your_card"
         elseif errorMessage == "you don't have enough mana" then
@@ -169,7 +171,9 @@ function BasePlayer:Cast(cardIndex)
 
     -- Deduct mana cost
     self.mana = self.mana - card.mana
-    message2 = "player " .. self.num .. " cast " .. card.name
+    if not self.suppressMessages then
+        message2 = "player " .. self.num .. " cast " .. card.name
+    end
 
     -- Use the card's cast method
     card:cast(self, self:Other())
