@@ -38,6 +38,7 @@ colors = {
 function love.load()
     lg = love.graphics
     lg.setDefaultFilter("nearest", "nearest")
+
     math.randomseed(os.time())
     love.keyboard.setKeyRepeat(true)
 
@@ -115,9 +116,12 @@ function love.update(dt)
 end
 
 function love.draw()
-    -- Setup and background
+    -- Setup
     local scale = math.min(lg.getWidth() / 800, lg.getHeight() / 600)
+    lg.translate((lg.getWidth() - 800 * scale) / 2, (lg.getHeight() - 600 * scale) / 2)
     lg.scale(scale, scale)
+
+    -- Background
     lg.draw(background, 0, 0, 0, 5, 5)
     lg.setFont(fontM)
 
