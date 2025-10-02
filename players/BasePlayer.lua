@@ -3,8 +3,25 @@ BasePlayer.__index = BasePlayer
 
 -- Player positioning constants
 local PLAYER_POSITIONS = {
-    [1] = { x = 100, y = 330, uiHealthX = 25, uiManaX = 25, textAlign = "left", textOffsetX = 30, animX = 100 },
-    [2] = { x = 700, y = 330, uiHealthX = 775, uiManaX = 775, textAlign = "right", textOffsetX = -25, mirror = true, animX = 540 }
+    [1] = {
+        x = 100,
+        y = 330,
+        uiHealthX = 25,
+        uiManaX = 25,
+        textAlign = "left",
+        textOffsetX = 30,
+        animX = 100
+    },
+    [2] = {
+        x = 700,
+        y = 330,
+        uiHealthX = 775,
+        uiManaX = 775,
+        textAlign = "right",
+        textOffsetX = -25,
+        mirror = true,
+        animX = 540
+    }
 }
 
 function BasePlayer:new(playerNumber)
@@ -16,8 +33,8 @@ function BasePlayer:new(playerNumber)
         mana = 0,
         manaRegen = 1,
         spriteNum = 1,
-        anim = resourceManager:newAnimation(resourceManager:getImage("wizard"), 160, 160, 2),
-        
+        anim = resourceManager:newAnimation(resourceManager:getImage("wizard"), 32, 32, 2),
+
         damageDisplay = {
             amount = 0,
             endTime = 0,
@@ -35,9 +52,9 @@ function BasePlayer:Draw()
 
     local pos = PLAYER_POSITIONS[self.num]
     if pos.mirror then
-        lg.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], pos.x, pos.y, 0, -1, 1)
+        lg.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], pos.x, pos.y, 0, -5, 5)
     else
-        lg.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], pos.x, pos.y, 0)
+        lg.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], pos.x, pos.y, 0, 5, 5)
     end
 end
 
@@ -45,7 +62,7 @@ function BasePlayer:DrawUI()
     local pos = PLAYER_POSITIONS[self.num]
     local healthSize = self.health * 2
     local manaSize = self.mana * 2
-    
+
     -- Player 1 is left aligned
     -- Player 2 is right aligned
     local healthX = pos.uiHealthX
@@ -54,11 +71,11 @@ function BasePlayer:DrawUI()
         healthX = healthX - healthSize
         manaX = manaX - manaSize
     end
-    
+
     -- Draw mana bar
     lg.setColor(colors.blue)
     lg.rectangle("fill", manaX, 75, manaSize, 30)
-    
+
     -- Draw health bar with color based on health level
     if self.health <= 10 then
         lg.setColor(colors.red)
@@ -73,13 +90,13 @@ function BasePlayer:DrawUI()
         lg.rectangle("fill", healthX, 25, healthSize, 30)
         lg.setColor(colors.white)
     end
-    
+
     -- Draw health and mana text
     lg.setFont(fontL)
     lg.printf(math.floor(self.health + 0.5), pos.textOffsetX, 15, 800, pos.textAlign)
     lg.setColor(colors.white)
     lg.printf(math.floor(self.mana), pos.textOffsetX, 65, 800, pos.textAlign)
-    
+
     -- Draw damage numbers
     self:drawDamageNumbers()
 end
@@ -91,7 +108,7 @@ function BasePlayer:drawDamageNumbers()
         else
             lg.setColor(colors.green)
         end
-        
+
         local absAmount = math.abs(self.damageDisplay.amount)
         if absAmount > 20 then
             lg.setFont(fontXL)
@@ -100,7 +117,7 @@ function BasePlayer:drawDamageNumbers()
         else
             lg.setFont(fontM)
         end
-        
+
         local pos = PLAYER_POSITIONS[self.num]
         local damageX, damageWidth
         if self.num == 1 then
@@ -111,7 +128,7 @@ function BasePlayer:drawDamageNumbers()
             damageWidth = 200
         end
         local damageY = 230 - (gameTime - self.damageDisplay.endTime) * 25
-        
+
         lg.printf(absAmount, damageX, damageY, damageWidth, "center")
     end
 end
@@ -136,7 +153,7 @@ function BasePlayer:Cast(cardIndex)
             return "cannot_cast"
         end
     end
-    
+
     -- Calculate animation position
     local x
     if card.loc == "self" then
@@ -153,7 +170,7 @@ function BasePlayer:Cast(cardIndex)
     -- Deduct mana cost
     self.mana = self.mana - card.mana
     message2 = "player " .. self.num .. " cast " .. card.name
-    
+
     -- Use the card's cast method
     card:cast(self, self:Other())
     return "success"
@@ -164,12 +181,13 @@ function BasePlayer:Damage(amtDamage)
     self.damageDisplay.amount = amtDamage
     self.damageDisplay.endTime = gameTime + 1
     self.damageDisplay.isActive = true
-    
+
     -- Apply damage to health
     self.health = self.health - amtDamage
 end
 
-function BasePlayer:update(dt) end
+function BasePlayer:update(dt)
+end
 
 function BasePlayer:canAfford(manaCost)
     return self.mana >= manaCost

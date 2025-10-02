@@ -88,10 +88,10 @@ function ResourceManager:loadCards()
         -- Create animation for the card
         local cardImage = self:getImage("card_" .. cardName)
         if cardImage then
-            cardData.anim = self:newAnimation(cardImage, 160, 160, 1)
+            cardData.anim = self:newAnimation(cardImage, 32, 32, 1)
         else
             local placeholderImage = self:getImage("placeholder")
-            cardData.anim = self:newAnimation(placeholderImage, 160, 160, 10)
+            cardData.anim = self:newAnimation(placeholderImage, 32, 32, 10)
         end
         
         -- Use CardFactory to create the appropriate card class

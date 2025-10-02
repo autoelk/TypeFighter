@@ -25,18 +25,19 @@ message2 = "" -- right side text
 
 -- Colors
 colors = {
-    red = {250/255, 89/255, 52/255},
-    orange = {250/255, 121/255, 33/255},
-    yellow = {253/255, 231/255, 76/255},
-    green = {155/255, 197/255, 61/255},
-    blue = {91/255, 192/255, 235/255},
-    grey = {77/255, 80/255, 87/255},
+    red = {250 / 255, 89 / 255, 52 / 255},
+    orange = {250 / 255, 121 / 255, 33 / 255},
+    yellow = {253 / 255, 231 / 255, 76 / 255},
+    green = {155 / 255, 197 / 255, 61 / 255},
+    blue = {91 / 255, 192 / 255, 235 / 255},
+    grey = {77 / 255, 80 / 255, 87 / 255},
     white = {1, 1, 1},
     black = {0, 0, 0}
 }
 
 function love.load()
     lg = love.graphics
+    lg.setDefaultFilter("nearest", "nearest")
     math.randomseed(os.time())
     love.keyboard.setKeyRepeat(true)
 
@@ -55,7 +56,7 @@ function love.load()
     deck = gameManager:getDeck()
     gameManager:addPlayer(HumanPlayer:new(1))
     gameManager:addPlayer(AIPlayer:new(2, "normal"))
-    
+
     initializeStates()
     stateManager:changeState("menu")
 end
@@ -80,7 +81,7 @@ end
 
 function love.update(dt)
     gameTime = gameTime + dt
-    
+
     -- Update card animations
     for i = 1, #cards do
         cards[i].t = cards[i].t - dt
@@ -117,9 +118,9 @@ function love.draw()
     -- Setup and background
     local scale = math.min(lg.getWidth() / 800, lg.getHeight() / 600)
     lg.scale(scale, scale)
-    lg.draw(background, 0, 0)
+    lg.draw(background, 0, 0, 0, 5, 5)
     lg.setFont(fontM)
-    
+
     -- Draw players
     local player1 = gameManager:getPlayer(1)
     local player2 = gameManager:getPlayer(2)

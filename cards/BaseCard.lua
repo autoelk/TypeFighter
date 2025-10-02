@@ -15,13 +15,13 @@ function BaseCard:new(cardData)
         deck = 0,
         loc = cardData.loc or "self", -- where card is animated (proj, other, self)
         anim = cardData.anim,
-        
+
         -- Animation configuration
-        animSpeed = cardData.animSpeed or 1.0,  -- Speed multiplier for animation playback
-        offsetX = cardData.offsetX or 0,        -- X offset for animation positioning
-        offsetY = cardData.offsetY or 0,        -- Y offset for animation positioning
-        rotation = cardData.rotation or 0,      -- Default rotation for the card
-        scale = cardData.scale or 1             -- Default scale for the card
+        animSpeed = cardData.animSpeed or 1.0, -- Speed multiplier for animation playback
+        offsetX = cardData.offsetX or 0, -- X offset for animation positioning
+        offsetY = cardData.offsetY or 0, -- Y offset for animation positioning
+        rotation = cardData.rotation or 0, -- Default rotation for the card
+        scale = cardData.scale or 5 -- Default scale for the card
     }
     setmetatable(card, self)
     return card
@@ -46,7 +46,7 @@ function BaseCard:DisplayMini(x, y)
     fontXS:setLineHeight(0.6)
     lg.setColor(self:Color())
     lg.rectangle("fill", x, y, 130, 60)
-    --print text
+    -- print text
     lg.setColor(colors.black)
     lg.setFont(fontS)
     lg.printf(self.name, x + 5, y, 130, "left")
@@ -69,7 +69,7 @@ function BaseCard:Display()
         lg.rectangle("fill", self.x + 10, self.y + 25, 160, 160)
     end
 
-    --print text
+    -- print text
     lg.setFont(fontS)
     lg.printf(self.name, self.x + 10, self.y, 180, "left")
     lg.printf("mana " .. self.mana, self.x - 10, self.y, 180, "right")
@@ -89,25 +89,25 @@ function BaseCard:Animate(x, y, r, s, offsetX, offsetY)
     -- Use provided offsets or default to 0 (no offset)
     offsetX = offsetX or 0
     offsetY = offsetY or 0
-    
+
     local finalX = (x or self.x) + offsetX
     local finalY = (y or self.y) + offsetY
-    
+
     r = r or self.rotation
     s = s or self.scale
-    
+
     lg.setColor(colors.white)
-    
+
     -- Calculate sprite frame based on animation speed
     local effectiveTime = self.anim.currentTime * self.animSpeed
     local spriteNum = math.floor(effectiveTime / self.anim.duration * #self.anim.quads) + 1
-    
+
     -- Ensure spriteNum stays within bounds when using different animation speeds
     if spriteNum > #self.anim.quads then
         spriteNum = ((spriteNum - 1) % #self.anim.quads) + 1
     end
-    
-    lg.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], finalX, finalY, r, s, 1)
+
+    lg.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], finalX, finalY, r, s, s)
 end
 
 -- Calculate the location the card should be at
@@ -132,11 +132,11 @@ function BaseCard:canCast(caster, target)
     if self.deck ~= caster.num then
         return false, "that card is not in your deck"
     end
-    
+
     -- Check mana cost
     if not caster:canAfford(self.mana) then
         return false, "you don't have enough mana"
     end
-    
+
     return true, nil
 end
