@@ -14,7 +14,7 @@ end
 
 function ResourceManager:loadFont(name, path, size)
     if not self.fonts[name] then
-        self.fonts[name] = love.graphics.newFont(path, size)
+        self.fonts[name] = love.graphics.newFont(path, size, "mono")
     end
     return self.fonts[name]
 end
@@ -53,7 +53,7 @@ function ResourceManager:loadAllAssets()
     self:loadFont("fontM", "assets/munro-small.ttf", 24)
     self:loadFont("fontS", "assets/munro-small.ttf", 18)
     self:loadFont("fontXS", "assets/munro-small.ttf", 15)
-    
+
     -- Load images
     self:loadImage("background", "assets/background.png")
     self:loadImage("wizard", "assets/wizard.png")
@@ -65,7 +65,7 @@ end
 function ResourceManager:loadCards()
     -- Get all available card names from the CardFactory
     local cardNames = cardFactory:getAllCardNames()
-    
+
     -- Create cards directly using CardFactory
     for i, cardName in ipairs(cardNames) do
         -- Load card image
@@ -75,16 +75,16 @@ function ResourceManager:loadCards()
             cardImageFile:close()
             self:loadImage("card_" .. cardName, path)
         end
-        
+
         -- Create basic card data structure
         local cardData = {
             x = 0,
             y = 0,
             index = i,
             name = cardName,
-            loc = "hand"  -- default location
+            loc = "hand" -- default location
         }
-        
+
         -- Create animation for the card
         local cardImage = self:getImage("card_" .. cardName)
         if cardImage then
@@ -93,7 +93,7 @@ function ResourceManager:loadCards()
             local placeholderImage = self:getImage("placeholder")
             cardData.anim = self:newAnimation(placeholderImage, 32, 32, 10)
         end
-        
+
         -- Use CardFactory to create the appropriate card class
         local card = cardFactory:createCard(cardName, cardData)
         gameManager:setCard(i, card)
