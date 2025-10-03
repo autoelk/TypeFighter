@@ -2,7 +2,9 @@ require "states.BaseState"
 
 -- Card Selection State
 CardSelectState = {}
-setmetatable(CardSelectState, {__index = BaseState})
+setmetatable(CardSelectState, {
+    __index = BaseState
+})
 CardSelectState.__index = CardSelectState
 
 function CardSelectState:new()
@@ -16,12 +18,17 @@ function CardSelectState:enter()
     -- Reset decks
     for i = 1, #cards do
         cards[i].deck = 0
+        cards[i]:Loop()
     end
     -- Reset player picks for card selection
     local humanPlayer = gameManager:getHumanPlayer()
     local aiPlayer = gameManager:getAIPlayer()
-    if humanPlayer then humanPlayer.picks = 5 end
-    if aiPlayer then aiPlayer.picks = 5 end
+    if humanPlayer then
+        humanPlayer.picks = 5
+    end
+    if aiPlayer then
+        aiPlayer.picks = 5
+    end
 end
 
 function CardSelectState:update(dt)
@@ -70,7 +77,7 @@ function CardSelectState:keypressed(key)
     if key == "return" then
         local userInput = self:processInput()
         local location = cardFactory:findCard(userInput)
-        
+
         if location > 0 then
             self:handleCardSelection(location)
         elseif userInput == "start" or userInput == "p" then
@@ -86,8 +93,10 @@ end
 
 function CardSelectState:handleCardSelection(location)
     local humanPlayer = gameManager:getHumanPlayer()
-    if not humanPlayer then return end
-    
+    if not humanPlayer then
+        return
+    end
+
     if cards[location].deck == 1 then
         cards[location].deck = 0
         message = "removed " .. cards[location].name
@@ -106,7 +115,7 @@ end
 function CardSelectState:handleGameStart()
     local humanPlayer = gameManager:getHumanPlayer()
     local aiPlayer = gameManager:getAIPlayer()
-    
+
     if humanPlayer and humanPlayer.picks > 0 then
         message = "you have " .. humanPlayer.picks .. " picks left"
     elseif aiPlayer and aiPlayer.picks > 0 then
@@ -116,7 +125,6 @@ function CardSelectState:handleGameStart()
         self.stateManager:changeState("game")
     end
 end
-
 
 function CardSelectState:wheelmoved(x, y)
     self.posy = self.posy + y * 75

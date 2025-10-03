@@ -2,7 +2,9 @@ require "states.BaseState"
 
 -- Menu State
 MenuState = {}
-setmetatable(MenuState, {__index = BaseState})
+setmetatable(MenuState, {
+    __index = BaseState
+})
 MenuState.__index = MenuState
 
 function MenuState:new()
@@ -13,11 +15,14 @@ function MenuState:enter()
     input = ""
     message = "type p to start"
     message2 = "[p]lay [b]rowse [q]uit"
-    
+
     -- Reset all card assignments when returning to menu
     for i = 1, #cards do
         cards[i].deck = 0
     end
+
+    cards[cardFactory:findCard("torrent")]:Loop()
+    cards[cardFactory:findCard("fireball")]:Loop()
 end
 
 function MenuState:draw()
@@ -25,7 +30,7 @@ function MenuState:draw()
     lg.printf("typefighter", 0, 200, 800, "center")
     lg.setFont(fontM)
     lg.printf("[p]lay game\n[b]rowse cards\n[q]uit", 0, 300, 800, "center")
-    
+
     -- Animation
     cards[cardFactory:findCard("torrent")]:Animate(50, 180, 0)
     cards[cardFactory:findCard("fireball")]:Animate(750, 345, 3.14159)

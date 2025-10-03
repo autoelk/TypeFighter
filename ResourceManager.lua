@@ -118,8 +118,15 @@ function ResourceManager:newAnimation(image, width, height, duration)
             table.insert(animation.quads, lg.newQuad(x, y, width, height, image:getDimensions()))
         end
     end
-    animation.duration = duration or 1
-    animation.currentTime = 0
+
+    -- Fixed 12 FPS animation system
+    animation.fps = 12
+    animation.frameDuration = 1 / animation.fps
+    animation.currentFrame = 1
+    animation.accumulator = 0
+    animation.loopMode = "loop"
+    animation.loopTime = nil
+    animation.elapsed = 0
 
     return animation
 end

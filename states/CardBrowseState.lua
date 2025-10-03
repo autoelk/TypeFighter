@@ -2,17 +2,22 @@ require "states.BaseState"
 
 -- Card Browse State
 CardBrowseState = {}
-setmetatable(CardBrowseState, {__index = BaseState})
+setmetatable(CardBrowseState, {
+    __index = BaseState
+})
 CardBrowseState.__index = CardBrowseState
 
 function CardBrowseState:new()
     local state = setmetatable(BaseState:new(), self)
-    state.posy = 10  -- Card scroll position
+    state.posy = 10 -- Card scroll position
     return state
 end
 
 function CardBrowseState:enter()
     message2 = "[Q] to go back"
+    for i = 1, #cards do
+        cards[i]:Loop()
+    end
 end
 
 function CardBrowseState:update(dt)
@@ -41,7 +46,6 @@ function CardBrowseState:keypressed(key)
     end
     BaseState.keypressed(self, key)
 end
-
 
 function CardBrowseState:wheelmoved(x, y)
     self.posy = self.posy + y * 75

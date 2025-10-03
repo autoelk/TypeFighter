@@ -16,8 +16,9 @@ function BaseCard:new(cardData)
         loc = cardData.loc or "self", -- where card is animated (proj, other, self)
         anim = cardData.anim,
 
-        -- Animation configuration
-        animSpeed = cardData.animSpeed or 1.0, -- Speed multiplier for animation playback
+        -- Animation configuration (fixed 12fps system)
+        playMode = cardData.playMode or "loop", -- loop | once | loop_for
+        playTime = cardData.playTime, -- only used if playMode == loop_for (seconds)
         offsetX = cardData.offsetX or 0, -- X offset for animation positioning
         offsetY = cardData.offsetY or 0, -- Y offset for animation positioning
         rotation = cardData.rotation or 0, -- Default rotation for the card
@@ -77,12 +78,25 @@ function BaseCard:Display()
     self:Animate(self.x + 10, self.y + 25)
 end
 
-function BaseCard:StartAnimate(x, y)
-    self.anim.currentTime = 0 -- reset Animation
+function BaseCard:StartAnimate(x, y, playMode, playTime)
+    -- Reset animation timing
+    self.anim.currentFrame = 1
+    self.anim.accumulator = 0
+    self.anim.elapsed = 0
+    self.anim.loopMode = playMode or self.playMode or "loop"
+    self.playMode = self.anim.loopMode
+    self.playTime = playTime or self.playTime
     self.x = x or self.x
     self.y = y or self.y
-    -- Adjust animation duration based on speed (faster speed = shorter duration)
-    self.t = self.anim.duration / self.animSpeed
+
+    -- Determine active time window (self.t governs visibility in GameState:draw())
+    if self.playMode == "once" then
+        self.t = #self.anim.quads * self.anim.frameDuration
+    elseif self.playMode == "loop_for" then
+        self.t = self.playTime or (#self.anim.quads * self.anim.frameDuration)
+    else -- loop (infinite)
+        self.t = math.huge
+    end
 end
 
 function BaseCard:Animate(x, y, r, sx, sy, offsetX, offsetY)
@@ -99,29 +113,65 @@ function BaseCard:Animate(x, y, r, sx, sy, offsetX, offsetY)
 
     lg.setColor(colors.white)
 
-    -- Calculate sprite frame based on animation speed
-    local effectiveTime = self.anim.currentTime * self.animSpeed
-    local spriteNum = math.floor(effectiveTime / self.anim.duration * #self.anim.quads) + 1
-
-    -- Ensure spriteNum stays within bounds when using different animation speeds
-    if spriteNum > #self.anim.quads then
-        spriteNum = ((spriteNum - 1) % #self.anim.quads) + 1
+    local spriteNum = self.anim.currentFrame or 1
+    if spriteNum < 1 then
+        spriteNum = 1
     end
-
+    if spriteNum > #self.anim.quads then
+        spriteNum = #self.anim.quads
+    end
     lg.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], finalX, finalY, r, sx, sy)
 end
 
 function BaseCard:update(dt)
-    if self.t > 0 then
+    if self.t > 0 and self.t ~= math.huge then
         self.t = self.t - dt
         if self.t < 0 then
             self.t = 0
         end
     end
-    self.anim.currentTime = self.anim.currentTime + dt
-    if self.anim.currentTime >= self.anim.duration then
-        self.anim.currentTime = self.anim.currentTime - self.anim.duration
+
+    -- Advance animation at fixed 12 fps
+    local anim = self.anim
+    if self.t > 0 then
+        anim.accumulator = anim.accumulator + dt
+        anim.elapsed = anim.elapsed + dt
+        while anim.accumulator >= anim.frameDuration do
+            anim.accumulator = anim.accumulator - anim.frameDuration
+            anim.currentFrame = (anim.currentFrame or 1) + 1
+            if anim.currentFrame > #anim.quads then
+                if self.playMode == "once" then
+                    anim.currentFrame = #anim.quads
+                    self.t = 0
+                    break
+                else
+                    anim.currentFrame = 1
+                end
+            end
+        end
+        if self.playMode == "loop_for" and anim.elapsed >= (self.playTime or 0) then
+            self.t = 0
+        end
     end
+end
+
+function BaseCard:PlayOnce(x, y)
+    self:StartAnimate(x, y, "once")
+end
+
+function BaseCard:Loop(x, y)
+    self:StartAnimate(x, y, "loop")
+end
+
+function BaseCard:LoopFor(x, y, seconds)
+    self:StartAnimate(x, y, "loop_for", seconds)
+end
+
+function BaseCard:ResetAnimation()
+    self.anim.currentFrame = 1
+    self.anim.accumulator = 0
+    self.anim.elapsed = 0
+    self.t = 0
 end
 
 -- Calculate the location the card should be at

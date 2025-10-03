@@ -20,17 +20,23 @@ function GameState:enter()
     player1.mana = 0
     player1.manaRegen = 1
     player1.spriteNum = 1
-    player1.anim.currentTime = 0
+    player1.anim.currentFrame = 1
+    player1.anim.accumulator = 0
     player2.health = 50
     player2.healthRegen = 0
     player2.mana = 0
     player2.manaRegen = 1
     player2.spriteNum = 1
-    player2.anim.currentTime = 0
+    player2.anim.currentFrame = 1
+    player2.anim.accumulator = 0
 
     -- Set game interface messages
     message = "type card names to cast them"
     message2 = "[esc] pause [q]uit to menu"
+
+    for i = 1, #cards do
+        cards[i]:ResetAnimation()
+    end
 end
 
 function GameState:update(dt)

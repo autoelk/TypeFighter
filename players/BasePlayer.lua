@@ -34,6 +34,8 @@ function BasePlayer:new(playerNumber)
         manaRegen = 1,
         spriteNum = 1,
         anim = resourceManager:newAnimation(resourceManager:getImage("wizard"), 32, 32, 2),
+        deathAnimStarted = false,
+        deathAnimFinished = false,
 
         damageDisplay = {
             amount = 0,
@@ -46,8 +48,10 @@ function BasePlayer:new(playerNumber)
 end
 
 function BasePlayer:Draw()
-    if self.health <= 0 and self.spriteNum ~= #self.anim.quads then
-        self.spriteNum = math.floor(self.anim.currentTime / self.anim.duration * #self.anim.quads) + 1
+    if self.health > 0 then
+        self.spriteNum = 1
+    else
+        self.spriteNum = self.anim.currentFrame or #self.anim.quads
     end
 
     local pos = PLAYER_POSITIONS[self.num]
@@ -191,10 +195,30 @@ function BasePlayer:Damage(amtDamage)
 end
 
 function BasePlayer:update(dt)
-    if self.health <= 0 then
-        self.anim.currentTime = self.anim.currentTime + dt
-        if self.anim.currentTime >= self.anim.duration then
-            self.anim.currentTime = self.anim.currentTime - self.anim.duration
+    local anim = self.anim
+    -- Hold first frame while alive
+    if self.health > 0 then
+        anim.currentFrame = 1
+        anim.accumulator = 0
+        self.deathAnimStarted = false
+        self.deathAnimFinished = false
+    elseif not self.deathAnimStarted then
+        self.deathAnimStarted = true
+        anim.currentFrame = 1
+        anim.accumulator = 0
+    elseif self.deathAnimFinished then
+        anim.currentFrame = #anim.quads
+        return
+    end
+
+    anim.accumulator = anim.accumulator + dt
+    while anim.accumulator >= anim.frameDuration do
+        anim.accumulator = anim.accumulator - anim.frameDuration
+        anim.currentFrame = (anim.currentFrame or 1) + 1
+        if anim.currentFrame >= #anim.quads then
+            anim.currentFrame = #anim.quads
+            self.deathAnimFinished = true
+            break
         end
     end
 end
