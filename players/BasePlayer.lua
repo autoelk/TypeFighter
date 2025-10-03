@@ -166,12 +166,10 @@ function BasePlayer:Cast(cardIndex)
         x = PLAYER_POSITIONS[self.num].animX
     elseif card.loc == "proj" then
         x = PLAYER_POSITIONS[self:Other().num].animX
-        card.x = x
-        card.y = 300
     elseif card.loc == "other" then
         x = PLAYER_POSITIONS[self:Other().num].animX
     end
-    card:StartAnimate(x, 300)
+    card:PlayOnce(x, 300)
 
     -- Deduct mana cost
     self.mana = self.mana - card.mana
