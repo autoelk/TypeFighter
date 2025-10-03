@@ -120,7 +120,7 @@ function BaseCard:Animate(x, y, r, sx, sy, offsetX, offsetY)
     if spriteNum > #self.anim.quads then
         spriteNum = #self.anim.quads
     end
-    lg.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], finalX, finalY, r, sx, sy)
+    lg.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], finalX, finalY, math.rad(r), sx, sy)
 end
 
 function BaseCard:update(dt)
