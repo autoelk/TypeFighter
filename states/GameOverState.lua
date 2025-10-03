@@ -2,7 +2,9 @@ require "states.BaseState"
 
 -- Game Over State
 GameOverState = {}
-setmetatable(GameOverState, {__index = BaseState})
+setmetatable(GameOverState, {
+    __index = BaseState
+})
 GameOverState.__index = GameOverState
 
 function GameOverState:new()
@@ -14,17 +16,12 @@ end
 function GameOverState:enter()
     local player1 = gameManager:getPlayer(1)
     local player2 = gameManager:getPlayer(2)
-    
-    if player1 and player2 then
-        if player1.health <= 0 and player2.health <= 0 then
-            self.gameOverMessage = "tie"
-        elseif player1.health <= 0 then
-            self.gameOverMessage = "player 2 wins"
-        elseif player2.health <= 0 then
-            self.gameOverMessage = "player 1 wins"
-        end
-    else
-        self.gameOverMessage = "game error"
+    if player1.health <= 0 and player2.health <= 0 then
+        self.gameOverMessage = "tie"
+    elseif player1.health <= 0 then
+        self.gameOverMessage = "player 2 wins"
+    elseif player2.health <= 0 then
+        self.gameOverMessage = "player 1 wins"
     end
 end
 

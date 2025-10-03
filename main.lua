@@ -82,34 +82,13 @@ end
 
 function love.update(dt)
     gameTime = gameTime + dt
-
-    -- Update card animations
     for i = 1, #cards do
-        cards[i].t = cards[i].t - dt
-        if cards[i].t < 0 then
-            cards[i].t = 0
-        end
-        cards[i].anim.currentTime = cards[i].anim.currentTime + dt
-        if cards[i].anim.currentTime >= cards[i].anim.duration then
-            cards[i].anim.currentTime = cards[i].anim.currentTime - cards[i].anim.duration
-        end
+        cards[i]:update(dt)
     end
-
-    -- Update player death animations
     local player1 = gameManager:getPlayer(1)
     local player2 = gameManager:getPlayer(2)
-    if player1 and player1.health <= 0 then
-        player1.anim.currentTime = player1.anim.currentTime + dt
-        if player1.anim.currentTime >= player1.anim.duration then
-            player1.anim.currentTime = player1.anim.currentTime - player1.anim.duration
-        end
-    end
-    if player2 and player2.health <= 0 then
-        player2.anim.currentTime = player2.anim.currentTime + dt
-        if player2.anim.currentTime >= player2.anim.duration then
-            player2.anim.currentTime = player2.anim.currentTime - player2.anim.duration
-        end
-    end
+    player1:update(dt)
+    player2:update(dt)
 
     -- Update current state
     stateManager:update(dt)
@@ -128,14 +107,10 @@ function love.draw()
     -- Draw players
     local player1 = gameManager:getPlayer(1)
     local player2 = gameManager:getPlayer(2)
-    if player1 then
-        lg.setColor(colors.white)
-        player1:Draw()
-    end
-    if player2 then
-        lg.setColor(colors.red)
-        player2:Draw()
-    end
+    lg.setColor(colors.white)
+    player1:Draw()
+    lg.setColor(colors.red)
+    player2:Draw()
     lg.setColor(colors.white)
 
     -- Draw current state

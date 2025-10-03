@@ -35,6 +35,7 @@ function AIPlayer:new(playerNumber, difficulty)
 end
 
 function AIPlayer:update(dt)
+    BasePlayer.update(self, dt)
     -- Update AI casting cooldown
     self.castCooldown = self.castCooldown - dt
 

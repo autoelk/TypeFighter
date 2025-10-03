@@ -111,6 +111,19 @@ function BaseCard:Animate(x, y, r, sx, sy, offsetX, offsetY)
     lg.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], finalX, finalY, r, sx, sy)
 end
 
+function BaseCard:update(dt)
+    if self.t > 0 then
+        self.t = self.t - dt
+        if self.t < 0 then
+            self.t = 0
+        end
+    end
+    self.anim.currentTime = self.anim.currentTime + dt
+    if self.anim.currentTime >= self.anim.duration then
+        self.anim.currentTime = self.anim.currentTime - self.anim.duration
+    end
+end
+
 -- Calculate the location the card should be at
 function BaseCard:Move(dx, dy)
     if self.x ~= dx or self.y ~= dy then

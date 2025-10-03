@@ -191,6 +191,12 @@ function BasePlayer:Damage(amtDamage)
 end
 
 function BasePlayer:update(dt)
+    if self.health <= 0 then
+        self.anim.currentTime = self.anim.currentTime + dt
+        if self.anim.currentTime >= self.anim.duration then
+            self.anim.currentTime = self.anim.currentTime - self.anim.duration
+        end
+    end
 end
 
 function BasePlayer:canAfford(manaCost)

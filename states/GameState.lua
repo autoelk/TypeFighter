@@ -15,24 +15,18 @@ function GameState:enter()
     -- Initialize players for gameplay
     local player1 = gameManager:getPlayer(1)
     local player2 = gameManager:getPlayer(2)
-
-    if player1 then
-        player1.health = 50
-        player1.healthRegen = 0
-        player1.mana = 0
-        player1.manaRegen = 1
-        player1.spriteNum = 1
-        player1.anim.currentTime = 0
-    end
-
-    if player2 then
-        player2.health = 50
-        player2.healthRegen = 0
-        player2.mana = 0
-        player2.manaRegen = 1
-        player2.spriteNum = 1
-        player2.anim.currentTime = 0
-    end
+    player1.health = 50
+    player1.healthRegen = 0
+    player1.mana = 0
+    player1.manaRegen = 1
+    player1.spriteNum = 1
+    player1.anim.currentTime = 0
+    player2.health = 50
+    player2.healthRegen = 0
+    player2.mana = 0
+    player2.manaRegen = 1
+    player2.spriteNum = 1
+    player2.anim.currentTime = 0
 
     -- Set game interface messages
     message = "type card names to cast them"
@@ -56,30 +50,22 @@ function GameState:update(dt)
     -- Health and mana regen
     local player1 = gameManager:getPlayer(1)
     local player2 = gameManager:getPlayer(2)
-
-    if player1 then
-        player1.mana = player1.mana + dt * player1.manaRegen
-        if player1.mana < 0 then
-            player1.mana = 0
-        end
-        player1.health = player1.health + dt * player1.healthRegen
+    player1.mana = player1.mana + dt * player1.manaRegen
+    if player1.mana < 0 then
+        player1.mana = 0
     end
-
-    if player2 then
-        player2.mana = player2.mana + dt * player2.manaRegen
-        if player2.mana < 0 then
-            player2.mana = 0
-        end
-        player2.health = player2.health + dt * player2.healthRegen
+    player1.health = player1.health + dt * player1.healthRegen
+    player2.mana = player2.mana + dt * player2.manaRegen
+    if player2.mana < 0 then
+        player2.mana = 0
     end
+    player2.health = player2.health + dt * player2.healthRegen
 
     -- Player2 AI update
-    if player2 and player2.update then
-        player2:update(dt)
-    end
+    player2:update(dt)
 
     -- Check for game over
-    if (player1 and player1.health <= 0) or (player2 and player2.health <= 0) then
+    if player1.health <= 0 or player2.health <= 0 then
         self.stateManager:changeState("gameOver")
     end
 end
@@ -110,13 +96,8 @@ function GameState:draw()
 
     local player1 = gameManager:getPlayer(1)
     local player2 = gameManager:getPlayer(2)
-
-    if player1 then
-        player1:DrawUI()
-    end
-    if player2 then
-        player2:DrawUI()
-    end
+    player1:DrawUI()
+    player2:DrawUI()
 end
 
 function GameState:keypressed(key)
