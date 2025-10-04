@@ -14,6 +14,8 @@ function PunchCard:new(cardData)
     card.type = "attack"
     card.elem = "earth"
     card.loc = "other"
+    card.offsetX = -90
+    card.offsetY = 15
     setmetatable(card, self)
     return card
 end
