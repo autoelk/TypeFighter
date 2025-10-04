@@ -15,6 +15,7 @@ function PoisonCard:new(cardData)
     card.type = "misc"
     card.elem = "fire"
     card.loc = "other"
+    card.offsetY = 15
     setmetatable(card, self)
     return card
 end
