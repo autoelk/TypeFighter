@@ -13,6 +13,7 @@ require "cards.PunchCard"
 require "cards.ManatideCard"
 require "cards.ForceCard"
 require "cards.SliceCard"
+require "cards.PortalCard"
 
 CardFactory = {}
 CardFactory.__index = CardFactory
@@ -33,7 +34,8 @@ function CardFactory:new()
             ["punch"] = PunchCard,
             ["manatide"] = ManatideCard,
             ["force"] = ForceCard,
-            ["slice"] = SliceCard
+            ["slice"] = SliceCard,
+            ["portal"] = PortalCard
         }
     }
     setmetatable(factory, self)

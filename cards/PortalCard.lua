@@ -1,16 +1,16 @@
 require "cards.BaseCard"
 
-TyphoonCard = {}
-setmetatable(TyphoonCard, {
+PortalCard = {}
+setmetatable(PortalCard, {
     __index = BaseCard
 })
-TyphoonCard.__index = TyphoonCard
+PortalCard.__index = PortalCard
 
-function TyphoonCard:new(cardData)
+function PortalCard:new(cardData)
     local card = BaseCard:new(cardData)
-    card.name = "typhoon"
-    card.damage = 100
-    card.mana = 50
+    card.name = "portal"
+    card.damage = 40
+    card.mana = 20
     card.type = "attack"
     card.elem = "water"
     card.loc = "other"
@@ -18,11 +18,11 @@ function TyphoonCard:new(cardData)
     return card
 end
 
-function TyphoonCard:getDescription()
+function PortalCard:getDescription()
     return "deal " .. self.damage .. " damage."
 end
 
-function TyphoonCard:cast(caster, target)
+function PortalCard:cast(caster, target)
     target:Damage(self.damage)
     return true
 end
