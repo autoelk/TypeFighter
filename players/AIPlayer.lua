@@ -92,8 +92,7 @@ function AIPlayer:attemptCardPick()
 
     for i = 1, #cards do
         local card = cards[i]
-        -- never select ritual
-        if card.deck == 0 and card.name ~= "ritual" then
+        if card.deck == 0 and card.name ~= "ritual" and card.name ~= "manatide" then
             table.insert(availableCards, i)
         end
     end
