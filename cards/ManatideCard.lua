@@ -1,7 +1,9 @@
 require "cards.BaseCard"
 
 ManatideCard = {}
-setmetatable(ManatideCard, {__index = BaseCard})
+setmetatable(ManatideCard, {
+    __index = BaseCard
+})
 ManatideCard.__index = ManatideCard
 
 function ManatideCard:new(cardData)

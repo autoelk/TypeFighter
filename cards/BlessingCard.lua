@@ -1,7 +1,9 @@
 require "cards.BaseCard"
 
 BlessingCard = {}
-setmetatable(BlessingCard, {__index = BaseCard})
+setmetatable(BlessingCard, {
+    __index = BaseCard
+})
 BlessingCard.__index = BlessingCard
 
 function BlessingCard:new(cardData)
@@ -12,6 +14,8 @@ function BlessingCard:new(cardData)
     card.type = "misc"
     card.elem = "earth"
     card.loc = "self"
+    card.offsetY = 20
+    card.offsetX = 10
     setmetatable(card, self)
     return card
 end

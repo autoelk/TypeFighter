@@ -1,7 +1,9 @@
 require "cards.BaseCard"
 
 PunchCard = {}
-setmetatable(PunchCard, {__index = BaseCard})
+setmetatable(PunchCard, {
+    __index = BaseCard
+})
 PunchCard.__index = PunchCard
 
 function PunchCard:new(cardData)

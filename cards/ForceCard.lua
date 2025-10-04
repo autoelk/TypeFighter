@@ -1,7 +1,9 @@
 require "cards.BaseCard"
 
 ForceCard = {}
-setmetatable(ForceCard, {__index = BaseCard})
+setmetatable(ForceCard, {
+    __index = BaseCard
+})
 ForceCard.__index = ForceCard
 
 function ForceCard:new(cardData)

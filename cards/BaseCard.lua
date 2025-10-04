@@ -100,7 +100,6 @@ function BaseCard:StartAnimate(x, y, playMode, playTime)
 end
 
 function BaseCard:Animate(x, y, r, sx, sy, offsetX, offsetY)
-    -- Use provided offsets or default to 0 (no offset)
     offsetX = offsetX or 0
     offsetY = offsetY or 0
 
@@ -141,8 +140,8 @@ function BaseCard:update(dt)
             anim.currentFrame = (anim.currentFrame or 1) + 1
             if anim.currentFrame > #anim.quads then
                 if self.playMode == "once" then
+                    self:ResetAnimation()
                     anim.currentFrame = #anim.quads
-                    self.t = 0
                     break
                 else
                     anim.currentFrame = 1
@@ -150,7 +149,7 @@ function BaseCard:update(dt)
             end
         end
         if self.playMode == "loop_for" and anim.elapsed >= (self.playTime or 0) then
-            self.t = 0
+            self:ResetAnimation()
         end
     end
 end

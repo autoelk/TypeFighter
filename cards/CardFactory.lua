@@ -33,7 +33,7 @@ function CardFactory:new()
             ["punch"] = PunchCard,
             ["manatide"] = ManatideCard,
             ["force"] = ForceCard,
-            ["slice"] = SliceCard,
+            ["slice"] = SliceCard
         }
     }
     setmetatable(factory, self)

@@ -1,7 +1,9 @@
 require "cards.BaseCard"
 
 SliceCard = {}
-setmetatable(SliceCard, {__index = BaseCard})
+setmetatable(SliceCard, {
+    __index = BaseCard
+})
 SliceCard.__index = SliceCard
 
 function SliceCard:new(cardData)
@@ -26,12 +28,12 @@ function SliceCard:canCast(caster, target)
     if not canCast then
         return false, errorMessage
     end
-    
+
     -- Check health requirement
     if caster.health <= self.healthThreshold then
         return false, "you need more than " .. self.healthThreshold .. " health to cast this"
     end
-    
+
     return true, nil
 end
 

@@ -1,17 +1,20 @@
 require "cards.BaseCard"
 
 RageCard = {}
-setmetatable(RageCard, {__index = BaseCard})
+setmetatable(RageCard, {
+    __index = BaseCard
+})
 RageCard.__index = RageCard
 
 function RageCard:new(cardData)
     local card = BaseCard:new(cardData)
     card.name = "rage"
     card.baseDamage = 50 -- Base damage calculation (50 - health)
-    card.mana = 20
+    card.mana = 10
     card.type = "misc"
     card.elem = "fire"
     card.loc = "proj"
+    card.offsetY = 15
     setmetatable(card, self)
     return card
 end

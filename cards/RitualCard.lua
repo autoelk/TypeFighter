@@ -1,7 +1,9 @@
 require "cards.BaseCard"
 
 RitualCard = {}
-setmetatable(RitualCard, {__index = BaseCard})
+setmetatable(RitualCard, {
+    __index = BaseCard
+})
 RitualCard.__index = RitualCard
 
 function RitualCard:new(cardData)

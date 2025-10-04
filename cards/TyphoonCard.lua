@@ -1,7 +1,9 @@
 require "cards.BaseCard"
 
 TyphoonCard = {}
-setmetatable(TyphoonCard, {__index = BaseCard})
+setmetatable(TyphoonCard, {
+    __index = BaseCard
+})
 TyphoonCard.__index = TyphoonCard
 
 function TyphoonCard:new(cardData)

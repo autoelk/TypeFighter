@@ -1,7 +1,9 @@
 require "cards.BaseCard"
 
 PoisonCard = {}
-setmetatable(PoisonCard, {__index = BaseCard})
+setmetatable(PoisonCard, {
+    __index = BaseCard
+})
 PoisonCard.__index = PoisonCard
 
 function PoisonCard:new(cardData)

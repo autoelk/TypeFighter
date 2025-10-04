@@ -1,7 +1,9 @@
 require "cards.BaseCard"
 
 TorrentCard = {}
-setmetatable(TorrentCard, {__index = BaseCard})
+setmetatable(TorrentCard, {
+    __index = BaseCard
+})
 TorrentCard.__index = TorrentCard
 
 function TorrentCard:new(cardData)

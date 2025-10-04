@@ -1,7 +1,9 @@
 require "cards.BaseCard"
 
 HealCard = {}
-setmetatable(HealCard, {__index = BaseCard})
+setmetatable(HealCard, {
+    __index = BaseCard
+})
 HealCard.__index = HealCard
 
 function HealCard:new(cardData)

@@ -1,7 +1,9 @@
 require "cards.BaseCard"
 
 BoltCard = {}
-setmetatable(BoltCard, {__index = BaseCard})
+setmetatable(BoltCard, {
+    __index = BaseCard
+})
 BoltCard.__index = BoltCard
 
 function BoltCard:new(cardData)

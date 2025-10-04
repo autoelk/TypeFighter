@@ -1,7 +1,9 @@
 require "cards.BaseCard"
 
 FireballCard = {}
-setmetatable(FireballCard, {__index = BaseCard})
+setmetatable(FireballCard, {
+    __index = BaseCard
+})
 FireballCard.__index = FireballCard
 
 function FireballCard:new(cardData)

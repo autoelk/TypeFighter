@@ -1,7 +1,9 @@
 require "cards.BaseCard"
 
 GemCard = {}
-setmetatable(GemCard, {__index = BaseCard})
+setmetatable(GemCard, {
+    __index = BaseCard
+})
 GemCard.__index = GemCard
 
 function GemCard:new(cardData)
@@ -12,6 +14,7 @@ function GemCard:new(cardData)
     card.type = "misc"
     card.elem = "water"
     card.loc = "self"
+    card.offsetY = -160
     setmetatable(card, self)
     return card
 end
