@@ -103,6 +103,10 @@ function BaseCard:Animate(x, y, r, sx, sy, offsetX, offsetY)
     offsetX = offsetX or 0
     offsetY = offsetY or 0
 
+    if self.deck == 2 then
+        offsetX = -offsetX
+    end
+
     local finalX = (x or self.x) + offsetX
     local finalY = (y or self.y) + offsetY
 

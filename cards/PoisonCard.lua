@@ -25,7 +25,7 @@ end
 
 function PoisonCard:cast(caster, target)
     target:ApplyEffect("poison", {
-        duration = card.duration,
+        duration = self.duration,
         tickInterval = 1,
         stackMode = "stack",
         maxStacks = 5,
