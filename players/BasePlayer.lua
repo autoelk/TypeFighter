@@ -41,7 +41,8 @@ function BasePlayer:new(playerNumber)
             amount = 0,
             endTime = 0,
             isActive = false
-        }
+        },
+        effects = {}
     }
     setmetatable(player, self)
     return player
@@ -219,6 +220,87 @@ function BasePlayer:update(dt)
             break
         end
     end
+    self:UpdateEffects(dt)
+end
+
+function BasePlayer:ApplyEffect(id, cfg)
+    if not cfg then
+        error("ApplyEffect requires a configuration table")
+    end
+
+    --[[ three modes: stack, refresh, ignore
+    stack - refresh duration and add a stack, up to maxStacks
+    refresh - refresh duration only
+    ignore - do nothing if effect already exists ]]
+    local eff = self.effects[id]
+    if eff then
+        local mode = cfg.stackMode or eff.stackMode or "refresh"
+        if mode == "stack" then
+            local newStacks = eff.stacks + 1
+            if (cfg.maxStacks or eff.maxStacks) then
+                local limit = cfg.maxStacks or eff.maxStacks
+                newStacks = math.min(limit, newStacks)
+                eff.maxStacks = limit
+            end
+            eff.stacks = newStacks
+            eff.timeLeft = cfg.duration or eff.timeLeft
+        elseif mode == "refresh" then
+            eff.timeLeft = cfg.duration or eff.timeLeft
+        elseif mode == "ignore" then
+            return eff
+        end
+        return eff
+    end
+
+    eff = {
+        id = id,
+        timeLeft = cfg.duration,
+        tickInterval = cfg.tickInterval,
+        tickTimer = 0,
+        stacks = 1,
+        maxStacks = cfg.maxStacks,
+        stackMode = cfg.stackMode or "refresh",
+        onTick = cfg.onTick,
+        onExpire = cfg.onExpire,
+        onApply = cfg.onApply
+    }
+    self.effects[id] = eff
+    if eff.onApply then
+        eff.onApply(self, eff)
+    end
+    return eff
+end
+
+function BasePlayer:UpdateEffects(dt)
+    for id, eff in pairs(self.effects) do
+        if eff.timeLeft then
+            eff.timeLeft = eff.timeLeft - dt
+            if eff.timeLeft <= 0 then
+                if eff.onExpire then
+                    eff.onExpire(self, eff)
+                end
+                self.effects[id] = nil
+            else
+                if eff.tickInterval then
+                    eff.tickTimer = eff.tickTimer + dt
+                    while eff.tickTimer >= eff.tickInterval do
+                        eff.tickTimer = eff.tickTimer - eff.tickInterval
+                        if eff.onTick then
+                            eff.onTick(self, eff)
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+
+function BasePlayer:HasEffect(id)
+    return self.effects[id] ~= nil
+end
+
+function BasePlayer:GetEffect(id)
+    return self.effects[id]
 end
 
 function BasePlayer:canAfford(manaCost)

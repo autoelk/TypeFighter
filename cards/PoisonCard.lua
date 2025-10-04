@@ -9,8 +9,9 @@ PoisonCard.__index = PoisonCard
 function PoisonCard:new(cardData)
     local card = BaseCard:new(cardData)
     card.name = "poison"
-    card.regenAmount = 1
-    card.mana = 15
+    card.damagePerTick = 2
+    card.duration = 10
+    card.mana = 5
     card.type = "misc"
     card.elem = "fire"
     card.loc = "other"
@@ -19,10 +20,18 @@ function PoisonCard:new(cardData)
 end
 
 function PoisonCard:getDescription()
-    return "reduce opponent's health regen by " .. self.regenAmount .. "."
+    return "apply stacking poison for 10s."
 end
 
 function PoisonCard:cast(caster, target)
-    target.healthRegen = target.healthRegen - self.regenAmount
+    target:ApplyEffect("poison", {
+        duration = card.duration,
+        tickInterval = 1,
+        stackMode = "stack",
+        maxStacks = 5,
+        onTick = function(player, eff)
+            player:Damage(eff.stacks * self.damagePerTick)
+        end
+    })
     return true
 end
