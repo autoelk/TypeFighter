@@ -30,6 +30,23 @@ function GameOverState:draw()
     lg.printf(self.gameOverMessage, 0, 200, 800, "center")
     lg.setFont(fontM)
     lg.printf("[r]estart game\n[q]uit", 0, 300, 800, "center")
+
+    for i = 1, #cards do
+        if cards[i].t > 0 then
+            local card = cards[i]
+            local animX = card.x
+            local animSx = card.scale
+            local animSy = card.scale
+
+            if card.deck == 2 then
+                animSx = animSx * -1
+                animX = animX + 160
+            end
+
+            card:Animate(animX, card.y, card.rotation, animSx, animSy, card.offsetX, card.offsetY)
+        end
+    end
+
 end
 
 function GameOverState:keypressed(key)
