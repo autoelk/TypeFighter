@@ -22,6 +22,7 @@ function GameState:enter()
     player1.spriteNum = 1
     player1.anim.currentFrame = 1
     player1.anim.accumulator = 0
+    player1.isAlive = true
     player2.health = 50
     player2.healthRegen = 0
     player2.mana = 0
@@ -29,6 +30,7 @@ function GameState:enter()
     player2.spriteNum = 1
     player2.anim.currentFrame = 1
     player2.anim.accumulator = 0
+    player2.isAlive = true
 
     -- Set game interface messages
     message = "type card names to cast them"
@@ -70,8 +72,8 @@ function GameState:update(dt)
     -- Player2 AI update
     player2:update(dt)
 
-    -- Check for game over
-    if player1.health <= 0 or player2.health <= 0 then
+    -- Check for game over using isAlive flag
+    if not player1.isAlive or not player2.isAlive then
         self.stateManager:changeState("gameOver")
     end
 end

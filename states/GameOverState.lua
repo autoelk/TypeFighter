@@ -16,11 +16,12 @@ end
 function GameOverState:enter()
     local player1 = gameManager:getPlayer(1)
     local player2 = gameManager:getPlayer(2)
-    if player1.health <= 0 and player2.health <= 0 then
+    -- Decide game over message based on isAlive flags
+    if not player1.isAlive and not player2.isAlive then
         self.gameOverMessage = "tie"
-    elseif player1.health <= 0 then
+    elseif not player1.isAlive then
         self.gameOverMessage = "player 2 wins"
-    elseif player2.health <= 0 then
+    elseif not player2.isAlive then
         self.gameOverMessage = "player 1 wins"
     end
 end

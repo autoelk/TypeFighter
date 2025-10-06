@@ -29,6 +29,7 @@ function BasePlayer:new(playerNumber)
         num = playerNumber,
         picks = 5,
         health = 50,
+        isAlive = true,
         healthRegen = 0,
         mana = 0,
         manaRegen = 1,
@@ -49,7 +50,7 @@ function BasePlayer:new(playerNumber)
 end
 
 function BasePlayer:Draw()
-    if self.health > 0 then
+    if self.isAlive then
         self.spriteNum = 1
     else
         self.spriteNum = self.anim.currentFrame or #self.anim.quads
@@ -191,12 +192,13 @@ function BasePlayer:Damage(amtDamage)
 
     -- Apply damage to health
     self.health = self.health - amtDamage
+    self.isAlive = self.health > 0
 end
 
 function BasePlayer:update(dt)
     local anim = self.anim
     -- Hold first frame while alive
-    if self.health > 0 then
+    if self.isAlive then
         anim.currentFrame = 1
         anim.accumulator = 0
         self.deathAnimStarted = false
