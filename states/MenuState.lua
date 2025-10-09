@@ -27,13 +27,14 @@ end
 
 function MenuState:draw()
     lg.setFont(fontXL)
-    lg.printf("typefighter", 0, 200, 800, "center")
+    lg.printf("typefighter", 0, 200, GAME_WIDTH, "center")
     lg.setFont(fontM)
-    lg.printf("[p]lay game\n[b]rowse cards\n[q]uit", 0, 300, 800, "center")
+    lg.printf("[p]lay game\n[b]rowse cards\n[q]uit", 0, 300, GAME_WIDTH, "center")
 
     -- Animation
-    cards[cardFactory:findCard("torrent")]:animate(50, 180)
-    cards[cardFactory:findCard("fireball")]:animate(750, 345, 180)
+    local margin = 50
+    cards[cardFactory:findCard("torrent")]:animate(margin, 180)
+    cards[cardFactory:findCard("fireball")]:animate(GAME_WIDTH - margin, 345, 180)
 end
 
 function MenuState:keypressed(key)
@@ -49,4 +50,3 @@ function MenuState:keypressed(key)
         input = ""
     end
 end
-

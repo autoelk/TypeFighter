@@ -19,21 +19,36 @@ require "states.GameOverState"
 gameTime = 0
 stateManager = nil
 resourceManager = nil
-input = "" -- player input
-message = "" -- left side text
+input = ""    -- player input
+message = ""  -- left side text
 message2 = "" -- right side text
 
 -- Colors
-colors = {
-    red = {250 / 255, 89 / 255, 52 / 255},
-    orange = {250 / 255, 121 / 255, 33 / 255},
-    yellow = {253 / 255, 231 / 255, 76 / 255},
-    green = {155 / 255, 197 / 255, 61 / 255},
-    blue = {91 / 255, 192 / 255, 235 / 255},
-    grey = {77 / 255, 80 / 255, 87 / 255},
-    white = {1, 1, 1},
-    black = {0, 0, 0}
+COLORS = {
+    RED = { 250 / 255, 89 / 255, 52 / 255 },
+    ORANGE = { 250 / 255, 121 / 255, 33 / 255 },
+    YELLOW = { 253 / 255, 231 / 255, 76 / 255 },
+    GREEN = { 155 / 255, 197 / 255, 61 / 255 },
+    BLUE = { 91 / 255, 192 / 255, 235 / 255 },
+    GREY = { 77 / 255, 80 / 255, 87 / 255 },
+    WHITE = { 1, 1, 1 },
+    BLACK = { 0, 0, 0 }
 }
+
+-- Game dimensions
+GAME_WIDTH = 800
+GAME_HEIGHT = 600
+PIXEL_TO_GAME_SCALE = 5
+
+-- Sprite constants
+SPRITE_PIXEL_SIZE = 32
+SCALED_SPRITE_SIZE = SPRITE_PIXEL_SIZE * PIXEL_TO_GAME_SCALE
+
+-- Card dimensions
+LARGE_CARD_WIDTH = SCALED_SPRITE_SIZE + 20
+LARGE_CARD_HEIGHT = SCALED_SPRITE_SIZE + 100
+MINI_CARD_WIDTH = 130
+MINI_CARD_HEIGHT = 60
 
 function love.load()
     lg = love.graphics
@@ -96,34 +111,35 @@ end
 
 function love.draw()
     -- Setup
-    local scale = math.min(lg.getWidth() / 800, lg.getHeight() / 600)
-    lg.translate((lg.getWidth() - 800 * scale) / 2, (lg.getHeight() - 600 * scale) / 2)
+    local scale = math.min(lg.getWidth() / GAME_WIDTH, lg.getHeight() / GAME_HEIGHT)
+    lg.translate((lg.getWidth() - GAME_WIDTH * scale) / 2, (lg.getHeight() - GAME_HEIGHT * scale) / 2)
     lg.scale(scale, scale)
 
     -- Background
-    lg.draw(background, 0, 0, 0, 5, 5)
+    lg.draw(background, 0, 0, 0, PIXEL_TO_GAME_SCALE, PIXEL_TO_GAME_SCALE)
     lg.setFont(fontM)
 
     -- Draw players
     local player1 = gameManager:getPlayer(1)
     local player2 = gameManager:getPlayer(2)
-    lg.setColor(colors.white)
+    lg.setColor(COLORS.WHITE)
     player1:draw()
-    lg.setColor(colors.red)
+    lg.setColor(COLORS.RED)
     player2:draw()
-    lg.setColor(colors.white)
+    lg.setColor(COLORS.WHITE)
 
     -- Draw current state
     stateManager:draw()
 
     -- Draw input interface
-    lg.setColor(colors.black)
-    lg.rectangle("fill", 0, 570, 800, 30)
+    local inputRectHeight = 30
+    lg.setColor(COLORS.BLACK)
+    lg.rectangle("fill", 0, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, inputRectHeight)
     lg.setFont(fontM)
-    lg.setColor(colors.white)
-    lg.printf(message, 5, 570, 800, "left")
-    lg.printf(message2, -5, 570, 800, "right")
-    lg.printf(input, 5, 570, 800, "left")
+    lg.setColor(COLORS.WHITE)
+    lg.printf(message, 5, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "left")
+    lg.printf(message2, -5, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "right")
+    lg.printf(input, 5, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "left")
 end
 
 function love.textinput(t)

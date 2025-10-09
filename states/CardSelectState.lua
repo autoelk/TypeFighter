@@ -39,15 +39,19 @@ function CardSelectState:update(dt)
     local cardsGone = 0
     for i = 1, #cards do
         if cards[i].deck == 1 then
+            -- if the card is in our deck, display it on the right
             cardsGone = cardsGone + 1
             table.insert(deck, i)
-            cards[i]:move(595, 25 * #deck)
+            cards[i]:move(GAME_WIDTH - LARGE_CARD_WIDTH - 25, 25 * #deck)
         else
             local colNum, rowNum = (i - cardsGone) % 3, math.ceil((i - cardsGone) / 3)
             if colNum == 0 then
                 colNum = 3
             end
-            cards[i]:move(190 * (colNum - 1) + 10, 262 * (rowNum - 1) + self.posy)
+            local margin = 10
+            local colSpacing = LARGE_CARD_WIDTH + margin
+            local rowSpacing = LARGE_CARD_HEIGHT + margin
+            cards[i]:move(margin + colSpacing * (colNum - 1), rowSpacing * (rowNum - 1) + self.posy)
         end
     end
 

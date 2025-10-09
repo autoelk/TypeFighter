@@ -27,7 +27,10 @@ function CardBrowseState:update(dt)
         if colNum == 0 then
             colNum = 4
         end
-        cards[i]:move(196 * (colNum - 1) + 16, 268 * (rowNum - 1) + self.posy)
+        local margin = 16
+        local colSpacing = LARGE_CARD_WIDTH + margin
+        local rowSpacing = LARGE_CARD_HEIGHT + margin
+        cards[i]:move(margin + colSpacing * (colNum - 1), rowSpacing * (rowNum - 1) + self.posy)
     end
 end
 

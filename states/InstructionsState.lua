@@ -24,9 +24,9 @@ end
 
 function InstructionsState:draw()
     lg.setFont(fontM)
-    lg.setColor(colors.black)
+    lg.setColor(COLORS.BLACK)
     lg.rectangle("fill", 200, 150, 400, 300)
-    lg.setColor(colors.white)
+    lg.setColor(COLORS.WHITE)
     lg.printf(
         "choose 5 cards by typing their names before player2 can chose them. you can remove cards from your deck by typing their name again. when you are done, type p to start.",
         210, 160, 380, "center")

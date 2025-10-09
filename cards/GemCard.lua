@@ -14,7 +14,7 @@ function GemCard:new(cardData)
     card.type = "misc"
     card.elem = "water"
     card.loc = "self"
-    card.offsetY = -160
+    card.offsetY = -SCALED_SPRITE_SIZE
     setmetatable(card, self)
     return card
 end

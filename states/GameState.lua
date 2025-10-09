@@ -34,7 +34,7 @@ function GameState:enter()
 
     -- Set game interface messages
     message = "type card names to cast them"
-    message2 = "[esc] pause [q]uit to menu"
+    message2 = "[q]uit to menu [esc] pause"
 
     for i = 1, #cards do
         cards[i]:resetAnimation()
@@ -80,7 +80,10 @@ end
 function GameState:draw()
     -- Display deck
     for i = 1, #deck do
-        cards[deck[i]]:displayMini((155 * (i - 1)) + 25, 500)
+        local margin = 25
+        local x = margin + (MINI_CARD_WIDTH + margin) * (i - 1)
+        local y = GAME_HEIGHT - MINI_CARD_HEIGHT - 40
+        cards[deck[i]]:displayMini(x, y)
     end
 
     -- Animations for game
@@ -94,7 +97,7 @@ function GameState:draw()
             -- Handle deck-specific positioning (mirroring for player 2)
             if card.deck == 2 then
                 animSx = animSx * -1
-                animX = animX + 160
+                animX = animX + SCALED_SPRITE_SIZE
             end
 
             card:animate(animX, card.y, card.rotation, animSx, animSy, card.offsetX, card.offsetY)

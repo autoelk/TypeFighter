@@ -15,9 +15,9 @@ end
 
 function PauseState:draw()
     lg.setFont(fontXL)
-    lg.printf("pause", 0, 200, 800, "center")
+    lg.printf("pause", 0, 200, GAME_WIDTH, "center")
     lg.setFont(fontM)
-    lg.printf("[esc] to return", 0, 300, 800, "center")
+    lg.printf("[esc] to return", 0, 300, GAME_WIDTH, "center")
 end
 
 function PauseState:keypressed(key)

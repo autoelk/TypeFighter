@@ -58,9 +58,25 @@ function BasePlayer:draw()
 
     local pos = PLAYER_POSITIONS[self.num]
     if pos.mirror then
-        lg.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], pos.x, pos.y, 0, -5, 5)
+        lg.draw(
+            self.anim.spriteSheet,
+            self.anim.quads[self.spriteNum],
+            pos.x,
+            pos.y,
+            0,
+            -PIXEL_TO_GAME_SCALE,
+            PIXEL_TO_GAME_SCALE
+        )
     else
-        lg.draw(self.anim.spriteSheet, self.anim.quads[self.spriteNum], pos.x, pos.y, 0, 5, 5)
+        lg.draw(
+            self.anim.spriteSheet,
+            self.anim.quads[self.spriteNum],
+            pos.x,
+            pos.y,
+            0,
+            PIXEL_TO_GAME_SCALE,
+            PIXEL_TO_GAME_SCALE
+        )
     end
 end
 
@@ -79,29 +95,29 @@ function BasePlayer:drawUI()
     end
 
     -- Draw mana bar
-    lg.setColor(colors.blue)
+    lg.setColor(COLORS.BLUE)
     lg.rectangle("fill", manaX, 75, manaSize, 30)
 
     -- Draw health bar with color based on health level
     if self.health <= 10 then
-        lg.setColor(colors.red)
+        lg.setColor(COLORS.RED)
         lg.rectangle("fill", healthX, 25, healthSize, 30)
-        lg.setColor(colors.white)
+        lg.setColor(COLORS.WHITE)
     elseif self.health <= 20 then
-        lg.setColor(colors.yellow)
+        lg.setColor(COLORS.YELLOW)
         lg.rectangle("fill", healthX, 25, healthSize, 30)
-        lg.setColor(colors.black)
+        lg.setColor(COLORS.BLACK)
     else
-        lg.setColor(colors.green)
+        lg.setColor(COLORS.GREEN)
         lg.rectangle("fill", healthX, 25, healthSize, 30)
-        lg.setColor(colors.white)
+        lg.setColor(COLORS.WHITE)
     end
 
     -- Draw health and mana text
     lg.setFont(fontL)
-    lg.printf(math.floor(self.health + 0.5), pos.textOffsetX, 15, 800, pos.textAlign)
-    lg.setColor(colors.white)
-    lg.printf(math.floor(self.mana), pos.textOffsetX, 65, 800, pos.textAlign)
+    lg.printf(math.floor(self.health + 0.5), pos.textOffsetX, 15, GAME_WIDTH, pos.textAlign)
+    lg.setColor(COLORS.WHITE)
+    lg.printf(math.floor(self.mana), pos.textOffsetX, 65, GAME_WIDTH, pos.textAlign)
 
     -- Draw damage numbers
     self:drawDamageNumbers()
@@ -110,9 +126,9 @@ end
 function BasePlayer:drawDamageNumbers()
     if self.damageDisplay.isActive and gameTime < self.damageDisplay.endTime and self.damageDisplay.amount ~= 0 then
         if self.damageDisplay.amount > 0 then
-            lg.setColor(colors.red)
+            lg.setColor(COLORS.RED)
         else
-            lg.setColor(colors.green)
+            lg.setColor(COLORS.GREEN)
         end
 
         local absAmount = math.abs(self.damageDisplay.amount)
@@ -167,9 +183,9 @@ function BasePlayer:castCard(cardIndex)
     if card.loc == "self" then
         x = PLAYER_POSITIONS[self.num].animX
     elseif card.loc == "proj" then
-    x = PLAYER_POSITIONS[self:other().num].animX
+        x = PLAYER_POSITIONS[self:other().num].animX
     elseif card.loc == "other" then
-    x = PLAYER_POSITIONS[self:other().num].animX
+        x = PLAYER_POSITIONS[self:other().num].animX
     end
     card:playOnce(x, 300)
 

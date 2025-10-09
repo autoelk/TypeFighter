@@ -28,9 +28,9 @@ end
 
 function GameOverState:draw()
     lg.setFont(fontXL)
-    lg.printf(self.gameOverMessage, 0, 200, 800, "center")
+    lg.printf(self.gameOverMessage, 0, 200, GAME_WIDTH, "center")
     lg.setFont(fontM)
-    lg.printf("[r]estart game\n[q]uit", 0, 300, 800, "center")
+    lg.printf("[r]estart game\n[q]uit", 0, 300, GAME_WIDTH, "center")
 
     for i = 1, #cards do
         if cards[i].t > 0 then
@@ -41,13 +41,12 @@ function GameOverState:draw()
 
             if card.deck == 2 then
                 animSx = animSx * -1
-                animX = animX + 160
+                animX = animX + SCALED_SPRITE_SIZE
             end
 
             card:animate(animX, card.y, card.rotation, animSx, animSy, card.offsetX, card.offsetY)
         end
     end
-
 end
 
 function GameOverState:keypressed(key)
@@ -61,4 +60,3 @@ function GameOverState:keypressed(key)
         input = ""
     end
 end
-

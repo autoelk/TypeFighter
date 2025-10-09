@@ -17,12 +17,12 @@ function BaseCard:new(cardData)
         anim = cardData.anim,
 
         -- Animation configuration (fixed 12fps system)
-        playMode = cardData.playMode or "loop", -- loop | once | loop_for
-        playTime = cardData.playTime, -- only used if playMode == loop_for (seconds)
-        offsetX = cardData.offsetX or 0, -- X offset for animation positioning
-        offsetY = cardData.offsetY or 0, -- Y offset for animation positioning
-        rotation = cardData.rotation or 0, -- Default rotation for the card
-        scale = cardData.scale or 5 -- Default scale for the card
+        playMode = cardData.playMode or "loop",   -- loop | once | loop_for
+        playTime = cardData.playTime,             -- only used if playMode == loop_for (seconds)
+        offsetX = cardData.offsetX or 0,          -- X offset for animation positioning
+        offsetY = cardData.offsetY or 0,          -- Y offset for animation positioning
+        rotation = cardData.rotation or 0,        -- Default rotation for the card
+        scale = cardData.scale or PIXEL_TO_GAME_SCALE -- Default scale for the card
     }
     setmetatable(card, self)
     return card
@@ -30,13 +30,13 @@ end
 
 function BaseCard:color()
     if self.elem == "fire" then
-        return colors.red
+        return COLORS.RED
     elseif self.elem == "earth" then
-        return colors.green
+        return COLORS.GREEN
     elseif self.elem == "water" then
-        return colors.blue
+        return COLORS.BLUE
     else
-        return colors.grey
+        return COLORS.GREY
     end
 end
 
@@ -46,12 +46,12 @@ function BaseCard:displayMini(x, y)
     y = y or self.y
     fontXS:setLineHeight(0.6)
     lg.setColor(self:color())
-    lg.rectangle("fill", x, y, 130, 60)
+    lg.rectangle("fill", x, y, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
     -- print text
-    lg.setColor(colors.black)
+    lg.setColor(COLORS.BLACK)
     lg.setFont(fontS)
-    lg.printf(self.name, x + 5, y, 130, "left")
-    lg.printf(self.mana, x - 5, y, 130, "right")
+    lg.printf(self.name, x + 5, y, MINI_CARD_WIDTH, "left")
+    lg.printf(self.mana, x - 5, y, MINI_CARD_WIDTH, "right")
     lg.setFont(fontXS)
     lg.printf(self:getDescription(), x + 5, y + 15, 110, "left")
 end
@@ -59,22 +59,22 @@ end
 -- Display large version of card during card selection
 function BaseCard:display()
     if self.deck == 2 then
-    lg.setColor(self:color())
-        lg.rectangle("fill", self.x, self.y, 180, 252)
-        lg.setColor(colors.black)
-        lg.rectangle("fill", self.x + 10, self.y + 25, 160, 160)
+        lg.setColor(self:color())
+        lg.rectangle("fill", self.x, self.y, LARGE_CARD_WIDTH, LARGE_CARD_HEIGHT)
+        lg.setColor(COLORS.BLACK)
+        lg.rectangle("fill", self.x + 10, self.y + 25, SCALED_SPRITE_SIZE, SCALED_SPRITE_SIZE)
     else
-    lg.setColor(self:color())
-        lg.rectangle("fill", self.x, self.y, 180, 252)
-        lg.setColor(colors.white)
-        lg.rectangle("fill", self.x + 10, self.y + 25, 160, 160)
+        lg.setColor(self:color())
+        lg.rectangle("fill", self.x, self.y, LARGE_CARD_WIDTH, LARGE_CARD_HEIGHT)
+        lg.setColor(COLORS.WHITE)
+        lg.rectangle("fill", self.x + 10, self.y + 25, SCALED_SPRITE_SIZE, SCALED_SPRITE_SIZE)
     end
 
     -- print text
     lg.setFont(fontS)
-    lg.printf(self.name, self.x + 10, self.y, 180, "left")
-    lg.printf("mana " .. self.mana, self.x - 10, self.y, 180, "right")
-    lg.printf(self:getDescription(), self.x + 10, self.y + 190, 160, "left")
+    lg.printf(self.name, self.x + 10, self.y, LARGE_CARD_WIDTH, "left")
+    lg.printf("mana " .. self.mana, self.x - 10, self.y, LARGE_CARD_WIDTH, "right")
+    lg.printf(self:getDescription(), self.x + 10, self.y + 190, SCALED_SPRITE_SIZE, "left")
     self:animate(self.x + 10, self.y + 25)
 end
 
@@ -114,7 +114,7 @@ function BaseCard:animate(x, y, r, sx, sy, offsetX, offsetY)
     sx = sx or self.scale
     sy = sy or self.scale
 
-    lg.setColor(colors.white)
+    lg.setColor(COLORS.WHITE)
 
     local spriteNum = self.anim.currentFrame or 1
     if spriteNum < 1 then
