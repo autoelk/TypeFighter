@@ -16,7 +16,7 @@ end
 function CardBrowseState:enter()
     message2 = "[Q] to go back"
     for i = 1, #cards do
-        cards[i]:Loop()
+        cards[i]:loop()
     end
 end
 
@@ -27,13 +27,13 @@ function CardBrowseState:update(dt)
         if colNum == 0 then
             colNum = 4
         end
-        cards[i]:Move(196 * (colNum - 1) + 16, 268 * (rowNum - 1) + self.posy)
+        cards[i]:move(196 * (colNum - 1) + 16, 268 * (rowNum - 1) + self.posy)
     end
 end
 
 function CardBrowseState:draw()
     for i = 1, #cards do
-        cards[i]:Display()
+        cards[i]:display()
     end
 end
 

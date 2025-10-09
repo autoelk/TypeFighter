@@ -18,7 +18,7 @@ function CardSelectState:enter()
     -- Reset decks
     for i = 1, #cards do
         cards[i].deck = 0
-        cards[i]:Loop()
+        cards[i]:loop()
     end
     -- Reset player picks for card selection
     local humanPlayer = gameManager:getHumanPlayer()
@@ -41,13 +41,13 @@ function CardSelectState:update(dt)
         if cards[i].deck == 1 then
             cardsGone = cardsGone + 1
             table.insert(deck, i)
-            cards[i]:Move(595, 25 * #deck)
+            cards[i]:move(595, 25 * #deck)
         else
             local colNum, rowNum = (i - cardsGone) % 3, math.ceil((i - cardsGone) / 3)
             if colNum == 0 then
                 colNum = 3
             end
-            cards[i]:Move(190 * (colNum - 1) + 10, 262 * (rowNum - 1) + self.posy)
+            cards[i]:move(190 * (colNum - 1) + 10, 262 * (rowNum - 1) + self.posy)
         end
     end
 
@@ -62,13 +62,13 @@ end
 function CardSelectState:draw()
     for i = 1, #cards do
         if cards[i].deck ~= 1 then
-            cards[i]:Display()
+            cards[i]:display()
         end
     end
     -- Draw cards in deck on top
     for i = 1, #cards do
         if cards[i].deck == 1 then
-            cards[i]:Display()
+            cards[i]:display()
         end
     end
 end

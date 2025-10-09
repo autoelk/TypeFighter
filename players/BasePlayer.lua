@@ -49,7 +49,7 @@ function BasePlayer:new(playerNumber)
     return player
 end
 
-function BasePlayer:Draw()
+function BasePlayer:draw()
     if self.isAlive then
         self.spriteNum = 1
     else
@@ -64,7 +64,7 @@ function BasePlayer:Draw()
     end
 end
 
-function BasePlayer:DrawUI()
+function BasePlayer:drawUI()
     local pos = PLAYER_POSITIONS[self.num]
     local healthSize = self.health * 2
     local manaSize = self.mana * 2
@@ -139,15 +139,15 @@ function BasePlayer:drawDamageNumbers()
     end
 end
 
-function BasePlayer:Other()
+function BasePlayer:other()
     return gameManager:getOpponent(self)
 end
 
-function BasePlayer:Cast(cardIndex)
+function BasePlayer:castCard(cardIndex)
     local card = cards[cardIndex]
 
     -- Check if we are able to cast the card
-    local canCast, errorMessage = card:canCast(self, self:Other())
+    local canCast, errorMessage = card:canCast(self, self:other())
     if not canCast then
         if not self.suppressMessages then
             message = errorMessage
@@ -167,11 +167,11 @@ function BasePlayer:Cast(cardIndex)
     if card.loc == "self" then
         x = PLAYER_POSITIONS[self.num].animX
     elseif card.loc == "proj" then
-        x = PLAYER_POSITIONS[self:Other().num].animX
+    x = PLAYER_POSITIONS[self:other().num].animX
     elseif card.loc == "other" then
-        x = PLAYER_POSITIONS[self:Other().num].animX
+    x = PLAYER_POSITIONS[self:other().num].animX
     end
-    card:PlayOnce(x, 300)
+    card:playOnce(x, 300)
 
     -- Deduct mana cost
     self.mana = self.mana - card.mana
@@ -180,11 +180,11 @@ function BasePlayer:Cast(cardIndex)
     end
 
     -- Use the card's cast method
-    card:cast(self, self:Other())
+    card:cast(self, self:other())
     return "success"
 end
 
-function BasePlayer:Damage(amtDamage)
+function BasePlayer:damage(amtDamage)
     -- Update damage display state
     self.damageDisplay.amount = amtDamage
     self.damageDisplay.endTime = gameTime + 1

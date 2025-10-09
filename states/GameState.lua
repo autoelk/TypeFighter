@@ -37,7 +37,7 @@ function GameState:enter()
     message2 = "[esc] pause [q]uit to menu"
 
     for i = 1, #cards do
-        cards[i]:ResetAnimation()
+        cards[i]:resetAnimation()
     end
 end
 
@@ -72,7 +72,6 @@ function GameState:update(dt)
     -- Player2 AI update
     player2:update(dt)
 
-    -- Check for game over using isAlive flag
     if not player1.isAlive or not player2.isAlive then
         self.stateManager:changeState("gameOver")
     end
@@ -81,7 +80,7 @@ end
 function GameState:draw()
     -- Display deck
     for i = 1, #deck do
-        cards[deck[i]]:DisplayMini((155 * (i - 1)) + 25, 500)
+        cards[deck[i]]:displayMini((155 * (i - 1)) + 25, 500)
     end
 
     -- Animations for game
@@ -98,14 +97,14 @@ function GameState:draw()
                 animX = animX + 160
             end
 
-            card:Animate(animX, card.y, card.rotation, animSx, animSy, card.offsetX, card.offsetY)
+            card:animate(animX, card.y, card.rotation, animSx, animSy, card.offsetX, card.offsetY)
         end
     end
 
     local player1 = gameManager:getPlayer(1)
     local player2 = gameManager:getPlayer(2)
-    player1:DrawUI()
-    player2:DrawUI()
+    player1:drawUI()
+    player2:drawUI()
 end
 
 function GameState:keypressed(key)
@@ -122,17 +121,11 @@ function GameState:keypressed(key)
             elseif result == "unknown_card" then
                 message = "type card names to cast them"
             elseif result == "insufficient_mana" then
-                -- Message already set by BasePlayer:Cast()
-                -- Don't override it
             elseif result == "not_your_card" then
                 message = "that card is not in your deck"
             elseif result == "cannot_cast" then
-                -- Message already set by BasePlayer:Cast() for specific condition
-                -- Don't override it
-                -- If result is "success", don't change the message
             end
         end
         input = ""
     end
 end
-

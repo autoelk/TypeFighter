@@ -25,6 +25,6 @@ end
 
 function RageCard:cast(caster, target)
     local damage = self.baseDamage - caster.health
-    target:Damage(damage)
+    target:damage(damage)
     return true
 end

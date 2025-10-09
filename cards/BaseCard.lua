@@ -28,7 +28,7 @@ function BaseCard:new(cardData)
     return card
 end
 
-function BaseCard:Color()
+function BaseCard:color()
     if self.elem == "fire" then
         return colors.red
     elseif self.elem == "earth" then
@@ -41,11 +41,11 @@ function BaseCard:Color()
 end
 
 -- Display mini version of card during gameplay
-function BaseCard:DisplayMini(x, y)
+function BaseCard:displayMini(x, y)
     x = x or self.x
     y = y or self.y
     fontXS:setLineHeight(0.6)
-    lg.setColor(self:Color())
+    lg.setColor(self:color())
     lg.rectangle("fill", x, y, 130, 60)
     -- print text
     lg.setColor(colors.black)
@@ -57,14 +57,14 @@ function BaseCard:DisplayMini(x, y)
 end
 
 -- Display large version of card during card selection
-function BaseCard:Display()
+function BaseCard:display()
     if self.deck == 2 then
-        lg.setColor(self:Color())
+    lg.setColor(self:color())
         lg.rectangle("fill", self.x, self.y, 180, 252)
         lg.setColor(colors.black)
         lg.rectangle("fill", self.x + 10, self.y + 25, 160, 160)
     else
-        lg.setColor(self:Color())
+    lg.setColor(self:color())
         lg.rectangle("fill", self.x, self.y, 180, 252)
         lg.setColor(colors.white)
         lg.rectangle("fill", self.x + 10, self.y + 25, 160, 160)
@@ -75,10 +75,10 @@ function BaseCard:Display()
     lg.printf(self.name, self.x + 10, self.y, 180, "left")
     lg.printf("mana " .. self.mana, self.x - 10, self.y, 180, "right")
     lg.printf(self:getDescription(), self.x + 10, self.y + 190, 160, "left")
-    self:Animate(self.x + 10, self.y + 25)
+    self:animate(self.x + 10, self.y + 25)
 end
 
-function BaseCard:StartAnimate(x, y, playMode, playTime)
+function BaseCard:startAnimate(x, y, playMode, playTime)
     -- Reset animation timing
     self.anim.currentFrame = 1
     self.anim.accumulator = 0
@@ -99,7 +99,7 @@ function BaseCard:StartAnimate(x, y, playMode, playTime)
     end
 end
 
-function BaseCard:Animate(x, y, r, sx, sy, offsetX, offsetY)
+function BaseCard:animate(x, y, r, sx, sy, offsetX, offsetY)
     offsetX = offsetX or 0
     offsetY = offsetY or 0
 
@@ -144,7 +144,7 @@ function BaseCard:update(dt)
             anim.currentFrame = (anim.currentFrame or 1) + 1
             if anim.currentFrame > #anim.quads then
                 if self.playMode == "once" then
-                    self:ResetAnimation()
+                    self:resetAnimation()
                     anim.currentFrame = #anim.quads
                     break
                 else
@@ -153,24 +153,24 @@ function BaseCard:update(dt)
             end
         end
         if self.playMode == "loop_for" and anim.elapsed >= (self.playTime or 0) then
-            self:ResetAnimation()
+            self:resetAnimation()
         end
     end
 end
 
-function BaseCard:PlayOnce(x, y)
-    self:StartAnimate(x, y, "once")
+function BaseCard:playOnce(x, y)
+    self:startAnimate(x, y, "once")
 end
 
-function BaseCard:Loop(x, y)
-    self:StartAnimate(x, y, "loop")
+function BaseCard:loop(x, y)
+    self:startAnimate(x, y, "loop")
 end
 
-function BaseCard:LoopFor(x, y, seconds)
-    self:StartAnimate(x, y, "loop_for", seconds)
+function BaseCard:loopFor(x, y, seconds)
+    self:startAnimate(x, y, "loop_for", seconds)
 end
 
-function BaseCard:ResetAnimation()
+function BaseCard:resetAnimation()
     self.anim.currentFrame = 1
     self.anim.accumulator = 0
     self.anim.elapsed = 0
@@ -178,7 +178,7 @@ function BaseCard:ResetAnimation()
 end
 
 -- Calculate the location the card should be at
-function BaseCard:Move(dx, dy)
+function BaseCard:move(dx, dy)
     if self.x ~= dx or self.y ~= dy then
         self.x = self.x + ((dx - self.x) / 20)
         self.y = self.y + ((dy - self.y) / 20)

@@ -108,9 +108,9 @@ function love.draw()
     local player1 = gameManager:getPlayer(1)
     local player2 = gameManager:getPlayer(2)
     lg.setColor(colors.white)
-    player1:Draw()
+    player1:draw()
     lg.setColor(colors.red)
-    player2:Draw()
+    player2:draw()
     lg.setColor(colors.white)
 
     -- Draw current state

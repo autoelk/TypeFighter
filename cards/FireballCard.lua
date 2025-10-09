@@ -24,6 +24,6 @@ end
 
 function FireballCard:cast(caster, target)
     -- Apply damage to target
-    target:Damage(self.damage)
+    target:damage(self.damage)
     return true
 end

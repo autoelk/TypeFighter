@@ -39,7 +39,7 @@ end
 
 function SliceCard:cast(caster, target)
     if caster.health > self.healthThreshold then
-        target:Damage(self.damage)
+        target:damage(self.damage)
         return true
     end
     return false

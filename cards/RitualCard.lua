@@ -24,7 +24,7 @@ function RitualCard:getDescription()
 end
 
 function RitualCard:cast(caster, target)
-    caster:Damage(self.healthCost) -- Take damage
+    caster:damage(self.healthCost) -- Take damage
     caster.mana = caster.mana + self.manaGain -- Gain mana
     return true
 end

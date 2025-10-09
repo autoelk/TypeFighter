@@ -23,6 +23,6 @@ function TorrentCard:getDescription()
 end
 
 function TorrentCard:cast(caster, target)
-    target:Damage(self.damage)
+    target:damage(self.damage)
     return true
 end

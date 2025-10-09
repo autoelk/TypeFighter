@@ -24,6 +24,6 @@ end
 
 function HealCard:cast(caster, target)
     -- Heal the caster (negative damage)
-    caster:Damage(-self.healAmount)
+    caster:damage(-self.healAmount)
     return true
 end

@@ -31,7 +31,7 @@ function PoisonCard:cast(caster, target)
         stackMode = "stack",
         maxStacks = 5,
         onTick = function(player, eff)
-            player:Damage(eff.stacks * self.damagePerTick)
+            player:damage(eff.stacks * self.damagePerTick)
         end
     })
     return true

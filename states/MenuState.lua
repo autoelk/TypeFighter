@@ -21,8 +21,8 @@ function MenuState:enter()
         cards[i].deck = 0
     end
 
-    cards[cardFactory:findCard("torrent")]:Loop()
-    cards[cardFactory:findCard("fireball")]:Loop()
+    cards[cardFactory:findCard("torrent")]:loop()
+    cards[cardFactory:findCard("fireball")]:loop()
 end
 
 function MenuState:draw()
@@ -32,8 +32,8 @@ function MenuState:draw()
     lg.printf("[p]lay game\n[b]rowse cards\n[q]uit", 0, 300, 800, "center")
 
     -- Animation
-    cards[cardFactory:findCard("torrent")]:Animate(50, 180)
-    cards[cardFactory:findCard("fireball")]:Animate(750, 345, 180)
+    cards[cardFactory:findCard("torrent")]:animate(50, 180)
+    cards[cardFactory:findCard("fireball")]:animate(750, 345, 180)
 end
 
 function MenuState:keypressed(key)

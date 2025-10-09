@@ -23,6 +23,6 @@ function BoltCard:getDescription()
 end
 
 function BoltCard:cast(caster, target)
-    target:Damage(self.damage)
+    target:damage(self.damage)
     return true
 end

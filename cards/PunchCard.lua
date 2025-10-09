@@ -25,6 +25,6 @@ function PunchCard:getDescription()
 end
 
 function PunchCard:cast(caster, target)
-    target:Damage(self.damage)
+    target:damage(self.damage)
     return true
 end

@@ -44,7 +44,7 @@ function GameOverState:draw()
                 animX = animX + 160
             end
 
-            card:Animate(animX, card.y, card.rotation, animSx, animSy, card.offsetX, card.offsetY)
+            card:animate(animX, card.y, card.rotation, animSx, animSy, card.offsetX, card.offsetY)
         end
     end
 

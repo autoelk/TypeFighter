@@ -63,7 +63,7 @@ function AIPlayer:attemptCast()
     if castChance < self.castChance then
         -- Select a card to cast (currently random, could be improved with strategy)
         local cardIndex = availableCards[math.random(1, #availableCards)]
-        return self:Cast(cardIndex)
+        return self:castCard(cardIndex)
     end
 
     return false

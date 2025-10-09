@@ -23,6 +23,6 @@ function TyphoonCard:getDescription()
 end
 
 function TyphoonCard:cast(caster, target)
-    target:Damage(self.damage)
+    target:damage(self.damage)
     return true
 end
