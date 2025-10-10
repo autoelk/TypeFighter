@@ -62,19 +62,19 @@ function BaseCard:display()
         lg.setColor(self:color())
         lg.rectangle("fill", self.x, self.y, LARGE_CARD_WIDTH, LARGE_CARD_HEIGHT)
         lg.setColor(COLORS.BLACK)
-        lg.rectangle("fill", self.x + 10, self.y + 25, SCALED_SPRITE_SIZE, SCALED_SPRITE_SIZE)
+        lg.rectangle("fill", self.x + 10, self.y + 25, SPRITE_SIZE, SPRITE_SIZE)
     else
         lg.setColor(self:color())
         lg.rectangle("fill", self.x, self.y, LARGE_CARD_WIDTH, LARGE_CARD_HEIGHT)
         lg.setColor(COLORS.WHITE)
-        lg.rectangle("fill", self.x + 10, self.y + 25, SCALED_SPRITE_SIZE, SCALED_SPRITE_SIZE)
+        lg.rectangle("fill", self.x + 10, self.y + 25, SPRITE_SIZE, SPRITE_SIZE)
     end
 
     -- print text
     lg.setFont(fontS)
     lg.printf(self.name, self.x + 10, self.y, LARGE_CARD_WIDTH, "left")
     lg.printf("mana " .. self.mana, self.x - 10, self.y, LARGE_CARD_WIDTH, "right")
-    lg.printf(self:getDescription(), self.x + 10, self.y + 190, SCALED_SPRITE_SIZE, "left")
+    lg.printf(self:getDescription(), self.x + 10, self.y + 190, SPRITE_SIZE, "left")
     self:animate(self.x + 10, self.y + 25)
 end
 
@@ -198,7 +198,7 @@ end
 -- Check if we are able to cast the card, returns failure reason if not
 function BaseCard:canCast(caster, target)
     -- Check if caster owns this card
-    if self.deck ~= caster.num then
+    if self.deck ~= caster.id then
         return false, "that card is not in your deck"
     end
 

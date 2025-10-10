@@ -1,32 +1,9 @@
 BasePlayer = {}
 BasePlayer.__index = BasePlayer
 
--- Player positioning constants
-local PLAYER_POSITIONS = {
-    [1] = {
-        x = 100,
-        y = 330,
-        uiHealthX = 25,
-        uiManaX = 25,
-        textAlign = "left",
-        textOffsetX = 30,
-        animX = 100
-    },
-    [2] = {
-        x = 700,
-        y = 330,
-        uiHealthX = 775,
-        uiManaX = 775,
-        textAlign = "right",
-        textOffsetX = -25,
-        mirror = true,
-        animX = 540
-    }
-}
-
-function BasePlayer:new(playerNumber)
+function BasePlayer:new(id)
     local player = {
-        num = playerNumber,
+        id = id,
         picks = MAX_DECK_SIZE,
         health = 50,
         isAlive = true,
@@ -35,7 +12,7 @@ function BasePlayer:new(playerNumber)
         manaRegen = 1,
         spriteNum = 1,
         deck = {},
-        anim = resourceManager:newAnimation(resourceManager:getImage("wizard"), 32, 32, 2),
+        anim = resourceManager:getAnimation("wizard"),
         deathAnimStarted = false,
         deathAnimFinished = false,
 
@@ -50,6 +27,26 @@ function BasePlayer:new(playerNumber)
     return player
 end
 
+-- Reset player state for a new game, does not reset deck
+function BasePlayer:reset()
+    self.health = 50
+    self.isAlive = true
+    self.healthRegen = 0
+    self.mana = 0
+    self.manaRegen = 1
+    self.spriteNum = 1
+    self.anim.currentFrame = 1
+    self.anim.accumulator = 0
+    self.deathAnimStarted = false
+    self.deathAnimFinished = false
+    self.damageDisplay = {
+        amount = 0,
+        endTime = 0,
+        isActive = false
+    }
+    self.effects = {}
+end
+
 function BasePlayer:draw()
     if self.isAlive then
         self.spriteNum = 1
@@ -57,13 +54,12 @@ function BasePlayer:draw()
         self.spriteNum = self.anim.currentFrame or #self.anim.quads
     end
 
-    local pos = PLAYER_POSITIONS[self.num]
-    if pos.mirror then
+    if self.mirror then
         lg.draw(
             self.anim.spriteSheet,
             self.anim.quads[self.spriteNum],
-            pos.x,
-            pos.y,
+            self.x,
+            self.y,
             0,
             -PIXEL_TO_GAME_SCALE,
             PIXEL_TO_GAME_SCALE
@@ -72,8 +68,8 @@ function BasePlayer:draw()
         lg.draw(
             self.anim.spriteSheet,
             self.anim.quads[self.spriteNum],
-            pos.x,
-            pos.y,
+            self.x,
+            self.y,
             0,
             PIXEL_TO_GAME_SCALE,
             PIXEL_TO_GAME_SCALE
@@ -82,15 +78,13 @@ function BasePlayer:draw()
 end
 
 function BasePlayer:drawUI()
-    local pos = PLAYER_POSITIONS[self.num]
-    local healthSize = self.health * 2
-    local manaSize = self.mana * 2
+    local barScale = 2
+    local healthSize = self.health * barScale
+    local manaSize = self.mana * barScale
 
-    -- Player 1 is left aligned
-    -- Player 2 is right aligned
-    local healthX = pos.uiHealthX
-    local manaX = pos.uiManaX
-    if self.num == 2 then
+    local healthX = self.uiX
+    local manaX = self.uiX
+    if self.mirror then
         healthX = healthX - healthSize
         manaX = manaX - manaSize
     end
@@ -115,10 +109,14 @@ function BasePlayer:drawUI()
     end
 
     -- Draw health and mana text
+    local textAlign = "left"
+    if self.mirror then
+        textAlign = "right"
+    end
     lg.setFont(fontL)
-    lg.printf(math.floor(self.health + 0.5), pos.textOffsetX, 15, GAME_WIDTH, pos.textAlign)
+    lg.printf(math.ceil(self.health), self.textOffsetX, 15, GAME_WIDTH, textAlign)
     lg.setColor(COLORS.WHITE)
-    lg.printf(math.floor(self.mana), pos.textOffsetX, 65, GAME_WIDTH, pos.textAlign)
+    lg.printf(math.floor(self.mana), self.textOffsetX, 65, GAME_WIDTH, textAlign)
 
     -- Draw damage numbers
     self:drawDamageNumbers()
@@ -141,23 +139,13 @@ function BasePlayer:drawDamageNumbers()
             lg.setFont(fontM)
         end
 
-        local pos = PLAYER_POSITIONS[self.num]
-        local damageX, damageWidth
-        if self.num == 1 then
-            damageX = 70
-            damageWidth = 200
-        else
-            damageX = 500
-            damageWidth = 200
+        local damageX = self.x
+        if self.mirror then
+            damageX = damageX - SPRITE_SIZE
         end
-        local damageY = 230 - (gameTime - self.damageDisplay.endTime) * 25
-
-        lg.printf(absAmount, damageX, damageY, damageWidth, "center")
+        local damageY = self.animY - 40 - (gameTime - self.damageDisplay.endTime) * 25
+        lg.printf(absAmount, damageX, damageY, SPRITE_SIZE, "center")
     end
-end
-
-function BasePlayer:other()
-    return gameManager:getOpponent(self)
 end
 
 function BasePlayer:castCard(cardIndex)
@@ -182,18 +170,18 @@ function BasePlayer:castCard(cardIndex)
     -- Calculate animation position
     local x
     if card.loc == "self" then
-        x = PLAYER_POSITIONS[self.num].animX
+        x = self.animX
     elseif card.loc == "proj" then
-        x = PLAYER_POSITIONS[self:other().num].animX
+        x = self:other().animX
     elseif card.loc == "other" then
-        x = PLAYER_POSITIONS[self:other().num].animX
+        x = self:other().animX
     end
-    card:playOnce(x, 300)
+    card:playOnce(x, self.animY)
 
     -- Deduct mana cost
     self.mana = self.mana - card.mana
     if not self.suppressMessages then
-        message2 = "player " .. self.num .. " cast " .. card.name
+        message2 = "player " .. self.id .. " cast " .. card.name
     end
 
     -- Use the card's cast method
@@ -221,9 +209,9 @@ function BasePlayer:update(dt)
         self.deathAnimStarted = false
         self.deathAnimFinished = false
     elseif not self.deathAnimStarted then
-        self.deathAnimStarted = true
         anim.currentFrame = 1
         anim.accumulator = 0
+        self.deathAnimStarted = true
     elseif self.deathAnimFinished then
         anim.currentFrame = #anim.quads
         return
@@ -244,7 +232,7 @@ end
 
 -- Add a card to the player's deck
 function BasePlayer:addCard(cardIdx)
-    cards[cardIdx].deck = self.num
+    cards[cardIdx].deck = self.id
     table.insert(self.deck, cardIdx)
     self.picks = self.picks - 1
 end
@@ -335,4 +323,8 @@ end
 
 function BasePlayer:canAfford(manaCost)
     return self.mana >= manaCost
+end
+
+function BasePlayer:other()
+    error("BasePlayer:other() must be implemented by subclass")
 end

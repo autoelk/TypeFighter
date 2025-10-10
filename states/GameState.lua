@@ -14,24 +14,8 @@ end
 function GameState:enter()
     gameManager.currentState = "GameState"
     -- Initialize players for gameplay
-    local player1 = gameManager:getPlayer(1)
-    local player2 = gameManager:getPlayer(2)
-    player1.health = 50
-    player1.healthRegen = 0
-    player1.mana = 0
-    player1.manaRegen = 1
-    player1.spriteNum = 1
-    player1.anim.currentFrame = 1
-    player1.anim.accumulator = 0
-    player1.isAlive = true
-    player2.health = 50
-    player2.healthRegen = 0
-    player2.mana = 0
-    player2.manaRegen = 1
-    player2.spriteNum = 1
-    player2.anim.currentFrame = 1
-    player2.anim.accumulator = 0
-    player2.isAlive = true
+    gameManager:getHumanPlayer():reset()
+    gameManager:getAIPlayer():reset()
 
     -- Set game interface messages
     message = "type card names to cast them"
@@ -43,37 +27,42 @@ function GameState:enter()
 end
 
 function GameState:update(dt)
+    local humanPlayer = gameManager:getHumanPlayer()
+    local aiPlayer = gameManager:getAIPlayer()
+
     -- Move projectile animations
     for i = 1, #cards do
+        local animDuration = cards[i].anim.frameDuration * #cards[i].anim.quads
+        local animDist = aiPlayer.animX - humanPlayer.animX - SPRITE_SIZE
+        local animSpeed = animDist / animDuration
+
         if cards[i].loc == "proj" then
-            if cards[i].deck == 1 and cards[i].t > 0 then
-                cards[i].x = 540 - 280 * cards[i].t
-                cards[i].y = 300
-            elseif cards[i].deck == 2 and cards[i].t > 0 then
-                cards[i].x = 100 + 280 * cards[i].t
-                cards[i].y = 300
+            if cards[i].deck == humanPlayer.id and cards[i].t > 0 then
+                cards[i].x = aiPlayer.animX - animSpeed * cards[i].t
+                cards[i].y = aiPlayer.animY
+            elseif cards[i].deck == aiPlayer.id and cards[i].t > 0 then
+                cards[i].x = humanPlayer.animX + animSpeed * cards[i].t
+                cards[i].y = humanPlayer.animY
             end
         end
     end
 
     -- Health and mana regen
-    local player1 = gameManager:getPlayer(1)
-    local player2 = gameManager:getPlayer(2)
-    player1.mana = player1.mana + dt * player1.manaRegen
-    if player1.mana < 0 then
-        player1.mana = 0
+    humanPlayer.mana = humanPlayer.mana + dt * humanPlayer.manaRegen
+    if humanPlayer.mana < 0 then
+        humanPlayer.mana = 0
     end
-    player1.health = player1.health + dt * player1.healthRegen
-    player2.mana = player2.mana + dt * player2.manaRegen
-    if player2.mana < 0 then
-        player2.mana = 0
+    humanPlayer.health = humanPlayer.health + dt * humanPlayer.healthRegen
+    aiPlayer.mana = aiPlayer.mana + dt * aiPlayer.manaRegen
+    if aiPlayer.mana < 0 then
+        aiPlayer.mana = 0
     end
-    player2.health = player2.health + dt * player2.healthRegen
+    aiPlayer.health = aiPlayer.health + dt * aiPlayer.healthRegen
 
     -- Player2 AI update
-    player2:update(dt)
+    aiPlayer:update(dt)
 
-    if not player1.isAlive or not player2.isAlive then
+    if not humanPlayer.isAlive or not aiPlayer.isAlive then
         self.stateManager:changeState("gameOver")
     end
 end
@@ -81,9 +70,11 @@ end
 function GameState:draw()
     -- Display human player's deck
     local deck = gameManager:getHumanPlayer().deck
+    local margin = 25
+    local deckWidth = (MINI_CARD_WIDTH + margin) * #deck + margin
+    local startX = (GAME_WIDTH - deckWidth) / 2 + margin
     for i = 1, #deck do
-        local margin = 25
-        local x = margin + (MINI_CARD_WIDTH + margin) * (i - 1)
+        local x = startX + (MINI_CARD_WIDTH + margin) * (i - 1)
         local y = GAME_HEIGHT - MINI_CARD_HEIGHT - 40
         cards[deck[i]]:displayMini(x, y)
     end
@@ -99,17 +90,15 @@ function GameState:draw()
             -- Handle deck-specific positioning (mirroring for player 2)
             if card.deck == 2 then
                 animSx = animSx * -1
-                animX = animX + SCALED_SPRITE_SIZE
+                animX = animX + SPRITE_SIZE
             end
 
             card:animate(animX, card.y, card.rotation, animSx, animSy, card.offsetX, card.offsetY)
         end
     end
 
-    local player1 = gameManager:getPlayer(1)
-    local player2 = gameManager:getPlayer(2)
-    player1:drawUI()
-    player2:drawUI()
+    gameManager:getHumanPlayer():drawUI()
+    gameManager:getAIPlayer():drawUI()
 end
 
 function GameState:keypressed(key)

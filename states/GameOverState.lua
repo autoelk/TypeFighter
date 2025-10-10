@@ -16,28 +16,35 @@ end
 function GameOverState:enter()
     gameManager.currentState = "GameOverState"
     message2 = "[r]estart [q]uit"
-    local player1 = gameManager:getPlayer(1)
-    local player2 = gameManager:getPlayer(2)
+    local humanPlayer = gameManager:getHumanPlayer()
+    local aiPlayer = gameManager:getAIPlayer()
     -- Decide game over message based on isAlive flags
-    if not player1.isAlive and not player2.isAlive then
+    if not humanPlayer.isAlive and not aiPlayer.isAlive then
         self.gameOverMessage = "tie"
-    elseif not player1.isAlive then
+    elseif not humanPlayer.isAlive then
         self.gameOverMessage = "player 2 wins"
-    elseif not player2.isAlive then
+    elseif not aiPlayer.isAlive then
         self.gameOverMessage = "player 1 wins"
     end
 end
 
 function GameOverState:update(dt)
+    local humanPlayer = gameManager:getHumanPlayer()
+    local aiPlayer = gameManager:getAIPlayer()
+
     -- Move projectile animations
     for i = 1, #cards do
+        local animDuration = cards[i].anim.frameDuration * #cards[i].anim.quads
+        local animDist = aiPlayer.animX - humanPlayer.animX - SPRITE_SIZE
+        local animSpeed = animDist / animDuration
+
         if cards[i].loc == "proj" then
-            if cards[i].deck == 1 and cards[i].t > 0 then
-                cards[i].x = 540 - 280 * cards[i].t
-                cards[i].y = 300
-            elseif cards[i].deck == 2 and cards[i].t > 0 then
-                cards[i].x = 100 + 280 * cards[i].t
-                cards[i].y = 300
+            if cards[i].deck == humanPlayer.id and cards[i].t > 0 then
+                cards[i].x = aiPlayer.animX - animSpeed * cards[i].t
+                cards[i].y = aiPlayer.animY
+            elseif cards[i].deck == aiPlayer.id and cards[i].t > 0 then
+                cards[i].x = humanPlayer.animX + animSpeed * cards[i].t
+                cards[i].y = humanPlayer.animY
             end
         end
     end
@@ -58,7 +65,7 @@ function GameOverState:draw()
 
             if card.deck == 2 then
                 animSx = animSx * -1
-                animX = animX + SCALED_SPRITE_SIZE
+                animX = animX + SPRITE_SIZE
             end
 
             card:animate(animX, card.y, card.rotation, animSx, animSy, card.offsetX, card.offsetY)

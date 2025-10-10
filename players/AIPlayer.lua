@@ -6,8 +6,15 @@ setmetatable(AIPlayer, {
 })
 AIPlayer.__index = AIPlayer
 
-function AIPlayer:new(playerNumber, difficulty)
-    local player = BasePlayer:new(playerNumber)
+function AIPlayer:new(id, difficulty)
+    local player = BasePlayer:new(id)
+    player.x = GAME_WIDTH - 250
+    player.y = 390
+    player.animX = player.x - SPRITE_SIZE
+    player.animY = player.y - 30
+    player.uiX = GAME_WIDTH - 25
+    player.textOffsetX = -25
+    player.mirror = true
 
     -- AI-specific properties
     player.difficulty = difficulty or "normal"
@@ -95,7 +102,10 @@ function AIPlayer:drawUI()
 
     -- Show next spell to be cast
     if self.nextSpell and self.warningCooldown <= 0 then
-        -- TODO: Don't use hardcoded position
-        cards[self.nextSpell]:displayMini(540, 330 - 100)
+        cards[self.nextSpell]:displayMini(self.animX, self.animY - 100)
     end
+end
+
+function AIPlayer:other()
+    return gameManager:getHumanPlayer()
 end

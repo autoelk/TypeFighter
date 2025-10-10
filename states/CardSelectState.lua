@@ -10,7 +10,7 @@ CardSelectState.__index = CardSelectState
 function CardSelectState:new()
     local state = setmetatable(BaseState:new(), self)
     state.posy = 10 -- scroll position
-    state.cardsPerRow = 2
+    state.cardsPerRow = 4
     return state
 end
 
@@ -52,10 +52,12 @@ function CardSelectState:update(dt)
     local remCardIdx = 0
     local colSpacing = LARGE_CARD_WIDTH + margin
     local rowSpacing = LARGE_CARD_HEIGHT + margin
+    local displayWidth = self.cardsPerRow * colSpacing + margin
+    local startX = (GAME_WIDTH - displayWidth) / 2 + margin
     for i = 1, #cards do
         if cards[i].deck == 0 then
             local colNum, rowNum = remCardIdx % self.cardsPerRow, math.floor(remCardIdx / self.cardsPerRow)
-            local x = 25 + colSpacing + colSpacing * colNum
+            local x = startX + colSpacing * colNum
             local y = rowSpacing * rowNum + self.posy
             cards[i]:move(x, y)
             remCardIdx = remCardIdx + 1
@@ -92,9 +94,9 @@ function CardSelectState:draw()
     if #human.deck == MAX_DECK_SIZE and #ai.deck == MAX_DECK_SIZE then
         lg.setFont(fontL)
         lg.setColor(COLORS.BLACK)
-        lg.rectangle("fill", 0, 250, GAME_WIDTH, 50)
+        lg.rectangle("fill", 0, 300, GAME_WIDTH, 50)
         lg.setColor(COLORS.WHITE)
-        lg.printf("both decks full, type [p] to start", 0, 250, GAME_WIDTH, "center")
+        lg.printf("both decks full, type [p] to start", 0, 300, GAME_WIDTH, "center")
     end
 end
 
@@ -122,7 +124,7 @@ function CardSelectState:handleCardSelection(idx)
         return
     end
 
-    if cards[idx].deck == human.num then
+    if cards[idx].deck == human.id then
         human:removeCard(idx)
         message = "removed " .. cards[idx].name
     elseif cards[idx].deck ~= 0 then

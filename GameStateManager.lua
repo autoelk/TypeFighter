@@ -18,10 +18,10 @@ function GameStateManager:changeState(stateName)
     if self.currentState and self.currentState.exit then
         self.currentState:exit()
     end
-    
+
     self.previousState = self.currentState
     self.currentState = self.states[stateName]
-    
+
     if self.currentState and self.currentState.enter then
         self.currentState:enter()
     end

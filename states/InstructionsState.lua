@@ -9,6 +9,9 @@ function InstructionsState:new()
     local state = setmetatable(BaseState:new(), self)
     state.endTime = 0
     state.seen = false
+    state.instructionsText = "choose " ..
+        MAX_DECK_SIZE ..
+        " cards by typing their names before player2 can chose them.\n\nyou can remove cards from your deck by typing their name again."
     return state
 end
 
@@ -29,15 +32,15 @@ function InstructionsState:update(dt)
 end
 
 function InstructionsState:draw()
+    local margin = 10
+    local width = 400
+    local height = 320
+    local startX = (GAME_WIDTH - width) / 2
     lg.setFont(fontM)
     lg.setColor(COLORS.BLACK)
-    lg.rectangle("fill", 200, 150, 400, 300)
+    lg.rectangle("fill", startX, 150, width, height)
     lg.setColor(COLORS.WHITE)
-    lg.printf(
-        "choose " ..
-        MAX_DECK_SIZE ..
-        " cards by typing their names before player2 can chose them. you can remove cards from your deck by typing their name again. when you are done, type p to start.",
-        210, 160, 380, "center")
+    lg.printf(self.instructionsText, startX + margin, 160, width - 2 * margin, "center")
 end
 
 function InstructionsState:exit()

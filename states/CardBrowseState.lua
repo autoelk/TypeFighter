@@ -27,10 +27,12 @@ function CardBrowseState:update(dt)
     local margin = 15
     local colSpacing = LARGE_CARD_WIDTH + margin
     local rowSpacing = LARGE_CARD_HEIGHT + margin
+    local displayWidth = self.cardsPerRow * colSpacing + margin
+    local startX = (GAME_WIDTH - displayWidth) / 2 + margin
     for i = 1, #cards do
         local idx = i - 1
         local colNum, rowNum = idx % self.cardsPerRow, math.floor(idx / self.cardsPerRow)
-        local x = margin + colSpacing * colNum
+        local x = startX + colSpacing * colNum
         local y = rowSpacing * rowNum + self.posy
         cards[i]:move(x, y)
     end

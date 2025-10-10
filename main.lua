@@ -36,18 +36,18 @@ COLORS = {
 }
 
 -- UI constants
-GAME_WIDTH = 800
-GAME_HEIGHT = 600
+GAME_WIDTH = 1280
+GAME_HEIGHT = 720
 PIXEL_TO_GAME_SCALE = 5
 SCROLL_SPEED = 75
 
 -- Sprite constants
 SPRITE_PIXEL_SIZE = 32
-SCALED_SPRITE_SIZE = SPRITE_PIXEL_SIZE * PIXEL_TO_GAME_SCALE
+SPRITE_SIZE = SPRITE_PIXEL_SIZE * PIXEL_TO_GAME_SCALE
 
 -- Card dimensions
-LARGE_CARD_WIDTH = SCALED_SPRITE_SIZE + 20
-LARGE_CARD_HEIGHT = SCALED_SPRITE_SIZE + 100
+LARGE_CARD_WIDTH = SPRITE_SIZE + 20
+LARGE_CARD_HEIGHT = SPRITE_SIZE + 100
 MINI_CARD_WIDTH = 130
 MINI_CARD_HEIGHT = 60
 
@@ -103,10 +103,11 @@ function love.update(dt)
     for i = 1, #cards do
         cards[i]:update(dt)
     end
-    local player1 = gameManager:getPlayer(1)
-    local player2 = gameManager:getPlayer(2)
-    player1:update(dt)
-    player2:update(dt)
+
+    local humanPlayer = gameManager:getHumanPlayer()
+    local aiPlayer = gameManager:getAIPlayer()
+    humanPlayer:update(dt)
+    aiPlayer:update(dt)
 
     -- Update current state
     stateManager:update(dt)
@@ -123,12 +124,12 @@ function love.draw()
     lg.setFont(fontM)
 
     -- Draw players
-    local player1 = gameManager:getPlayer(1)
-    local player2 = gameManager:getPlayer(2)
+    local humanPlayer = gameManager:getHumanPlayer()
+    local aiPlayer = gameManager:getAIPlayer()
     lg.setColor(COLORS.WHITE)
-    player1:draw()
+    humanPlayer:draw()
     lg.setColor(COLORS.RED)
-    player2:draw()
+    aiPlayer:draw()
     lg.setColor(COLORS.WHITE)
 
     -- Draw current state

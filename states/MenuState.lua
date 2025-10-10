@@ -33,7 +33,7 @@ function MenuState:draw()
     lg.printf("[p]lay game\n[b]rowse cards\n[q]uit", 0, 300, GAME_WIDTH, "center")
 
     -- Animation
-    local margin = 50
+    local margin = 280
     cards[cardFactory:findCard("torrent")]:animate(margin, 180)
     cards[cardFactory:findCard("fireball")]:animate(GAME_WIDTH - margin, 345, 180)
 end

@@ -34,10 +34,10 @@ function ResourceManager:getImage(name)
     return self.images[name]
 end
 
-function ResourceManager:loadAnimation(name, imagePath, frameWidth, frameHeight, duration)
+function ResourceManager:loadAnimation(name, imagePath, frameWidth, frameHeight)
     if not self.animations[name] then
         local image = self:loadImage(name .. "_sheet", imagePath)
-        self.animations[name] = self:newAnimation(image, frameWidth, frameHeight, duration)
+        self.animations[name] = self:newAnimation(image, frameWidth, frameHeight)
     end
     return self.animations[name]
 end
@@ -56,7 +56,7 @@ function ResourceManager:loadAllAssets()
 
     -- Load images
     self:loadImage("background", "assets/background.png")
-    self:loadImage("wizard", "assets/wizard.png")
+    self:loadAnimation("wizard", "assets/wizard.png", SPRITE_PIXEL_SIZE, SPRITE_PIXEL_SIZE)
     self:loadImage("placeholder", "assets/placeholder.png")
 
     self:loadCards()
@@ -88,10 +88,10 @@ function ResourceManager:loadCards()
         -- Create animation for the card
         local cardImage = self:getImage("card_" .. cardName)
         if cardImage then
-            cardData.anim = self:newAnimation(cardImage, 32, 32, 1)
+            cardData.anim = self:newAnimation(cardImage, SPRITE_PIXEL_SIZE, SPRITE_PIXEL_SIZE)
         else
             local placeholderImage = self:getImage("placeholder")
-            cardData.anim = self:newAnimation(placeholderImage, 32, 32, 10)
+            cardData.anim = self:newAnimation(placeholderImage, SPRITE_PIXEL_SIZE, SPRITE_PIXEL_SIZE)
         end
 
         -- Use CardFactory to create the appropriate card class
@@ -108,7 +108,7 @@ function ResourceManager:cleanup()
     self.animations = {}
 end
 
-function ResourceManager:newAnimation(image, width, height, duration)
+function ResourceManager:newAnimation(image, width, height)
     local animation = {}
     animation.spriteSheet = image
     animation.quads = {}
