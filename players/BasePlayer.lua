@@ -27,13 +27,14 @@ local PLAYER_POSITIONS = {
 function BasePlayer:new(playerNumber)
     local player = {
         num = playerNumber,
-        picks = 5,
+        picks = MAX_DECK_SIZE,
         health = 50,
         isAlive = true,
         healthRegen = 0,
         mana = 0,
         manaRegen = 1,
         spriteNum = 1,
+        deck = {},
         anim = resourceManager:newAnimation(resourceManager:getImage("wizard"), 32, 32, 2),
         deathAnimStarted = false,
         deathAnimFinished = false,
@@ -238,12 +239,31 @@ function BasePlayer:update(dt)
             break
         end
     end
-    self:UpdateEffects(dt)
+    self:updateEffects(dt)
 end
 
-function BasePlayer:ApplyEffect(id, cfg)
+-- Add a card to the player's deck
+function BasePlayer:addCard(cardIdx)
+    cards[cardIdx].deck = self.num
+    table.insert(self.deck, cardIdx)
+    self.picks = self.picks - 1
+end
+
+-- Remove a card from the player's deck
+function BasePlayer:removeCard(cardIdx)
+    for i, v in ipairs(self.deck) do
+        if v == cardIdx then
+            cards[cardIdx].deck = 0
+            table.remove(self.deck, i)
+            self.picks = self.picks + 1
+            return
+        end
+    end
+end
+
+function BasePlayer:applyEffect(id, cfg)
     if not cfg then
-        error("ApplyEffect requires a configuration table")
+        error("applyEffect requires a configuration table")
     end
 
     --[[ three modes: stack, refresh, ignore
@@ -289,7 +309,7 @@ function BasePlayer:ApplyEffect(id, cfg)
     return eff
 end
 
-function BasePlayer:UpdateEffects(dt)
+function BasePlayer:updateEffects(dt)
     for id, eff in pairs(self.effects) do
         if eff.timeLeft then
             eff.timeLeft = eff.timeLeft - dt
@@ -311,14 +331,6 @@ function BasePlayer:UpdateEffects(dt)
             end
         end
     end
-end
-
-function BasePlayer:HasEffect(id)
-    return self.effects[id] ~= nil
-end
-
-function BasePlayer:GetEffect(id)
-    return self.effects[id]
 end
 
 function BasePlayer:canAfford(manaCost)

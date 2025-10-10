@@ -2,7 +2,7 @@ require "states.BaseState"
 
 -- Pause State
 PauseState = {}
-setmetatable(PauseState, {__index = BaseState})
+setmetatable(PauseState, { __index = BaseState })
 PauseState.__index = PauseState
 
 function PauseState:new()
@@ -10,6 +10,7 @@ function PauseState:new()
 end
 
 function PauseState:enter()
+    gameManager.currentState = "PauseState"
     message2 = "[q]uit to menu [esc] to return"
 end
 
@@ -28,4 +29,3 @@ function PauseState:keypressed(key)
         input = ""
     end
 end
-

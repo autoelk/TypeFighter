@@ -2,7 +2,7 @@ require "states.BaseState"
 
 -- Instructions State
 InstructionsState = {}
-setmetatable(InstructionsState, {__index = BaseState})
+setmetatable(InstructionsState, { __index = BaseState })
 InstructionsState.__index = InstructionsState
 
 function InstructionsState:new()
@@ -12,6 +12,7 @@ function InstructionsState:new()
 end
 
 function InstructionsState:enter()
+    gameManager.currentState = "InstructionsState"
     message2 = "[p] to skip [q] to go back"
     self.endTime = gameTime + 20
 end
@@ -28,7 +29,9 @@ function InstructionsState:draw()
     lg.rectangle("fill", 200, 150, 400, 300)
     lg.setColor(COLORS.WHITE)
     lg.printf(
-        "choose 5 cards by typing their names before player2 can chose them. you can remove cards from your deck by typing their name again. when you are done, type p to start.",
+        "choose " ..
+        MAX_DECK_SIZE ..
+        " cards by typing their names before player2 can chose them. you can remove cards from your deck by typing their name again. when you are done, type p to start.",
         210, 160, 380, "center")
 end
 
@@ -43,4 +46,3 @@ function InstructionsState:keypressed(key)
         input = ""
     end
 end
-

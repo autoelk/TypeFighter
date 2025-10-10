@@ -10,10 +10,12 @@ CardBrowseState.__index = CardBrowseState
 function CardBrowseState:new()
     local state = setmetatable(BaseState:new(), self)
     state.posy = 10 -- Card scroll position
+    state.cardsPerRow = 4
     return state
 end
 
 function CardBrowseState:enter()
+    gameManager.currentState = "CardBrowseState"
     message2 = "[Q] to go back"
     for i = 1, #cards do
         cards[i]:loop()
@@ -22,15 +24,15 @@ end
 
 function CardBrowseState:update(dt)
     -- Update card positions for browsing layout
+    local margin = 15
+    local colSpacing = LARGE_CARD_WIDTH + margin
+    local rowSpacing = LARGE_CARD_HEIGHT + margin
     for i = 1, #cards do
-        local colNum, rowNum = i % 4, math.ceil(i / 4)
-        if colNum == 0 then
-            colNum = 4
-        end
-        local margin = 16
-        local colSpacing = LARGE_CARD_WIDTH + margin
-        local rowSpacing = LARGE_CARD_HEIGHT + margin
-        cards[i]:move(margin + colSpacing * (colNum - 1), rowSpacing * (rowNum - 1) + self.posy)
+        local idx = i - 1
+        local colNum, rowNum = idx % self.cardsPerRow, math.floor(idx / self.cardsPerRow)
+        local x = margin + colSpacing * colNum
+        local y = rowSpacing * rowNum + self.posy
+        cards[i]:move(x, y)
     end
 end
 
@@ -51,11 +53,13 @@ function CardBrowseState:keypressed(key)
 end
 
 function CardBrowseState:wheelmoved(x, y)
-    self.posy = self.posy + y * 75
+    self.posy = self.posy + y * SCROLL_SPEED
+
     -- Scrolling boundaries
-    if self.posy >= 200 then
-        self.posy = 200
-    elseif self.posy <= (math.ceil(#cards / 3) - 1) * -317 + 25 then
-        self.posy = (math.ceil(#cards / 3) - 1) * -317 + 25
+    local margin = 15
+    if self.posy > margin then
+        self.posy = margin
+    elseif self.posy <= (math.ceil(#cards / 4) - 1) * -(LARGE_CARD_HEIGHT + margin) then
+        self.posy = (math.ceil(#cards / 4) - 1) * -(LARGE_CARD_HEIGHT + margin)
     end
 end

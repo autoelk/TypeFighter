@@ -12,6 +12,7 @@ function GameState:new()
 end
 
 function GameState:enter()
+    gameManager.currentState = "GameState"
     -- Initialize players for gameplay
     local player1 = gameManager:getPlayer(1)
     local player2 = gameManager:getPlayer(2)
@@ -78,7 +79,8 @@ function GameState:update(dt)
 end
 
 function GameState:draw()
-    -- Display deck
+    -- Display human player's deck
+    local deck = gameManager:getHumanPlayer().deck
     for i = 1, #deck do
         local margin = 25
         local x = margin + (MINI_CARD_WIDTH + margin) * (i - 1)

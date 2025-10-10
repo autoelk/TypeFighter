@@ -25,7 +25,7 @@ function PoisonCard:getDescription()
 end
 
 function PoisonCard:cast(caster, target)
-    target:ApplyEffect("poison", {
+    target:applyEffect("poison", {
         duration = self.duration,
         tickInterval = 1,
         stackMode = "stack",

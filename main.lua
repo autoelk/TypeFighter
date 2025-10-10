@@ -35,10 +35,11 @@ COLORS = {
     BLACK = { 0, 0, 0 }
 }
 
--- Game dimensions
+-- UI constants
 GAME_WIDTH = 800
 GAME_HEIGHT = 600
 PIXEL_TO_GAME_SCALE = 5
+SCROLL_SPEED = 75
 
 -- Sprite constants
 SPRITE_PIXEL_SIZE = 32
@@ -49,6 +50,9 @@ LARGE_CARD_WIDTH = SCALED_SPRITE_SIZE + 20
 LARGE_CARD_HEIGHT = SCALED_SPRITE_SIZE + 100
 MINI_CARD_WIDTH = 130
 MINI_CARD_HEIGHT = 60
+
+-- Game constants
+MAX_DECK_SIZE = 5
 
 function love.load()
     lg = love.graphics
@@ -69,7 +73,6 @@ function love.load()
     background = resourceManager:getImage("background")
 
     cards = gameManager:getCards()
-    deck = gameManager:getDeck()
     gameManager:addPlayer(HumanPlayer:new(1))
     gameManager:addPlayer(AIPlayer:new(2, "normal"))
 

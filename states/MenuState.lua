@@ -12,6 +12,7 @@ function MenuState:new()
 end
 
 function MenuState:enter()
+    gameManager.currentState = "MenuState"
     input = ""
     message = "type p to start"
     message2 = "[p]lay [b]rowse [q]uit"

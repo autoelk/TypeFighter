@@ -11,24 +11,23 @@ function AIPlayer:new(playerNumber, difficulty)
 
     -- AI-specific properties
     player.difficulty = difficulty or "normal"
-    player.castCooldown = 0 -- Current cooldown from casting
-
-    -- Card picking properties for selection phase
-    player.pickCooldown = 5 -- Start with initial cooldown
-    player.pickSpeed = 5 -- Time between pick attempts
 
     -- Adjust AI properties based on difficulty
     if difficulty == "easy" then
-        player.castSpeed = 3 -- Time between cast attempts
+        player.pickSpeed = 8   -- Time between pick attempts
+        player.castSpeed = 8   -- Time between cast attempts
         player.castChance = 60 -- Percentage chance to cast when possible
     elseif difficulty == "normal" then
-        player.castSpeed = 2
+        player.pickSpeed = 5
+        player.castSpeed = 5
         player.castChance = 80
     elseif difficulty == "hard" then
-        player.castSpeed = 1.5
+        player.pickSpeed = 2
+        player.castSpeed = 2
         player.castChance = 95
     end
-
+    player.castCooldown = 0                -- Current cooldown from casting
+    player.pickCooldown = player.pickSpeed -- Current cooldown from picking
     player.suppressMessages = true
     setmetatable(player, self)
     return player
@@ -36,73 +35,49 @@ end
 
 function AIPlayer:update(dt)
     BasePlayer.update(self, dt)
-    -- Update AI casting cooldown
-    self.castCooldown = self.castCooldown - dt
 
-    if self.castCooldown <= 0 then
-        self:attemptCast()
-        self.castCooldown = self.castSpeed
-    end
-end
+    if gameManager:getCurrentStateName() == "GameState" then
+        self.castCooldown = self.castCooldown - dt
+        if self.castCooldown <= 0 then
+            local availableCards = {}
+            for i = 1, #self.deck do
+                if self:canAfford(cards[self.deck[i]].mana) then
+                    table.insert(availableCards, self.deck[i])
+                end
+            end
 
-function AIPlayer:attemptCast()
-    local availableCards = {}
-    for i = 1, #cards do
-        local card = cards[i]
-        if card.deck == self.num and self:canAfford(card.mana) then
-            table.insert(availableCards, i)
+            if #availableCards > 0 and math.random(100) < self.castChance then
+                local cardIndex = availableCards[math.random(1, #availableCards)]
+                self:castCard(cardIndex)
+            end
+            self.castCooldown = self.castSpeed
         end
-    end
+    elseif gameManager:getCurrentStateName() == "CardSelectState" then
+        if #self:other().deck >= MAX_DECK_SIZE and self.picks > 0 then
+            -- if human player has filled their deck, just fill ours
+            self:selectRandomCard()
+            return
+        end
 
-    if #availableCards == 0 then
-        return false
-    end
-
-    -- Random chance to cast
-    local castChance = math.random(1, 100)
-    if castChance < self.castChance then
-        -- Select a card to cast (currently random, could be improved with strategy)
-        local cardIndex = availableCards[math.random(1, #availableCards)]
-        return self:castCard(cardIndex)
-    end
-
-    return false
-end
-
--- Card selection phase methods
-function AIPlayer:updateCardSelection(dt, opponentPicks)
-    -- Adjust pick speed based on opponent's remaining picks
-    self.pickSpeed = opponentPicks + 1
-
-    -- Update pick cooldown
-    self.pickCooldown = self.pickCooldown - dt
-
-    if self.pickCooldown <= 0 and self.picks > 0 then
-        if self:attemptCardPick() then
+        self.pickCooldown = self.pickCooldown - dt
+        if self.pickCooldown <= 0 and self.picks > 0 then
+            self:selectRandomCard()
             self.pickCooldown = self.pickSpeed
         end
     end
-
-    self.pickCooldown = math.max(self.pickCooldown, 0)
 end
 
-function AIPlayer:attemptCardPick()
-    -- Find available cards to pick
+function AIPlayer:selectRandomCard()
+    local illegalCards = { ["ritual"] = true, ["manatide"] = true }
     local availableCards = {}
-
     for i = 1, #cards do
         local card = cards[i]
-        if card.deck == 0 and card.name ~= "ritual" and card.name ~= "manatide" then
+        if card.deck == 0 and not illegalCards[card.name] then
             table.insert(availableCards, i)
         end
     end
-
     if #availableCards > 0 then
-        local cardIndex = availableCards[math.random(1, #availableCards)]
-        cards[cardIndex].deck = self.num
-        self.picks = self.picks - 1
-        return true
+        local cardIdx = availableCards[math.random(1, #availableCards)]
+        self:addCard(cardIdx)
     end
-
-    return false
 end

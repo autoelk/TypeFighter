@@ -17,11 +17,11 @@ function BaseCard:new(cardData)
         anim = cardData.anim,
 
         -- Animation configuration (fixed 12fps system)
-        playMode = cardData.playMode or "loop",   -- loop | once | loop_for
-        playTime = cardData.playTime,             -- only used if playMode == loop_for (seconds)
-        offsetX = cardData.offsetX or 0,          -- X offset for animation positioning
-        offsetY = cardData.offsetY or 0,          -- Y offset for animation positioning
-        rotation = cardData.rotation or 0,        -- Default rotation for the card
+        playMode = cardData.playMode or "loop",       -- loop | once | loop_for
+        playTime = cardData.playTime,                 -- only used if playMode == loop_for (seconds)
+        offsetX = cardData.offsetX or 0,              -- X offset for animation positioning
+        offsetY = cardData.offsetY or 0,              -- Y offset for animation positioning
+        rotation = cardData.rotation or 0,            -- Default rotation for the card
         scale = cardData.scale or PIXEL_TO_GAME_SCALE -- Default scale for the card
     }
     setmetatable(card, self)
@@ -78,6 +78,7 @@ function BaseCard:display()
     self:animate(self.x + 10, self.y + 25)
 end
 
+-- Start spell animation
 function BaseCard:startAnimate(x, y, playMode, playTime)
     -- Reset animation timing
     self.anim.currentFrame = 1
@@ -99,6 +100,7 @@ function BaseCard:startAnimate(x, y, playMode, playTime)
     end
 end
 
+-- Animate the actual spell
 function BaseCard:animate(x, y, r, sx, sy, offsetX, offsetY)
     offsetX = offsetX or 0
     offsetY = offsetY or 0

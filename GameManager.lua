@@ -7,7 +7,7 @@ function GameManager:new()
         humanPlayer = nil,
         aiPlayer = nil,
         cards = {},
-        deck = {}
+        currentState = nil
     }
     setmetatable(manager, self)
     return manager
@@ -15,7 +15,7 @@ end
 
 function GameManager:addPlayer(player)
     self.players[player.num] = player
-    
+
     if player.__index and player.__index.handleInput then
         self.humanPlayer = player
     else
@@ -48,19 +48,21 @@ function GameManager:reset()
     self.humanPlayer = nil
     self.aiPlayer = nil
     self.cards = {}
-    self.deck = {}
+    self.currentState = nil
 end
 
 function GameManager:getCards()
     return self.cards
 end
 
-function GameManager:getDeck()
-    return self.deck
-end
-
 function GameManager:setCard(index, card)
     self.cards[index] = card
+end
+
+function GameManager:getCurrentStateName()
+    if self.currentState then
+        return self.currentState
+    end
 end
 
 -- Global instance

@@ -14,6 +14,8 @@ function GameOverState:new()
 end
 
 function GameOverState:enter()
+    gameManager.currentState = "GameOverState"
+    message2 = "[r]estart [q]uit"
     local player1 = gameManager:getPlayer(1)
     local player2 = gameManager:getPlayer(2)
     -- Decide game over message based on isAlive flags
