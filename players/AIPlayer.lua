@@ -11,24 +11,24 @@ function AIPlayer:new(playerNumber, difficulty)
 
     -- AI-specific properties
     player.difficulty = difficulty or "normal"
-
-    -- Adjust AI properties based on difficulty
     if difficulty == "easy" then
-        player.pickSpeed = 8   -- Time between pick attempts
-        player.castSpeed = 8   -- Time between cast attempts
-        player.castChance = 60 -- Percentage chance to cast when possible
+        player.pickSpeed = 15  -- Time between pick attempts
+        player.castSpeed = 15  -- Time between cast attempts
+        player.warningTime = 8 -- Time before casting to show warning
     elseif difficulty == "normal" then
-        player.pickSpeed = 5
-        player.castSpeed = 5
-        player.castChance = 80
+        player.pickSpeed = 7
+        player.castSpeed = 7
+        player.warningTime = 5
     elseif difficulty == "hard" then
-        player.pickSpeed = 2
-        player.castSpeed = 2
-        player.castChance = 95
+        player.pickSpeed = 3
+        player.castSpeed = 3
+        player.warningTime = 2
     end
     player.castCooldown = 0                -- Current cooldown from casting
     player.pickCooldown = player.pickSpeed -- Current cooldown from picking
+    player.warningCooldown = 0             -- Current cooldown for showing warning
     player.suppressMessages = true
+    player.nextSpell = nil                 -- The next spell the AI plans to cast
     setmetatable(player, self)
     return player
 end
@@ -38,7 +38,15 @@ function AIPlayer:update(dt)
 
     if gameManager:getCurrentStateName() == "GameState" then
         self.castCooldown = self.castCooldown - dt
+        self.warningCooldown = self.warningCooldown - dt
         if self.castCooldown <= 0 then
+            if self.nextSpell then
+                self:castCard(self.nextSpell)
+                self.nextSpell = nil
+                self.warningCooldown = self.castSpeed - self.warningTime
+            end
+
+            -- Decide on the next spell to cast
             local availableCards = {}
             for i = 1, #self.deck do
                 if self:canAfford(cards[self.deck[i]].mana) then
@@ -46,9 +54,9 @@ function AIPlayer:update(dt)
                 end
             end
 
-            if #availableCards > 0 and math.random(100) < self.castChance then
+            if #availableCards > 0 then
                 local cardIndex = availableCards[math.random(1, #availableCards)]
-                self:castCard(cardIndex)
+                self.nextSpell = cardIndex
             end
             self.castCooldown = self.castSpeed
         end
@@ -79,5 +87,15 @@ function AIPlayer:selectRandomCard()
     if #availableCards > 0 then
         local cardIdx = availableCards[math.random(1, #availableCards)]
         self:addCard(cardIdx)
+    end
+end
+
+function AIPlayer:drawUI()
+    BasePlayer.drawUI(self)
+
+    -- Show next spell to be cast
+    if self.nextSpell and self.warningCooldown <= 0 then
+        -- TODO: Don't use hardcoded position
+        cards[self.nextSpell]:displayMini(540, 330 - 100)
     end
 end
