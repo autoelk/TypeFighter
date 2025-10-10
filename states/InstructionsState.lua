@@ -8,10 +8,15 @@ InstructionsState.__index = InstructionsState
 function InstructionsState:new()
     local state = setmetatable(BaseState:new(), self)
     state.endTime = 0
+    state.seen = false
     return state
 end
 
 function InstructionsState:enter()
+    if self.seen then
+        self.stateManager:changeState("cardSelect")
+        return
+    end
     gameManager.currentState = "InstructionsState"
     message2 = "[p] to skip [q] to go back"
     self.endTime = gameTime + 20
@@ -33,6 +38,10 @@ function InstructionsState:draw()
         MAX_DECK_SIZE ..
         " cards by typing their names before player2 can chose them. you can remove cards from your deck by typing their name again. when you are done, type p to start.",
         210, 160, 380, "center")
+end
+
+function InstructionsState:exit()
+    self.seen = true
 end
 
 function InstructionsState:keypressed(key)
