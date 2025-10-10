@@ -28,6 +28,21 @@ function GameOverState:enter()
     end
 end
 
+function GameOverState:update(dt)
+    -- Move projectile animations
+    for i = 1, #cards do
+        if cards[i].loc == "proj" then
+            if cards[i].deck == 1 and cards[i].t > 0 then
+                cards[i].x = 540 - 280 * cards[i].t
+                cards[i].y = 300
+            elseif cards[i].deck == 2 and cards[i].t > 0 then
+                cards[i].x = 100 + 280 * cards[i].t
+                cards[i].y = 300
+            end
+        end
+    end
+end
+
 function GameOverState:draw()
     lg.setFont(fontXL)
     lg.printf(self.gameOverMessage, 0, 200, GAME_WIDTH, "center")
