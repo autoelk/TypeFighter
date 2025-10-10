@@ -64,7 +64,6 @@ function CardFactory:getAllCardNames()
     for cardName, _ in pairs(self.cardTypes) do
         table.insert(cardNames, cardName)
     end
-    table.sort(cardNames)
     return cardNames
 end
 
