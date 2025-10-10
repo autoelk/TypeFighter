@@ -48,27 +48,21 @@ function BaseCard:displayMini(x, y)
     lg.setColor(self:color())
     lg.rectangle("fill", x, y, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
     -- print text
+    local margin = 5
     lg.setColor(COLORS.BLACK)
     lg.setFont(fontS)
-    lg.printf(self.name, x + 5, y, MINI_CARD_WIDTH, "left")
-    lg.printf(self.mana, x - 5, y, MINI_CARD_WIDTH, "right")
+    lg.printf(self.name, x + margin, y, MINI_CARD_WIDTH, "left")
+    lg.printf(self.mana, x - margin, y, MINI_CARD_WIDTH, "right")
     lg.setFont(fontXS)
-    lg.printf(self:getDescription(), x + 5, y + 15, 110, "left")
+    lg.printf(self:getDescription(), x + margin, y + 15, MINI_CARD_WIDTH - 4 * margin, "left")
 end
 
 -- Display large version of card during card selection
 function BaseCard:display()
-    if self.deck == 2 then
-        lg.setColor(self:color())
-        lg.rectangle("fill", self.x, self.y, LARGE_CARD_WIDTH, LARGE_CARD_HEIGHT)
-        lg.setColor(COLORS.BLACK)
-        lg.rectangle("fill", self.x + 10, self.y + 25, SPRITE_SIZE, SPRITE_SIZE)
-    else
-        lg.setColor(self:color())
-        lg.rectangle("fill", self.x, self.y, LARGE_CARD_WIDTH, LARGE_CARD_HEIGHT)
-        lg.setColor(COLORS.WHITE)
-        lg.rectangle("fill", self.x + 10, self.y + 25, SPRITE_SIZE, SPRITE_SIZE)
-    end
+    lg.setColor(self:color())
+    lg.rectangle("fill", self.x, self.y, LARGE_CARD_WIDTH, LARGE_CARD_HEIGHT)
+    lg.setColor(COLORS.WHITE)
+    lg.rectangle("fill", self.x + 10, self.y + 25, SPRITE_SIZE, SPRITE_SIZE)
 
     -- print text
     lg.setFont(fontS)
