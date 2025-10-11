@@ -23,7 +23,7 @@ function GameState:enter()
 
     human.library = human.deck
     ai.library = ai.deck
-    for i = 1, MAX_HAND_SIZE do
+    for i = 1, STARTING_HAND_SIZE do
         human:drawCard()
         ai:drawCard()
     end

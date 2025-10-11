@@ -9,8 +9,8 @@ ForceCard.__index = ForceCard
 function ForceCard:new(cardData)
     local card = BaseCard:new(cardData)
     card.name = "force"
-    card.tradeAmount = 10 -- Amount to trade
-    card.mana = 30
+    card.mana = 15
+    card.tradeAmount = 1 -- Amount of health/mana regen to trade
     card.type = "misc"
     card.elem = "fire"
     card.loc = "self"

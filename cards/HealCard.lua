@@ -19,7 +19,7 @@ function HealCard:new(cardData)
 end
 
 function HealCard:getDescription()
-    return "restore " .. self.healAmount .. " health."
+    return "gain " .. self.healAmount .. " health."
 end
 
 function HealCard:cast(caster, target)

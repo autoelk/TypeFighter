@@ -20,7 +20,7 @@ function GemCard:new(cardData)
 end
 
 function GemCard:getDescription()
-    return "increase mana regeneration by " .. self.regenAmount .. "."
+    return "+" .. self.regenAmount .. " mana/sec."
 end
 
 function GemCard:cast(caster, target)

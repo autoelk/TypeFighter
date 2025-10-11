@@ -9,7 +9,7 @@ FireballCard.__index = FireballCard
 function FireballCard:new(cardData)
     local card = BaseCard:new(cardData)
     card.name = "fireball"
-    card.damage = 7
+    card.damage = 9
     card.mana = 3
     card.type = "attack"
     card.elem = "fire"

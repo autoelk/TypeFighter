@@ -9,8 +9,9 @@ BlessingCard.__index = BlessingCard
 function BlessingCard:new(cardData)
     local card = BaseCard:new(cardData)
     card.name = "blessing"
-    card.regenAmount = 0.75 -- Health regen amount
-    card.mana = 10
+    card.regenAmount = 1 -- Health regen amount
+    card.duration = 15   -- Duration of the effect in seconds
+    card.mana = 8
     card.type = "misc"
     card.elem = "earth"
     card.loc = "self"
@@ -21,10 +22,18 @@ function BlessingCard:new(cardData)
 end
 
 function BlessingCard:getDescription()
-    return "gain " .. self.regenAmount .. " health regen permanently."
+    return "+" .. self.regenAmount .. " health/sec for " .. self.duration .. " seconds."
 end
 
 function BlessingCard:cast(caster, target)
-    caster.healthRegen = caster.healthRegen + self.regenAmount
+    caster:applyEffect("blessing", {
+        duration = 10,
+        onApply = function(p, eff)
+            p.healthRegen = p.healthRegen + self.regenAmount
+        end,
+        onExpire = function(p, eff)
+            p.healthRegen = p.healthRegen - self.regenAmount
+        end
+    })
     return true
 end

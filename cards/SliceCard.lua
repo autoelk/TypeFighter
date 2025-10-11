@@ -9,9 +9,8 @@ SliceCard.__index = SliceCard
 function SliceCard:new(cardData)
     local card = BaseCard:new(cardData)
     card.name = "slice"
-    card.damage = 100
-    card.healthThreshold = 100 -- Health threshold required to cast
-    card.mana = 0
+    card.mana = 15
+    card.ratio = 1 / 2
     card.type = "misc"
     card.elem = "fire"
     card.loc = "other"
@@ -20,26 +19,12 @@ function SliceCard:new(cardData)
 end
 
 function SliceCard:getDescription()
-    return "deal " .. self.damage .. " damage if you have over " .. self.healthThreshold .. " health."
-end
-
-function SliceCard:canCast(caster, target)
-    local canCast, errorMessage = BaseCard.canCast(self, caster, target)
-    if not canCast then
-        return false, errorMessage
-    end
-
-    -- Check health requirement
-    if caster.health <= self.healthThreshold then
-        return false, "you need more than " .. self.healthThreshold .. " health to cast this"
-    end
-
-    return true, nil
+    return "deal damage equal to " .. math.floor(self.ratio * 100) .. "% of enemy health."
 end
 
 function SliceCard:cast(caster, target)
     if caster.health > self.healthThreshold then
-        target:damage(self.damage)
+        target:damage(math.floor(target.health * self.ratio))
         return true
     end
     return false

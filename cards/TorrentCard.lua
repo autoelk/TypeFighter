@@ -19,10 +19,11 @@ function TorrentCard:new(cardData)
 end
 
 function TorrentCard:getDescription()
-    return "deal " .. self.damage .. " damage."
+    return "deal " .. self.damage .. " damage. draw a card."
 end
 
 function TorrentCard:cast(caster, target)
     target:damage(self.damage)
+    caster:drawCard()
     return true
 end

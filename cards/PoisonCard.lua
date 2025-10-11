@@ -9,8 +9,8 @@ PoisonCard.__index = PoisonCard
 function PoisonCard:new(cardData)
     local card = BaseCard:new(cardData)
     card.name = "poison"
-    card.damagePerTick = 2
-    card.duration = 10
+    card.damagePerTick = 1
+    card.duration = 5
     card.mana = 5
     card.type = "misc"
     card.elem = "fire"
@@ -21,7 +21,7 @@ function PoisonCard:new(cardData)
 end
 
 function PoisonCard:getDescription()
-    return "apply stacking poison for 10s."
+    return "apply stacking poison for " .. self.duration .. "s."
 end
 
 function PoisonCard:cast(caster, target)
