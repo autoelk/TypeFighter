@@ -12,7 +12,7 @@ function BasePlayer:new(id)
         manaRegen = 1,
         spriteNum = 1,
         deck = {},
-        anim = resourceManager:getAnimation("wizard"),
+        anim = resourceManager:newAnimation(resourceManager:getImage("wizard"), SPRITE_PIXEL_SIZE, SPRITE_PIXEL_SIZE),
         deathAnimStarted = false,
         deathAnimFinished = false,
 
@@ -201,28 +201,27 @@ function BasePlayer:damage(amtDamage)
 end
 
 function BasePlayer:update(dt)
-    local anim = self.anim
     -- Hold first frame while alive
     if self.isAlive then
-        anim.currentFrame = 1
-        anim.accumulator = 0
+        self.anim.currentFrame = 1
+        self.anim.accumulator = 0
         self.deathAnimStarted = false
         self.deathAnimFinished = false
     elseif not self.deathAnimStarted then
-        anim.currentFrame = 1
-        anim.accumulator = 0
+        self.anim.currentFrame = 1
+        self.anim.accumulator = 0
         self.deathAnimStarted = true
     elseif self.deathAnimFinished then
-        anim.currentFrame = #anim.quads
+        self.anim.currentFrame = #self.anim.quads
         return
     end
 
-    anim.accumulator = anim.accumulator + dt
-    while anim.accumulator >= anim.frameDuration do
-        anim.accumulator = anim.accumulator - anim.frameDuration
-        anim.currentFrame = (anim.currentFrame or 1) + 1
-        if anim.currentFrame >= #anim.quads then
-            anim.currentFrame = #anim.quads
+    self.anim.accumulator = self.anim.accumulator + dt
+    while self.anim.accumulator >= self.anim.frameDuration do
+        self.anim.accumulator = self.anim.accumulator - self.anim.frameDuration
+        self.anim.currentFrame = (self.anim.currentFrame or 1) + 1
+        if self.anim.currentFrame >= #self.anim.quads then
+            self.anim.currentFrame = #self.anim.quads
             self.deathAnimFinished = true
             break
         end
