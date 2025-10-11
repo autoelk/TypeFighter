@@ -10,8 +10,9 @@ function BasePlayer:new(id)
         healthRegen = 0,
         mana = 0,
         manaRegen = 1,
-        spriteNum = 1,
         deck = {},
+        idleAnim = resourceManager:newAnimation(resourceManager:getImage("wizardIdle"), SPRITE_PIXEL_SIZE,
+            SPRITE_PIXEL_SIZE),
         deathAnim = resourceManager:newAnimation(resourceManager:getImage("wizardDeath"), SPRITE_PIXEL_SIZE,
             SPRITE_PIXEL_SIZE),
         castAnim = resourceManager:newAnimation(resourceManager:getImage("wizardCast"), SPRITE_PIXEL_SIZE,
@@ -39,13 +40,14 @@ function BasePlayer:reset()
     self.healthRegen = 0
     self.mana = 0
     self.manaRegen = 1
-    self.spriteNum = 1
     self.deathAnim.currentFrame = 1
     self.deathAnim.accumulator = 0
     self.deathAnimStarted = false
     self.deathAnimFinished = false
     self.castAnim.currentFrame = 1
     self.castAnim.accumulator = 0
+    self.idleAnim.currentFrame = 1
+    self.idleAnim.accumulator = 0
     self.isCasting = false
     self.castAnimFinished = false
     self.damageDisplay = {
@@ -57,27 +59,19 @@ function BasePlayer:reset()
 end
 
 function BasePlayer:draw()
-    -- Draw priority: death animation (if dead) -> cast animation (if casting) -> idle sprite
     if not self.isAlive then
-        self.spriteNum = self.deathAnim.currentFrame or #self.deathAnim.quads
         local scaleX = self.mirror and -PIXEL_TO_GAME_SCALE or PIXEL_TO_GAME_SCALE
-        lg.draw(self.deathAnim.spriteSheet, self.deathAnim.quads[self.spriteNum], self.x, self.y, 0, scaleX,
+        lg.draw(self.deathAnim.spriteSheet, self.deathAnim.quads[self.deathAnim.currentFrame], self.x, self.y, 0, scaleX,
             PIXEL_TO_GAME_SCALE)
-        return
-    end
-
-    if self.isCasting and self.castAnim then
-        local cf = self.castAnim.currentFrame or 1
+    elseif self.isCasting and self.castAnim then
         local scaleX = self.mirror and -PIXEL_TO_GAME_SCALE or PIXEL_TO_GAME_SCALE
-        lg.draw(self.castAnim.spriteSheet, self.castAnim.quads[cf], self.x, self.y, 0, scaleX, PIXEL_TO_GAME_SCALE)
-        return
+        lg.draw(self.castAnim.spriteSheet, self.castAnim.quads[self.castAnim.currentFrame], self.x, self.y, 0, scaleX,
+            PIXEL_TO_GAME_SCALE)
+    else
+        local scaleX = self.mirror and -PIXEL_TO_GAME_SCALE or PIXEL_TO_GAME_SCALE
+        lg.draw(self.idleAnim.spriteSheet, self.idleAnim.quads[self.idleAnim.currentFrame], self.x, self.y, 0, scaleX,
+            PIXEL_TO_GAME_SCALE)
     end
-
-    -- default idle sprite
-    self.spriteNum = 1
-    local scaleX = self.mirror and -PIXEL_TO_GAME_SCALE or PIXEL_TO_GAME_SCALE
-    lg.draw(self.deathAnim.spriteSheet, self.deathAnim.quads[self.spriteNum], self.x, self.y, 0, scaleX,
-        PIXEL_TO_GAME_SCALE)
 end
 
 function BasePlayer:drawUI()
@@ -243,6 +237,16 @@ function BasePlayer:update(dt)
             self.castAnim.currentFrame = #self.castAnim.quads
             self.isCasting = false
             self.castAnimFinished = true
+            break
+        end
+    end
+
+    self.idleAnim.accumulator = self.idleAnim.accumulator + dt
+    while self.idleAnim.accumulator >= self.idleAnim.frameDuration do
+        self.idleAnim.accumulator = self.idleAnim.accumulator - self.idleAnim.frameDuration
+        self.idleAnim.currentFrame = (self.idleAnim.currentFrame or 1) + 1
+        if self.idleAnim.currentFrame > #self.idleAnim.quads then
+            self.idleAnim.currentFrame = 1
             break
         end
     end
