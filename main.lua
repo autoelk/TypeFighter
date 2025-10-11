@@ -53,6 +53,7 @@ MINI_CARD_HEIGHT = 60
 
 -- Game constants
 MAX_DECK_SIZE = 5
+MAX_HAND_SIZE = 3
 
 function love.load()
     lg = love.graphics

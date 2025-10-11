@@ -6,7 +6,8 @@ function ResourceManager:new()
         images = {},
         fonts = {},
         sounds = {},
-        animations = {}
+        animations = {},
+        dict = {}
     }
     setmetatable(manager, self)
     return manager
@@ -62,6 +63,7 @@ function ResourceManager:loadAllAssets()
     self:loadImage("placeholder", "assets/placeholder.png")
 
     self:loadCards()
+    self:loadDictionary()
 end
 
 function ResourceManager:loadCards()
@@ -102,14 +104,6 @@ function ResourceManager:loadCards()
     end
 end
 
-function ResourceManager:cleanup()
-    -- Clean up resources if needed
-    self.images = {}
-    self.fonts = {}
-    self.sounds = {}
-    self.animations = {}
-end
-
 function ResourceManager:newAnimation(image, width, height)
     local animation = {}
     animation.spriteSheet = image
@@ -133,21 +127,23 @@ function ResourceManager:newAnimation(image, width, height)
     return animation
 end
 
-function ResourceManager:split(pString, pPattern)
-    local Table = {}
-    local fpat = "(.-)" .. pPattern
-    local last_end = 1
-    local s, e, cap = pString:find(fpat, 1)
-    while s do
-        if s ~= 1 or cap ~= "" then
-            table.insert(Table, cap)
+function ResourceManager:loadDictionary()
+    local file = io.open("assets/dict.txt", "r")
+    if not file then
+        error("Could not open dictionary file.")
+    end
+
+    self.dict = {}
+    for line in file:lines() do
+        local word = line:match("^%s*(.-)%s*$") -- trim whitespace
+        if word ~= "" then
+            table.insert(self.dict, word)
         end
-        last_end = e + 1
-        s, e, cap = pString:find(fpat, last_end)
     end
-    if last_end <= #pString then
-        cap = pString:sub(last_end)
-        table.insert(Table, cap)
-    end
-    return Table
+    file:close()
+end
+
+function ResourceManager:getRandomWord()
+    local index = math.random(#self.dict)
+    return self.dict[index]
 end

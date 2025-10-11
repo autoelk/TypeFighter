@@ -10,7 +10,9 @@ function BasePlayer:new(id)
         healthRegen = 0,
         mana = 0,
         manaRegen = 1,
-        deck = {},
+        hand = {},    -- Current cards in hand
+        library = {}, -- All cards available to draw from
+        deck = {},    -- All cards owned by the player
         idleAnim = resourceManager:newAnimation(resourceManager:getImage("wizardIdle"), SPRITE_PIXEL_SIZE,
             SPRITE_PIXEL_SIZE),
         deathAnim = resourceManager:newAnimation(resourceManager:getImage("wizardDeath"), SPRITE_PIXEL_SIZE,
@@ -56,6 +58,7 @@ function BasePlayer:reset()
         isActive = false
     }
     self.effects = {}
+    self.hand = {}
 end
 
 function BasePlayer:draw()
@@ -146,17 +149,30 @@ function BasePlayer:drawDamageNumbers()
 end
 
 function BasePlayer:castCard(cardIndex)
-    local card = cards[cardIndex]
+    -- Check if the card is in our hand
+    local handIdx = -1
+    for i = 1, #self.hand do
+        if self.hand[i] == cardIndex then
+            handIdx = i
+            break
+        end
+    end
+
+    if handIdx == -1 then
+        if not self.suppressMessages then
+            message = "that card is not in your hand"
+        end
+        return "not_in_hand"
+    end
 
     -- Check if we are able to cast the card
+    local card = cards[cardIndex]
     local canCast, errorMessage = card:canCast(self, self:other())
     if not canCast then
         if not self.suppressMessages then
             message = errorMessage
         end
-        if errorMessage == "that card is not in your deck" then
-            return "not_your_card"
-        elseif errorMessage == "you don't have enough mana" then
+        if errorMessage == "you don't have enough mana" then
             return "insufficient_mana"
         else
             -- For other conditions like health requirements
@@ -175,6 +191,7 @@ function BasePlayer:castCard(cardIndex)
     end
     card:playOnce(x, self.animY)
 
+    -- Start casting animation
     self.isCasting = true
     self.castAnim.currentFrame = 1
     self.castAnim.accumulator = 0
@@ -185,6 +202,10 @@ function BasePlayer:castCard(cardIndex)
     if not self.suppressMessages then
         message2 = "player " .. self.id .. " cast " .. card.name
     end
+
+    -- Remove card from hand
+    table.remove(self.hand, handIdx)
+    table.insert(self.library, cardIndex)
 
     -- Use the card's cast method
     card:cast(self, self:other())
@@ -342,6 +363,16 @@ function BasePlayer:updateEffects(dt)
             end
         end
     end
+end
+
+function BasePlayer:drawCard()
+    if #self.hand >= MAX_HAND_SIZE then
+        return false
+    end
+
+    table.insert(self.hand, self.library[1])
+    table.remove(self.library, 1)
+    return true
 end
 
 function BasePlayer:canAfford(manaCost)

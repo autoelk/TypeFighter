@@ -12,10 +12,21 @@ function GameState:new()
 end
 
 function GameState:enter()
+    local human = gameManager:getHumanPlayer()
+    local ai = gameManager:getAIPlayer()
+
     gameManager.currentState = "GameState"
     -- Initialize players for gameplay
-    gameManager:getHumanPlayer():reset()
-    gameManager:getAIPlayer():reset()
+    human:reset()
+    ai:reset()
+
+
+    human.library = human.deck
+    ai.library = ai.deck
+    for i = 1, MAX_HAND_SIZE do
+        human:drawCard()
+        ai:drawCard()
+    end
 
     -- Set game interface messages
     message = "type card names to cast them"
@@ -70,17 +81,22 @@ function GameState:draw()
     local aiPlayer = gameManager:getAIPlayer()
     local margin = 10
 
-    for i = 1, #humanPlayer.deck do
-        cards[humanPlayer.deck[i]]:displayMini(margin, (MINI_CARD_HEIGHT + margin) * i + margin + 100)
+    for i = 1, #humanPlayer.hand do
+        cards[humanPlayer.hand[i]]:displayMini(margin, (MINI_CARD_HEIGHT + margin) * i + 100)
     end
 
-    for i = 1, #aiPlayer.deck do
-        if aiPlayer.deck[i] == aiPlayer.nextSpell then
-            cards[aiPlayer.deck[i]]:displayMini(GAME_WIDTH - MINI_CARD_WIDTH - margin - 40,
-                (MINI_CARD_HEIGHT + margin) * i + margin + 100)
+    -- Display word for player to type in order to draw a card
+    if #humanPlayer.hand < MAX_HAND_SIZE then
+        humanPlayer:drawDictWord(margin, (MINI_CARD_HEIGHT + margin) * (#humanPlayer.hand + 1) + 100)
+    end
+
+    for i = 1, #aiPlayer.hand do
+        if aiPlayer.hand[i] == aiPlayer.nextSpell then
+            cards[aiPlayer.hand[i]]:displayMini(GAME_WIDTH - MINI_CARD_WIDTH - margin - 40,
+                (MINI_CARD_HEIGHT + margin) * i + 100)
         else
-            cards[aiPlayer.deck[i]]:displayMini(GAME_WIDTH - MINI_CARD_WIDTH - margin,
-                (MINI_CARD_HEIGHT + margin) * i + margin + 100)
+            cards[aiPlayer.hand[i]]:displayMini(GAME_WIDTH - MINI_CARD_WIDTH - margin,
+                (MINI_CARD_HEIGHT + margin) * i + 100)
         end
     end
 
@@ -111,19 +127,16 @@ function GameState:keypressed(key)
         self.stateManager:changeState("pause")
     elseif key == "return" then
         local userInput = self:processInput()
-        local humanPlayer = gameManager:getHumanPlayer()
-        if humanPlayer then
-            local result = humanPlayer:handleInput(userInput)
+        local result = gameManager:getHumanPlayer():handleInput(userInput)
 
-            if result == "quit" then
-                self.stateManager:changeState("menu")
-            elseif result == "unknown_card" then
-                message = "type card names to cast them"
-            elseif result == "insufficient_mana" then
-            elseif result == "not_your_card" then
-                message = "that card is not in your deck"
-            elseif result == "cannot_cast" then
-            end
+        if result == "quit" then
+            self.stateManager:changeState("menu")
+        elseif result == "unknown_card" then
+            message = "type card names to cast them"
+        elseif result == "insufficient_mana" then
+        elseif result == "not_your_card" then
+            message = "that card is not in your deck"
+        elseif result == "cannot_cast" then
         end
         input = ""
     end

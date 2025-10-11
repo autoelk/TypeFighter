@@ -191,15 +191,8 @@ end
 
 -- Check if we are able to cast the card, returns failure reason if not
 function BaseCard:canCast(caster, target)
-    -- Check if caster owns this card
-    if self.deck ~= caster.id then
-        return false, "that card is not in your deck"
-    end
-
-    -- Check mana cost
     if not caster:canAfford(self.mana) then
         return false, "you don't have enough mana"
     end
-
     return true, nil
 end
