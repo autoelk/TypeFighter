@@ -68,15 +68,23 @@ function GameState:update(dt)
 end
 
 function GameState:draw()
-    -- Display human player's deck
-    local deck = gameManager:getHumanPlayer().deck
-    local margin = 25
-    local deckWidth = (MINI_CARD_WIDTH + margin) * #deck + margin
-    local startX = (GAME_WIDTH - deckWidth) / 2 + margin
-    for i = 1, #deck do
-        local x = startX + (MINI_CARD_WIDTH + margin) * (i - 1)
-        local y = GAME_HEIGHT - MINI_CARD_HEIGHT - 40
-        cards[deck[i]]:displayMini(x, y)
+    -- Display decks
+    local humanPlayer = gameManager:getHumanPlayer()
+    local aiPlayer = gameManager:getAIPlayer()
+    local margin = 10
+
+    for i = 1, #humanPlayer.deck do
+        cards[humanPlayer.deck[i]]:displayMini(margin, (MINI_CARD_HEIGHT + margin) * i + margin + 100)
+    end
+
+    for i = 1, #aiPlayer.deck do
+        if aiPlayer.deck[i] == aiPlayer.nextSpell then
+            cards[aiPlayer.deck[i]]:displayMini(GAME_WIDTH - MINI_CARD_WIDTH - margin - 40,
+                (MINI_CARD_HEIGHT + margin) * i + margin + 100)
+        else
+            cards[aiPlayer.deck[i]]:displayMini(GAME_WIDTH - MINI_CARD_WIDTH - margin,
+                (MINI_CARD_HEIGHT + margin) * i + margin + 100)
+        end
     end
 
     -- Animations for game
@@ -97,8 +105,8 @@ function GameState:draw()
         end
     end
 
-    gameManager:getHumanPlayer():drawUI()
-    gameManager:getAIPlayer():drawUI()
+    humanPlayer:drawUI()
+    aiPlayer:drawUI()
 end
 
 function GameState:keypressed(key)

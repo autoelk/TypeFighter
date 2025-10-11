@@ -47,12 +47,6 @@ function AIPlayer:update(dt)
         self.castCooldown = self.castCooldown - dt
         self.warningCooldown = self.warningCooldown - dt
         if self.castCooldown <= 0 then
-            if self.nextSpell then
-                self:castCard(self.nextSpell)
-                self.nextSpell = nil
-                self.warningCooldown = self.castSpeed - self.warningTime
-            end
-
             -- Decide on the next spell to cast
             local availableCards = {}
             for i = 1, #self.deck do
@@ -64,8 +58,14 @@ function AIPlayer:update(dt)
             if #availableCards > 0 then
                 local cardIndex = availableCards[math.random(1, #availableCards)]
                 self.nextSpell = cardIndex
+                self.warningCooldown = self.castSpeed - self.warningTime
             end
             self.castCooldown = self.castSpeed
+        end
+
+        if self.nextSpell and self.warningCooldown <= 0 then
+            self:castCard(self.nextSpell)
+            self.nextSpell = nil
         end
     elseif gameManager:getCurrentStateName() == "CardSelectState" then
         if #self:other().deck >= MAX_DECK_SIZE and self.picks > 0 then
@@ -94,15 +94,6 @@ function AIPlayer:selectRandomCard()
     if #availableCards > 0 then
         local cardIdx = availableCards[math.random(1, #availableCards)]
         self:addCard(cardIdx)
-    end
-end
-
-function AIPlayer:drawUI()
-    BasePlayer.drawUI(self)
-
-    -- Show next spell to be cast
-    if self.nextSpell and self.warningCooldown <= 0 then
-        cards[self.nextSpell]:displayMini(self.animX, self.animY - 100)
     end
 end
 
