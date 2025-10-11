@@ -150,15 +150,9 @@ end
 
 function BasePlayer:castCard(cardIndex)
     -- Check if the card is in our hand
-    local handIdx = -1
-    for i = 1, #self.hand do
-        if self.hand[i] == cardIndex then
-            handIdx = i
-            break
-        end
-    end
+    local handIdx = indexOf(self.hand, cardIndex)
 
-    if handIdx == -1 then
+    if not handIdx then
         if not self.suppressMessages then
             message = "that card is not in your hand"
         end
@@ -283,13 +277,11 @@ end
 
 -- Remove a card from the player's deck
 function BasePlayer:removeCard(cardIdx)
-    for i, v in ipairs(self.deck) do
-        if v == cardIdx then
-            cards[cardIdx].deck = 0
-            table.remove(self.deck, i)
-            self.picks = self.picks + 1
-            return
-        end
+    local idx = indexOf(self.deck, cardIdx)
+    if idx then
+        cards[cardIdx].deck = 0
+        table.remove(self.deck, idx)
+        self.picks = self.picks + 1
     end
 end
 
@@ -381,4 +373,13 @@ end
 
 function BasePlayer:other()
     error("BasePlayer:other() must be implemented by subclass")
+end
+
+function indexOf(array, value)
+    for i, v in ipairs(array) do
+        if v == value then
+            return i
+        end
+    end
+    return nil
 end
