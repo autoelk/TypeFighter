@@ -21,10 +21,16 @@ function GameManager:addPlayer(player)
 end
 
 function GameManager:getHumanPlayer()
+    if not self.humanPlayer then
+        error("No human player found!")
+    end
     return self.humanPlayer
 end
 
 function GameManager:getAIPlayer()
+    if not self.aiPlayer then
+        error("No AI player found!")
+    end
     return self.aiPlayer
 end
 

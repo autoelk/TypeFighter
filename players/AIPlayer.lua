@@ -9,9 +9,9 @@ AIPlayer.__index = AIPlayer
 function AIPlayer:new(id, difficulty)
     local player = BasePlayer:new(id)
     player.x = GAME_WIDTH - 250
-    player.y = 390
+    player.y = 375
     player.animX = player.x - SPRITE_SIZE
-    player.animY = player.y - 30
+    player.animY = player.y - 15
     player.uiX = GAME_WIDTH - 25
     player.textOffsetX = -25
     player.mirror = true

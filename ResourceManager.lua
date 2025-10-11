@@ -56,7 +56,8 @@ function ResourceManager:loadAllAssets()
 
     -- Load images
     self:loadImage("background", "assets/background.png")
-    self:loadImage("wizard", "assets/wizard.png")
+    self:loadImage("wizardDeath", "assets/wizardDeath.png")
+    self:loadImage("wizardCast", "assets/wizardCast.png")
     self:loadImage("placeholder", "assets/placeholder.png")
 
     self:loadCards()

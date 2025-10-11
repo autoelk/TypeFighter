@@ -12,7 +12,12 @@ function BasePlayer:new(id)
         manaRegen = 1,
         spriteNum = 1,
         deck = {},
-        anim = resourceManager:newAnimation(resourceManager:getImage("wizard"), SPRITE_PIXEL_SIZE, SPRITE_PIXEL_SIZE),
+        deathAnim = resourceManager:newAnimation(resourceManager:getImage("wizardDeath"), SPRITE_PIXEL_SIZE,
+            SPRITE_PIXEL_SIZE),
+        castAnim = resourceManager:newAnimation(resourceManager:getImage("wizardCast"), SPRITE_PIXEL_SIZE,
+            SPRITE_PIXEL_SIZE),
+        isCasting = false,
+        castAnimFinished = false,
         deathAnimStarted = false,
         deathAnimFinished = false,
 
@@ -35,10 +40,14 @@ function BasePlayer:reset()
     self.mana = 0
     self.manaRegen = 1
     self.spriteNum = 1
-    self.anim.currentFrame = 1
-    self.anim.accumulator = 0
+    self.deathAnim.currentFrame = 1
+    self.deathAnim.accumulator = 0
     self.deathAnimStarted = false
     self.deathAnimFinished = false
+    self.castAnim.currentFrame = 1
+    self.castAnim.accumulator = 0
+    self.isCasting = false
+    self.castAnimFinished = false
     self.damageDisplay = {
         amount = 0,
         endTime = 0,
@@ -48,33 +57,27 @@ function BasePlayer:reset()
 end
 
 function BasePlayer:draw()
-    if self.isAlive then
-        self.spriteNum = 1
-    else
-        self.spriteNum = self.anim.currentFrame or #self.anim.quads
+    -- Draw priority: death animation (if dead) -> cast animation (if casting) -> idle sprite
+    if not self.isAlive then
+        self.spriteNum = self.deathAnim.currentFrame or #self.deathAnim.quads
+        local scaleX = self.mirror and -PIXEL_TO_GAME_SCALE or PIXEL_TO_GAME_SCALE
+        lg.draw(self.deathAnim.spriteSheet, self.deathAnim.quads[self.spriteNum], self.x, self.y, 0, scaleX,
+            PIXEL_TO_GAME_SCALE)
+        return
     end
 
-    if self.mirror then
-        lg.draw(
-            self.anim.spriteSheet,
-            self.anim.quads[self.spriteNum],
-            self.x,
-            self.y,
-            0,
-            -PIXEL_TO_GAME_SCALE,
-            PIXEL_TO_GAME_SCALE
-        )
-    else
-        lg.draw(
-            self.anim.spriteSheet,
-            self.anim.quads[self.spriteNum],
-            self.x,
-            self.y,
-            0,
-            PIXEL_TO_GAME_SCALE,
-            PIXEL_TO_GAME_SCALE
-        )
+    if self.isCasting and self.castAnim then
+        local cf = self.castAnim.currentFrame or 1
+        local scaleX = self.mirror and -PIXEL_TO_GAME_SCALE or PIXEL_TO_GAME_SCALE
+        lg.draw(self.castAnim.spriteSheet, self.castAnim.quads[cf], self.x, self.y, 0, scaleX, PIXEL_TO_GAME_SCALE)
+        return
     end
+
+    -- default idle sprite
+    self.spriteNum = 1
+    local scaleX = self.mirror and -PIXEL_TO_GAME_SCALE or PIXEL_TO_GAME_SCALE
+    lg.draw(self.deathAnim.spriteSheet, self.deathAnim.quads[self.spriteNum], self.x, self.y, 0, scaleX,
+        PIXEL_TO_GAME_SCALE)
 end
 
 function BasePlayer:drawUI()
@@ -178,6 +181,11 @@ function BasePlayer:castCard(cardIndex)
     end
     card:playOnce(x, self.animY)
 
+    self.isCasting = true
+    self.castAnim.currentFrame = 1
+    self.castAnim.accumulator = 0
+    self.castAnimFinished = false
+
     -- Deduct mana cost
     self.mana = self.mana - card.mana
     if not self.suppressMessages then
@@ -203,26 +211,38 @@ end
 function BasePlayer:update(dt)
     -- Hold first frame while alive
     if self.isAlive then
-        self.anim.currentFrame = 1
-        self.anim.accumulator = 0
+        self.deathAnim.currentFrame = 1
+        self.deathAnim.accumulator = 0
         self.deathAnimStarted = false
         self.deathAnimFinished = false
     elseif not self.deathAnimStarted then
-        self.anim.currentFrame = 1
-        self.anim.accumulator = 0
+        self.deathAnim.currentFrame = 1
+        self.deathAnim.accumulator = 0
         self.deathAnimStarted = true
     elseif self.deathAnimFinished then
-        self.anim.currentFrame = #self.anim.quads
+        self.deathAnim.currentFrame = #self.deathAnim.quads
         return
     end
 
-    self.anim.accumulator = self.anim.accumulator + dt
-    while self.anim.accumulator >= self.anim.frameDuration do
-        self.anim.accumulator = self.anim.accumulator - self.anim.frameDuration
-        self.anim.currentFrame = (self.anim.currentFrame or 1) + 1
-        if self.anim.currentFrame >= #self.anim.quads then
-            self.anim.currentFrame = #self.anim.quads
+    self.deathAnim.accumulator = self.deathAnim.accumulator + dt
+    while self.deathAnim.accumulator >= self.deathAnim.frameDuration do
+        self.deathAnim.accumulator = self.deathAnim.accumulator - self.deathAnim.frameDuration
+        self.deathAnim.currentFrame = (self.deathAnim.currentFrame or 1) + 1
+        if self.deathAnim.currentFrame >= #self.deathAnim.quads then
+            self.deathAnim.currentFrame = #self.deathAnim.quads
             self.deathAnimFinished = true
+            break
+        end
+    end
+
+    self.castAnim.accumulator = self.castAnim.accumulator + dt
+    while self.castAnim.accumulator >= self.castAnim.frameDuration do
+        self.castAnim.accumulator = self.castAnim.accumulator - self.castAnim.frameDuration
+        self.castAnim.currentFrame = (self.castAnim.currentFrame or 1) + 1
+        if self.castAnim.currentFrame > #self.castAnim.quads then
+            self.castAnim.currentFrame = #self.castAnim.quads
+            self.isCasting = false
+            self.castAnimFinished = true
             break
         end
     end

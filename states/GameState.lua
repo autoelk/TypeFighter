@@ -59,9 +59,6 @@ function GameState:update(dt)
     end
     aiPlayer.health = aiPlayer.health + dt * aiPlayer.healthRegen
 
-    -- Player2 AI update
-    aiPlayer:update(dt)
-
     if not humanPlayer.isAlive or not aiPlayer.isAlive then
         self.stateManager:changeState("gameOver")
     end

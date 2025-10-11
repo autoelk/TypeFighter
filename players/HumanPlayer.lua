@@ -7,9 +7,9 @@ HumanPlayer.__index = HumanPlayer
 function HumanPlayer:new(id)
     local player = BasePlayer:new(id)
     player.x = 250
-    player.y = 390
+    player.y = 375
     player.animX = player.x
-    player.animY = player.y - 30
+    player.animY = player.y - 15
     player.uiX = 25
     player.textOffsetX = 30
     player.mirror = false
