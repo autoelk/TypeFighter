@@ -23,9 +23,6 @@ function SliceCard:getDescription()
 end
 
 function SliceCard:cast(caster, target)
-    if caster.health > self.healthThreshold then
-        target:damage(math.floor(target.health * self.ratio))
-        return true
-    end
-    return false
+    target:damage(math.floor(target.health * self.ratio))
 end
+    
