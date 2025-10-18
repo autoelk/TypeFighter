@@ -10,7 +10,6 @@ function PauseState:new()
 end
 
 function PauseState:enter()
-    gameManager.currentState = "PauseState"
     message2 = "[q]uit to menu [esc] to return"
 end
 
@@ -23,9 +22,9 @@ end
 
 function PauseState:keypressed(key)
     if key == "escape" then
-        self.stateManager:changeState("game")
+        self.sceneManager:changeState("game")
     elseif key == "return" and self:processInput() == "q" then
-        self.stateManager:changeState("menu")
+        self.sceneManager:changeState("menu")
         input = ""
     end
 end

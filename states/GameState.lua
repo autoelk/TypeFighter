@@ -12,125 +12,110 @@ function GameState:new()
 end
 
 function GameState:enter()
-    local human = gameManager:getHumanPlayer()
-    local ai = gameManager:getAIPlayer()
-
-    gameManager.currentState = "GameState"
     -- Initialize players for gameplay
-    human:reset()
-    ai:reset()
+    HUMANPLAYER:reset()
+    AIPLAYER:reset()
 
+    HUMANPLAYER.library = HUMANPLAYER.deck
+    AIPLAYER.library = AIPLAYER.deck
 
-    human.library = human.deck
-    ai.library = ai.deck
+    -- Draw starting hands
     for i = 1, STARTING_HAND_SIZE do
-        human:drawCard()
-        ai:drawCard()
+        HUMANPLAYER:drawCard()
+        AIPLAYER:drawCard()
     end
 
     -- Set game interface messages
     message = "type card names to cast them"
     message2 = "[q]uit to menu [esc] pause"
 
-    for i = 1, #cards do
-        cards[i]:resetAnimation()
-    end
+    -- Initialize active spells list for this game
+    self.activeSpells = {}
 end
 
 function GameState:update(dt)
-    local humanPlayer = gameManager:getHumanPlayer()
-    local aiPlayer = gameManager:getAIPlayer()
+    -- Health and mana regen
+    HUMANPLAYER.mana = HUMANPLAYER.mana + dt * HUMANPLAYER.manaRegen
+    if HUMANPLAYER.mana < 0 then
+        HUMANPLAYER.mana = 0
+    end
+    HUMANPLAYER.health = HUMANPLAYER.health + dt * HUMANPLAYER.healthRegen
+    AIPLAYER.mana = AIPLAYER.mana + dt * AIPLAYER.manaRegen
+    if AIPLAYER.mana < 0 then
+        AIPLAYER.mana = 0
+    end
+    AIPLAYER.health = AIPLAYER.health + dt * AIPLAYER.healthRegen
 
-    -- Move projectile animations
-    for i = 1, #cards do
-        local animDuration = cards[i].anim.frameDuration * #cards[i].anim.quads
-        local animDist = aiPlayer.animX - humanPlayer.animX - SPRITE_SIZE
-        local animSpeed = animDist / animDuration
-
-        if cards[i].loc == "proj" then
-            if cards[i].deck == humanPlayer.id and cards[i].t > 0 then
-                cards[i].x = aiPlayer.animX - animSpeed * cards[i].t
-                cards[i].y = aiPlayer.animY
-            elseif cards[i].deck == aiPlayer.id and cards[i].t > 0 then
-                cards[i].x = humanPlayer.animX + animSpeed * cards[i].t
-                cards[i].y = humanPlayer.animY
-            end
+    -- Update active spells
+    for i = #self.activeSpells, 1, -1 do
+        local spell = self.activeSpells[i]
+        if spell.anim.timeLeft and spell.anim.timeLeft <= 0 then
+            table.remove(self.activeSpells, i)
+        else
+            spell:update(dt)
         end
     end
 
-    -- Health and mana regen
-    humanPlayer.mana = humanPlayer.mana + dt * humanPlayer.manaRegen
-    if humanPlayer.mana < 0 then
-        humanPlayer.mana = 0
+    local margin = 10
+    for i = 1, #HUMANPLAYER.hand do
+        HUMANPLAYER.hand[i]:update(dt)
+        HUMANPLAYER.hand[i]:move(margin, (MINI_CARD_HEIGHT + margin) * i + 100)
     end
-    humanPlayer.health = humanPlayer.health + dt * humanPlayer.healthRegen
-    aiPlayer.mana = aiPlayer.mana + dt * aiPlayer.manaRegen
-    if aiPlayer.mana < 0 then
-        aiPlayer.mana = 0
-    end
-    aiPlayer.health = aiPlayer.health + dt * aiPlayer.healthRegen
 
-    if not humanPlayer.isAlive or not aiPlayer.isAlive then
-        self.stateManager:changeState("gameOver")
+    for i = 1, #AIPLAYER.hand do
+        if AIPLAYER.hand[i] == AIPLAYER.nextSpell then
+            AIPLAYER.hand[i]:move(GAME_WIDTH - MINI_CARD_WIDTH - margin - 40,
+                (MINI_CARD_HEIGHT + margin) * i + 100)
+        else
+            AIPLAYER.hand[i]:move(GAME_WIDTH - MINI_CARD_WIDTH - margin,
+                (MINI_CARD_HEIGHT + margin) * i + 100)
+        end
+    end
+
+
+    if not HUMANPLAYER.isAlive or not AIPLAYER.isAlive then
+        self.sceneManager:changeState("gameOver")
     end
 end
 
 function GameState:draw()
     -- Display decks
-    local humanPlayer = gameManager:getHumanPlayer()
-    local aiPlayer = gameManager:getAIPlayer()
     local margin = 10
 
-    for i = 1, #humanPlayer.hand do
-        cards[humanPlayer.hand[i]]:displayMini(margin, (MINI_CARD_HEIGHT + margin) * i + 100)
+    for i = 1, #HUMANPLAYER.hand do
+        HUMANPLAYER.hand[i]:drawMini()
     end
 
     -- Display word for player to type in order to draw a card
-    if #humanPlayer.hand < MAX_HAND_SIZE then
-        humanPlayer:drawDictWord(margin, (MINI_CARD_HEIGHT + margin) * (#humanPlayer.hand + 1) + 100)
+    if #HUMANPLAYER.hand < MAX_HAND_SIZE then
+        HUMANPLAYER:drawDictWord(margin, (MINI_CARD_HEIGHT + margin) * (#HUMANPLAYER.hand + 1) + 100)
     end
 
-    for i = 1, #aiPlayer.hand do
-        if aiPlayer.hand[i] == aiPlayer.nextSpell then
-            cards[aiPlayer.hand[i]]:displayMini(GAME_WIDTH - MINI_CARD_WIDTH - margin - 40,
-                (MINI_CARD_HEIGHT + margin) * i + 100)
-        else
-            cards[aiPlayer.hand[i]]:displayMini(GAME_WIDTH - MINI_CARD_WIDTH - margin,
-                (MINI_CARD_HEIGHT + margin) * i + 100)
+    for i = 1, #AIPLAYER.hand do
+        AIPLAYER.hand[i]:drawMini()
+    end
+
+    -- Draw active spells
+    if self.activeSpells then
+        for i = 1, #self.activeSpells do
+            local s = self.activeSpells[i]
+            s:draw()
         end
     end
 
-    -- Animations for game
-    for i = 1, #cards do
-        if cards[i].t > 0 then
-            local card = cards[i]
-            local animX = card.x
-            local animSx = card.scale
-            local animSy = card.scale
-
-            -- Handle deck-specific positioning (mirroring for player 2)
-            if card.deck == 2 then
-                animSx = animSx * -1
-                animX = animX + SPRITE_SIZE
-            end
-
-            card:animate(animX, card.y, card.rotation, animSx, animSy, card.offsetX, card.offsetY)
-        end
-    end
-
-    humanPlayer:drawUI()
-    aiPlayer:drawUI()
+    HUMANPLAYER:drawUI()
+    AIPLAYER:drawUI()
 end
 
 function GameState:keypressed(key)
     if key == "escape" then
-        self.stateManager:changeState("pause")
+        self.sceneManager:changeState("pause")
     elseif key == "return" then
         local userInput = self:processInput()
-        local result = gameManager:getHumanPlayer():handleInput(userInput)
+        local result = HUMANPLAYER:handleInput(userInput)
 
         if result == "quit" then
-            self.stateManager:changeState("menu")
+            self.sceneManager:changeState("menu")
         elseif result == "unknown_card" then
             message = "type card names to cast them"
         elseif result == "insufficient_mana" then

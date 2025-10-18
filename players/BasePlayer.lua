@@ -1,35 +1,40 @@
+-- Abstract base class for players
 BasePlayer = {}
 BasePlayer.__index = BasePlayer
 
 function BasePlayer:new(id)
     local player = {
+        -- Basic stats
         id = id,
-        picks = MAX_DECK_SIZE,
-        health = 50,
         isAlive = true,
+        health = 50,
         healthRegen = 0,
         mana = 0,
         manaRegen = 1,
+        effects = {},
+
+        -- Cards
+        picks = MAX_DECK_SIZE,
         hand = {},    -- Current cards in hand
         library = {}, -- All cards available to draw from
         deck = {},    -- All cards owned by the player
-        idleAnim = resourceManager:newAnimation(resourceManager:getImage("wizardIdle"), SPRITE_PIXEL_SIZE,
-            SPRITE_PIXEL_SIZE),
-        deathAnim = resourceManager:newAnimation(resourceManager:getImage("wizardDeath"), SPRITE_PIXEL_SIZE,
-            SPRITE_PIXEL_SIZE),
-        castAnim = resourceManager:newAnimation(resourceManager:getImage("wizardCast"), SPRITE_PIXEL_SIZE,
-            SPRITE_PIXEL_SIZE),
+
+        -- Drawing
+        x = nil,
+        y = nil,
+        idleAnim = nil,
+        deathAnim = nil,
+        castAnim = nil,
         isCasting = false,
         castAnimFinished = false,
         deathAnimStarted = false,
         deathAnimFinished = false,
-
+        mirror = false,
         damageDisplay = {
             amount = 0,
             endTime = 0,
             isActive = false
         },
-        effects = {}
     }
     setmetatable(player, self)
     return player
@@ -63,16 +68,16 @@ end
 
 function BasePlayer:draw()
     if not self.isAlive then
-        local scaleX = self.mirror and -PIXEL_TO_GAME_SCALE or PIXEL_TO_GAME_SCALE
-        lg.draw(self.deathAnim.spriteSheet, self.deathAnim.quads[self.deathAnim.currentFrame], self.x, self.y, 0, scaleX,
+        lg.draw(self.deathAnim.spriteSheet, self.deathAnim.quads[self.deathAnim.currentFrame], self.x, self.y, 0,
+            PIXEL_TO_GAME_SCALE,
             PIXEL_TO_GAME_SCALE)
     elseif self.isCasting and self.castAnim then
-        local scaleX = self.mirror and -PIXEL_TO_GAME_SCALE or PIXEL_TO_GAME_SCALE
-        lg.draw(self.castAnim.spriteSheet, self.castAnim.quads[self.castAnim.currentFrame], self.x, self.y, 0, scaleX,
+        lg.draw(self.castAnim.spriteSheet, self.castAnim.quads[self.castAnim.currentFrame], self.x, self.y, 0,
+            PIXEL_TO_GAME_SCALE,
             PIXEL_TO_GAME_SCALE)
     else
-        local scaleX = self.mirror and -PIXEL_TO_GAME_SCALE or PIXEL_TO_GAME_SCALE
-        lg.draw(self.idleAnim.spriteSheet, self.idleAnim.quads[self.idleAnim.currentFrame], self.x, self.y, 0, scaleX,
+        lg.draw(self.idleAnim.spriteSheet, self.idleAnim.quads[self.idleAnim.currentFrame], self.x, self.y, 0,
+            PIXEL_TO_GAME_SCALE,
             PIXEL_TO_GAME_SCALE)
     end
 end
@@ -139,18 +144,14 @@ function BasePlayer:drawDamageNumbers()
             lg.setFont(fontM)
         end
 
-        local damageX = self.x
-        if self.mirror then
-            damageX = damageX - SPRITE_SIZE
-        end
-        local damageY = self.animY - 40 - (gameTime - self.damageDisplay.endTime) * 25
-        lg.printf(absAmount, damageX, damageY, SPRITE_SIZE, "center")
+        local damageY = self.y - 40 - (gameTime - self.damageDisplay.endTime) * 25
+        lg.printf(absAmount, self.x, damageY, SPRITE_SIZE, "center")
     end
 end
 
-function BasePlayer:castCard(cardIndex)
+function BasePlayer:castCard(card)
     -- Check if the card is in our hand
-    local handIdx = indexOf(self.hand, cardIndex)
+    local handIdx = indexOf(self.hand, card)
 
     if not handIdx then
         if not self.suppressMessages then
@@ -160,7 +161,6 @@ function BasePlayer:castCard(cardIndex)
     end
 
     -- Check if we are able to cast the card
-    local card = cards[cardIndex]
     local canCast, errorMessage = card:canCast(self, self:other())
     if not canCast then
         if not self.suppressMessages then
@@ -173,17 +173,6 @@ function BasePlayer:castCard(cardIndex)
             return "cannot_cast"
         end
     end
-
-    -- Calculate animation position
-    local x
-    if card.loc == "self" then
-        x = self.animX
-    elseif card.loc == "proj" then
-        x = self:other().animX
-    elseif card.loc == "other" then
-        x = self:other().animX
-    end
-    card:playOnce(x, self.animY)
 
     -- Start casting animation
     self.isCasting = true
@@ -199,10 +188,11 @@ function BasePlayer:castCard(cardIndex)
 
     -- Remove card from hand
     table.remove(self.hand, handIdx)
-    table.insert(self.library, cardIndex)
+    table.insert(self.library, card)
 
     -- Use the card's cast method
-    card:cast(self, self:other())
+    local spell = card:cast(self, self:other())
+    table.insert(sceneManager:getCurrentState().activeSpells, spell)
     return "success"
 end
 
@@ -269,17 +259,15 @@ function BasePlayer:update(dt)
 end
 
 -- Add a card to the player's deck
-function BasePlayer:addCard(cardIdx)
-    cards[cardIdx].deck = self.id
-    table.insert(self.deck, cardIdx)
+function BasePlayer:addCard(card)
+    table.insert(self.deck, card)
     self.picks = self.picks - 1
 end
 
 -- Remove a card from the player's deck
-function BasePlayer:removeCard(cardIdx)
-    local idx = indexOf(self.deck, cardIdx)
+function BasePlayer:removeCard(card)
+    local idx = indexOf(self.deck, card)
     if idx then
-        cards[cardIdx].deck = 0
         table.remove(self.deck, idx)
         self.picks = self.picks + 1
     end
@@ -373,6 +361,10 @@ end
 
 function BasePlayer:other()
     error("BasePlayer:other() must be implemented by subclass")
+end
+
+function BasePlayer:isMirrored()
+    return self.mirror
 end
 
 function indexOf(array, value)

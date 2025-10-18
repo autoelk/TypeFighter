@@ -15,10 +15,11 @@ require "cards.ForceCard"
 require "cards.SliceCard"
 require "cards.PortalCard"
 
-CardFactory = {}
-CardFactory.__index = CardFactory
+-- Static class responsible for creating card instances based on their names
+CardManager = {}
+CardManager.__index = CardManager
 
-function CardFactory:new()
+function CardManager:new()
     local factory = {
         cardTypes = {
             ["fireball"] = FireballCard,
@@ -36,48 +37,25 @@ function CardFactory:new()
             ["force"] = ForceCard,
             ["slice"] = SliceCard,
             ["portal"] = PortalCard
-        }
+        },
+        cardNames = {}
     }
+    for cardName, _ in pairs(factory.cardTypes) do
+        table.insert(factory.cardNames, cardName)
+    end
     setmetatable(factory, self)
     return factory
 end
 
-function CardFactory:createCard(cardName, cardData)
+function CardManager:createCard(cardName)
     local CardClass = self.cardTypes[string.lower(cardName)]
     if CardClass then
-        return CardClass:new(cardData)
+        return CardClass:new(0, 0)
     else
-        -- Fallback to creating a generic card from the old system
-        print("Warning: No specific class found for card '" .. cardName .. "', using BaseCard")
-        cardData.name = cardName
-        return BaseCard:new(cardData)
+        error("Unknown card type: " .. tostring(cardName))
     end
 end
 
-function CardFactory:registerCardType(cardName, CardClass)
-    self.cardTypes[string.lower(cardName)] = CardClass
+function CardManager:getAllCardNames()
+    return self.cardNames
 end
-
--- Get all available card names
-function CardFactory:getAllCardNames()
-    local cardNames = {}
-    for cardName, _ in pairs(self.cardTypes) do
-        table.insert(cardNames, cardName)
-    end
-    return cardNames
-end
-
--- Utility function to find a card by name in the GameManager's cards array
-function CardFactory:findCard(cardToFind)
-    cardToFind = string.lower(cardToFind)
-    local cards = gameManager:getCards()
-    for i = 1, #cards do
-        if cards[i].name == cardToFind then
-            return i
-        end
-    end
-    return 0
-end
-
--- Global instance
-cardFactory = CardFactory:new()

@@ -9,17 +9,17 @@ CardBrowseState.__index = CardBrowseState
 
 function CardBrowseState:new()
     local state = setmetatable(BaseState:new(), self)
-    state.posy = 10 -- Card scroll position
+    state.posy = 10 -- Scroll position
     state.cardsPerRow = 4
+    state.cards = {}
+    for _, cardName in ipairs(cardManager:getAllCardNames()) do
+        table.insert(state.cards, cardManager:createCard(cardName))
+    end
     return state
 end
 
 function CardBrowseState:enter()
-    gameManager.currentState = "CardBrowseState"
     message2 = "[Q] to go back"
-    for i = 1, #cards do
-        cards[i]:loop()
-    end
 end
 
 function CardBrowseState:update(dt)
@@ -29,25 +29,26 @@ function CardBrowseState:update(dt)
     local rowSpacing = LARGE_CARD_HEIGHT + margin
     local displayWidth = self.cardsPerRow * colSpacing + margin
     local startX = (GAME_WIDTH - displayWidth) / 2 + margin
-    for i = 1, #cards do
+    for i = 1, #self.cards do
         local idx = i - 1
         local colNum, rowNum = idx % self.cardsPerRow, math.floor(idx / self.cardsPerRow)
         local x = startX + colSpacing * colNum
         local y = rowSpacing * rowNum + self.posy
-        cards[i]:move(x, y)
+        self.cards[i]:move(x, y)
+        self.cards[i]:update(dt)
     end
 end
 
 function CardBrowseState:draw()
-    for i = 1, #cards do
-        cards[i]:display()
+    for i = 1, #self.cards do
+        self.cards[i]:draw()
     end
 end
 
 function CardBrowseState:keypressed(key)
     if key == "return" then
         if self:processInput() == "q" then
-            self.stateManager:changeState("menu")
+            self.sceneManager:changeState("menu")
         end
         input = ""
     end
@@ -61,7 +62,7 @@ function CardBrowseState:wheelmoved(x, y)
     local margin = 15
     if self.posy > margin then
         self.posy = margin
-    elseif self.posy <= (math.ceil(#cards / 4) - 1) * -(LARGE_CARD_HEIGHT + margin) then
-        self.posy = (math.ceil(#cards / 4) - 1) * -(LARGE_CARD_HEIGHT + margin)
+    elseif self.posy <= (math.ceil(#self.cards / self.cardsPerRow) - 1) * -(LARGE_CARD_HEIGHT + margin) then
+        self.posy = (math.ceil(#self.cards / self.cardsPerRow) - 1) * -(LARGE_CARD_HEIGHT + margin)
     end
 end

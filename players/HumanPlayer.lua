@@ -8,11 +8,14 @@ function HumanPlayer:new(id)
     local player = BasePlayer:new(id)
     player.x = 250
     player.y = 375
-    player.animX = player.x
-    player.animY = player.y - 15
+
+    player.mirror = false
     player.uiX = 25
     player.textOffsetX = 30
-    player.mirror = false
+    player.idleAnim = resourceManager:newAnimation("wizardIdle")
+    player.deathAnim = resourceManager:newAnimation("wizardDeath")
+    player.castAnim = resourceManager:newAnimation("wizardCast")
+
     player.drawWord = resourceManager:getRandomWord() -- Word the player needs to type to draw
     setmetatable(player, self)
     return player
@@ -28,16 +31,16 @@ function HumanPlayer:handleInput(userInput)
     end
 
     -- Find and cast card based on user input
-    local cardIndex = cardFactory:findCard(userInput)
-    if cardIndex > 0 then
-        return self:castCard(cardIndex)
-    else
-        -- Handle other commands like quit
-        if userInput == "q" or userInput == "quit" then
-            return "quit"
+    for _, card in ipairs(self.hand) do
+        if userInput == card.name then
+            return self:castCard(card)
         end
-        return "unknown_card" -- Return specific reason for failure
     end
+
+    if userInput == "q" or userInput == "quit" then
+        return "quit"
+    end
+    return "unknown_card"
 end
 
 function HumanPlayer:drawDictWord(libraryX, libraryY)
@@ -53,5 +56,5 @@ function HumanPlayer:drawDictWord(libraryX, libraryY)
 end
 
 function HumanPlayer:other()
-    return gameManager:getAIPlayer()
+    return AIPLAYER
 end

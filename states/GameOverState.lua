@@ -14,10 +14,9 @@ function GameOverState:new()
 end
 
 function GameOverState:enter()
-    gameManager.currentState = "GameOverState"
     message2 = "[r]estart [q]uit"
-    local humanPlayer = gameManager:getHumanPlayer()
-    local aiPlayer = gameManager:getAIPlayer()
+    local humanPlayer = HUMANPLAYER
+    local aiPlayer = AIPLAYER
     -- Decide game over message based on isAlive flags
     if not humanPlayer.isAlive and not aiPlayer.isAlive then
         self.gameOverMessage = "tie"
@@ -29,25 +28,6 @@ function GameOverState:enter()
 end
 
 function GameOverState:update(dt)
-    local humanPlayer = gameManager:getHumanPlayer()
-    local aiPlayer = gameManager:getAIPlayer()
-
-    -- Move projectile animations
-    for i = 1, #cards do
-        local animDuration = cards[i].anim.frameDuration * #cards[i].anim.quads
-        local animDist = aiPlayer.animX - humanPlayer.animX - SPRITE_SIZE
-        local animSpeed = animDist / animDuration
-
-        if cards[i].loc == "proj" then
-            if cards[i].deck == humanPlayer.id and cards[i].t > 0 then
-                cards[i].x = aiPlayer.animX - animSpeed * cards[i].t
-                cards[i].y = aiPlayer.animY
-            elseif cards[i].deck == aiPlayer.id and cards[i].t > 0 then
-                cards[i].x = humanPlayer.animX + animSpeed * cards[i].t
-                cards[i].y = humanPlayer.animY
-            end
-        end
-    end
 end
 
 function GameOverState:draw()
@@ -56,20 +36,9 @@ function GameOverState:draw()
     lg.setFont(fontM)
     lg.printf("[r]estart game\n[q]uit", 0, 300, GAME_WIDTH, "center")
 
-    for i = 1, #cards do
-        if cards[i].t > 0 then
-            local card = cards[i]
-            local animX = card.x
-            local animSx = card.scale
-            local animSy = card.scale
-
-            if card.deck == 2 then
-                animSx = animSx * -1
-                animX = animX + SPRITE_SIZE
-            end
-
-            card:animate(animX, card.y, card.rotation, animSx, animSy, card.offsetX, card.offsetY)
-        end
+    for i = 1, #activeSpells do
+        local s = activeSpells[i]
+        s:draw()
     end
 end
 
@@ -79,7 +48,7 @@ function GameOverState:keypressed(key)
         if userInput == "q" or userInput == "quit" then
             love.event.quit()
         elseif userInput == "r" or userInput == "restart" then
-            self.stateManager:changeState("menu")
+            self.sceneManager:changeState("menu")
         end
         input = ""
     end

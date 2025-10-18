@@ -1,4 +1,5 @@
 require "cards.BaseCard"
+require "spells.TorrentSpell"
 
 TorrentCard = {}
 setmetatable(TorrentCard, {
@@ -6,24 +7,19 @@ setmetatable(TorrentCard, {
 })
 TorrentCard.__index = TorrentCard
 
-function TorrentCard:new(cardData)
-    local card = BaseCard:new(cardData)
+function TorrentCard:new(x, y)
+    local card = BaseCard:new(x, y)
     card.name = "torrent"
-    card.damage = 15
     card.mana = 7
-    card.type = "attack"
     card.elem = "water"
-    card.loc = "proj"
+    card.anim = resourceManager:newAnimation("card_" .. card.name)
+
+    card.SpellClass = TorrentSpell
+    card.spellData = { damage = 15 }
     setmetatable(card, self)
     return card
 end
 
 function TorrentCard:getDescription()
-    return "deal " .. self.damage .. " damage. draw a card."
-end
-
-function TorrentCard:cast(caster, target)
-    target:damage(self.damage)
-    caster:drawCard()
-    return true
+    return "deal " .. self.spellData.damage .. " damage. draw a card."
 end

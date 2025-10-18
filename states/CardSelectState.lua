@@ -11,41 +11,46 @@ function CardSelectState:new()
     local state = setmetatable(BaseState:new(), self)
     state.posy = 10 -- scroll position
     state.cardsPerRow = 4
+    state.cardPool = {}
     return state
 end
 
 function CardSelectState:enter()
-    gameManager.currentState = "CardSelectState"
     message2 = "[P]lay [Q] to go back"
-    -- Reset decks
-    for i = 1, #cards do
-        cards[i].deck = 0
-        cards[i]:loop()
+    self.cardPool = {}
+    for _, cardName in ipairs(cardManager:getAllCardNames()) do
+        table.insert(self.cardPool, cardManager:createCard(cardName))
     end
     -- Reset player picks for card selection
-    local humanPlayer = gameManager:getHumanPlayer()
-    local aiPlayer = gameManager:getAIPlayer()
-    humanPlayer.picks = MAX_DECK_SIZE
-    humanPlayer.deck = {}
-    aiPlayer.picks = MAX_DECK_SIZE
-    aiPlayer.deck = {}
-    aiPlayer.pickCooldown = aiPlayer.pickSpeed
+    HUMANPLAYER.picks = MAX_DECK_SIZE
+    HUMANPLAYER.deck = {}
+    AIPLAYER.picks = MAX_DECK_SIZE
+    AIPLAYER.deck = {}
+
+    -- TODO Change way AI deck is populated
+    while AIPLAYER.picks > 0 do
+        local cardIdx = math.random(1, #self.cardPool)
+        table.insert(AIPLAYER.deck, self.cardPool[cardIdx])
+        table.remove(self.cardPool, cardIdx)
+        AIPLAYER.picks = AIPLAYER.picks - 1
+    end
 end
 
 function CardSelectState:update(dt)
-    local human = gameManager:getHumanPlayer()
-    local ai = gameManager:getAIPlayer()
-
     local margin = 10
 
-    -- draw ai selected cards
-    for i = 1, #ai.deck do
-        cards[ai.deck[i]]:move(GAME_WIDTH - LARGE_CARD_WIDTH - margin, 25 * (i - 1) + margin + 40)
+    for i = 1, #self.cardPool do
+        self.cardPool[i]:update(dt)
     end
 
-    -- draw human selected cards
-    for i = 1, #human.deck do
-        cards[human.deck[i]]:move(margin, 25 * (i - 1) + margin + 40)
+    for i = 1, #AIPLAYER.deck do
+        AIPLAYER.deck[i]:update(dt)
+        AIPLAYER.deck[i]:move(GAME_WIDTH - LARGE_CARD_WIDTH - margin, 25 * (i - 1) + margin + 40)
+    end
+
+    for i = 1, #HUMANPLAYER.deck do
+        HUMANPLAYER.deck[i]:update(dt)
+        HUMANPLAYER.deck[i]:move(margin, 25 * (i - 1) + margin + 40)
     end
 
     -- draw remaining cards
@@ -54,44 +59,38 @@ function CardSelectState:update(dt)
     local rowSpacing = LARGE_CARD_HEIGHT + margin
     local displayWidth = self.cardsPerRow * colSpacing + margin
     local startX = (GAME_WIDTH - displayWidth) / 2 + margin
-    for i = 1, #cards do
-        if cards[i].deck == 0 then
-            local colNum, rowNum = remCardIdx % self.cardsPerRow, math.floor(remCardIdx / self.cardsPerRow)
-            local x = startX + colSpacing * colNum
-            local y = rowSpacing * rowNum + self.posy
-            cards[i]:move(x, y)
-            remCardIdx = remCardIdx + 1
-        end
+    for i = 1, #self.cardPool do
+        local colNum, rowNum = remCardIdx % self.cardsPerRow, math.floor(remCardIdx / self.cardsPerRow)
+        local x = startX + colSpacing * colNum
+        local y = rowSpacing * rowNum + self.posy
+        self.cardPool[i]:move(x, y)
+        remCardIdx = remCardIdx + 1
     end
 end
 
 function CardSelectState:draw()
-    local human = gameManager:getHumanPlayer()
-    local ai = gameManager:getAIPlayer()
     local margin = 10
 
     lg.setFont(fontM)
     lg.setColor(COLORS.WHITE)
-    lg.printf("your deck " .. #human.deck .. "/" .. MAX_DECK_SIZE, margin, margin, LARGE_CARD_WIDTH, "center")
-    lg.printf("opp deck " .. #ai.deck .. "/" .. MAX_DECK_SIZE, GAME_WIDTH - LARGE_CARD_WIDTH - margin, margin,
+    lg.printf("your deck " .. #HUMANPLAYER.deck .. "/" .. MAX_DECK_SIZE, margin, margin, LARGE_CARD_WIDTH, "center")
+    lg.printf("opp deck " .. #AIPLAYER.deck .. "/" .. MAX_DECK_SIZE, GAME_WIDTH - LARGE_CARD_WIDTH - margin, margin,
         LARGE_CARD_WIDTH, "center")
 
-    for i = 1, #cards do
-        if cards[i].deck == 0 then
-            cards[i]:display()
-        end
+    for i = 1, #self.cardPool do
+        self.cardPool[i]:draw()
     end
 
-    for i = 1, #human.deck do
-        cards[human.deck[i]]:display()
+    for i = 1, #HUMANPLAYER.deck do
+        HUMANPLAYER.deck[i]:draw()
     end
 
-    for i = 1, #ai.deck do
-        cards[ai.deck[i]]:display()
+    for i = 1, #AIPLAYER.deck do
+        AIPLAYER.deck[i]:draw()
     end
 
     -- When both players have full decks, prompt player to start
-    if #human.deck == MAX_DECK_SIZE and #ai.deck == MAX_DECK_SIZE then
+    if #HUMANPLAYER.deck == MAX_DECK_SIZE and #AIPLAYER.deck == MAX_DECK_SIZE then
         lg.setFont(fontL)
         lg.setColor(COLORS.BLACK)
         lg.rectangle("fill", 0, 300, GAME_WIDTH, 50)
@@ -103,14 +102,22 @@ end
 function CardSelectState:keypressed(key)
     if key == "return" then
         local userInput = self:processInput()
-        local idx = cardFactory:findCard(userInput)
 
-        if idx > 0 then
-            self:handleCardSelection(idx)
+        -- Check if the user typed a card name
+        local isCardName = false
+
+        for _, cardName in ipairs(cardManager:getAllCardNames()) do
+            if userInput == cardName:lower() then
+                isCardName = true
+            end
+        end
+
+        if isCardName then
+            self:handleCardSelection(userInput)
         elseif userInput == "start" or userInput == "p" then
             self:handleGameStart()
         elseif userInput == "q" or userInput == "quit" then
-            self.stateManager:changeState("menu")
+            self.sceneManager:changeState("menu")
         else
             message = "type card names to choose them"
         end
@@ -118,36 +125,47 @@ function CardSelectState:keypressed(key)
     end
 end
 
-function CardSelectState:handleCardSelection(idx)
-    local human = gameManager:getHumanPlayer()
-    if not human then
-        return
+function CardSelectState:handleCardSelection(cardName)
+    for i = 1, #HUMANPLAYER.deck do
+        if HUMANPLAYER.deck[i].name:lower() == cardName then
+            table.insert(self.cardPool, HUMANPLAYER.deck[i])
+            HUMANPLAYER:removeCard(HUMANPLAYER.deck[i])
+            message = "removed " .. HUMANPLAYER.deck[i].name
+            return
+        end
     end
 
-    if cards[idx].deck == human.id then
-        human:removeCard(idx)
-        message = "removed " .. cards[idx].name
-    elseif cards[idx].deck ~= 0 then
-        message = cards[idx].name .. " is in other player's deck"
-    elseif human.picks <= 0 then
-        message = "no picks remaining"
-    else
-        human:addCard(idx)
-        message = "added " .. cards[idx].name
+    for i = 1, #AIPLAYER.deck do
+        if AIPLAYER.deck[i].name:lower() == cardName then
+            message = cardName .. " is in opponent's deck"
+            return
+        end
+    end
+
+    for i = 1, #self.cardPool do
+        if self.cardPool[i].name:lower() == cardName then
+            if #HUMANPLAYER.deck >= MAX_DECK_SIZE then
+                message = "your deck is full"
+            elseif HUMANPLAYER.picks <= 0 then
+                message = "no picks remaining"
+            else
+                HUMANPLAYER:addCard(self.cardPool[i])
+                message = "added " .. self.cardPool[i].name
+                table.remove(self.cardPool, i)
+            end
+            return
+        end
     end
 end
 
 function CardSelectState:handleGameStart()
-    local human = gameManager:getHumanPlayer()
-    local ai = gameManager:getAIPlayer()
-
-    if human and human.picks > 0 then
-        message = "you have " .. human.picks .. " picks left"
-    elseif ai and ai.picks > 0 then
-        message = "player2 has " .. ai.picks .. " picks left"
+    if HUMANPLAYER and HUMANPLAYER.picks > 0 then
+        message = "you have " .. HUMANPLAYER.picks .. " picks left"
+    elseif AIPLAYER and AIPLAYER.picks > 0 then
+        message = "player2 has " .. AIPLAYER.picks .. " picks left"
     else
         message = "game started"
-        self.stateManager:changeState("game")
+        self.sceneManager:changeState("game")
     end
 end
 
@@ -155,15 +173,8 @@ function CardSelectState:wheelmoved(x, y)
     self.posy = self.posy + y * SCROLL_SPEED
 
     -- Calculate bounds based on grid height
-    local remaining = 0
-    for i = 1, #cards do
-        if cards[i].deck == 0 then
-            remaining = remaining + 1
-        end
-    end
-
     local margin = 10
-    local rows = math.ceil(math.max(remaining, 1) / self.cardsPerRow)
+    local rows = math.ceil(math.max(#self.cardPool, 1) / self.cardsPerRow)
     local gridHeight = rows * (LARGE_CARD_HEIGHT + margin)
 
     local headerHeight = 40

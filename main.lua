@@ -1,11 +1,12 @@
 local utf8 = require("utf8")
-require "cards.CardFactory"
 require "players.BasePlayer"
 require "players.HumanPlayer"
 require "players.AIPlayer"
-require "GameManager"
+
+require "SceneManager"
+require "CardManager"
 require "ResourceManager"
-require "GameStateManager"
+
 require "states.BaseState"
 require "states.MenuState"
 require "states.CardBrowseState"
@@ -17,11 +18,13 @@ require "states.GameOverState"
 
 -- Global game state
 gameTime = 0
-stateManager = nil
+sceneManager = nil
+cardManager = nil
 resourceManager = nil
 input = ""    -- player input
 message = ""  -- left side text
 message2 = "" -- right side text
+activeSpells = {}
 
 -- Colors
 COLORS = {
@@ -63,7 +66,8 @@ function love.load()
     math.randomseed(os.time())
     love.keyboard.setKeyRepeat(true)
 
-    stateManager = GameStateManager:new()
+    sceneManager = SceneManager:new()
+    cardManager = CardManager:new()
     resourceManager = ResourceManager:new()
     resourceManager:loadAllAssets()
 
@@ -74,22 +78,18 @@ function love.load()
     fontXS = resourceManager:getFont("fontXS")
     background = resourceManager:getImage("background")
 
-    cards = gameManager:getCards()
-    gameManager:addPlayer(HumanPlayer:new(1))
-    gameManager:addPlayer(AIPlayer:new(2, "normal"))
+    -- TODO: Create a better solution for storing players
+    HUMANPLAYER = HumanPlayer:new(1)
+    AIPLAYER = AIPlayer:new(2, "normal")
 
-    initializeStates()
-    stateManager:changeState("menu")
-end
-
-function initializeStates()
-    stateManager:addState("menu", MenuState:new())
-    stateManager:addState("cardBrowse", CardBrowseState:new())
-    stateManager:addState("instructions", InstructionsState:new())
-    stateManager:addState("cardSelect", CardSelectState:new())
-    stateManager:addState("game", GameState:new())
-    stateManager:addState("pause", PauseState:new())
-    stateManager:addState("gameOver", GameOverState:new())
+    sceneManager:addState("menu", MenuState:new())
+    sceneManager:addState("cardBrowse", CardBrowseState:new())
+    sceneManager:addState("instructions", InstructionsState:new())
+    sceneManager:addState("cardSelect", CardSelectState:new())
+    sceneManager:addState("game", GameState:new())
+    sceneManager:addState("pause", PauseState:new())
+    sceneManager:addState("gameOver", GameOverState:new())
+    sceneManager:changeState("menu")
 end
 
 function love.keypressed(key)
@@ -97,25 +97,21 @@ function love.keypressed(key)
         input = string.sub(input, 1, utf8.offset(input, -1) - 1)
         return
     end
-    stateManager:keypressed(key)
+    sceneManager:keypressed(key)
 end
 
 function love.update(dt)
     gameTime = gameTime + dt
-    for i = 1, #cards do
-        cards[i]:update(dt)
-    end
-
-    local humanPlayer = gameManager:getHumanPlayer()
-    local aiPlayer = gameManager:getAIPlayer()
-    humanPlayer:update(dt)
-    aiPlayer:update(dt)
+    HUMANPLAYER:update(dt)
+    AIPLAYER:update(dt)
 
     -- Update current state
-    stateManager:update(dt)
+    sceneManager:update(dt)
 end
 
 function love.draw()
+    lg.clear(COLORS.WHITE)
+    lg.setColor(COLORS.WHITE)
     -- Setup
     local scale = math.min(lg.getWidth() / GAME_WIDTH, lg.getHeight() / GAME_HEIGHT)
     lg.translate((lg.getWidth() - GAME_WIDTH * scale) / 2, (lg.getHeight() - GAME_HEIGHT * scale) / 2)
@@ -126,16 +122,11 @@ function love.draw()
     lg.setFont(fontM)
 
     -- Draw players
-    local humanPlayer = gameManager:getHumanPlayer()
-    local aiPlayer = gameManager:getAIPlayer()
-    lg.setColor(COLORS.WHITE)
-    humanPlayer:draw()
-    lg.setColor(COLORS.RED)
-    aiPlayer:draw()
-    lg.setColor(COLORS.WHITE)
+    HUMANPLAYER:draw()
+    AIPLAYER:draw()
 
     -- Draw current state
-    stateManager:draw()
+    sceneManager:draw()
 
     -- Draw input interface
     local inputRectHeight = 30
@@ -154,5 +145,5 @@ function love.textinput(t)
 end
 
 function love.wheelmoved(dx, dy)
-    stateManager:wheelmoved(dx, dy)
+    sceneManager:wheelmoved(dx, dy)
 end

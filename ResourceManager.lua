@@ -1,3 +1,4 @@
+-- Manages loading and accessing game resources like images, fonts, sounds, and animations.
 ResourceManager = {}
 ResourceManager.__index = ResourceManager
 
@@ -35,18 +36,6 @@ function ResourceManager:getImage(name)
     return self.images[name]
 end
 
-function ResourceManager:loadAnimation(name, imagePath, frameWidth, frameHeight)
-    if not self.animations[name] then
-        local image = self:loadImage(name .. "_sheet", imagePath)
-        self.animations[name] = self:newAnimation(image, frameWidth, frameHeight)
-    end
-    return self.animations[name]
-end
-
-function ResourceManager:getAnimation(name)
-    return self.animations[name]
-end
-
 function ResourceManager:loadAllAssets()
     -- Load fonts
     self:loadFont("fontXL", "assets/munro-small.ttf", 96)
@@ -57,72 +46,60 @@ function ResourceManager:loadAllAssets()
 
     -- Load images
     self:loadImage("background", "assets/background.png")
+
     self:loadImage("wizardIdle", "assets/wizardIdle.png")
     self:loadImage("wizardDeath", "assets/wizardDeath.png")
     self:loadImage("wizardCast", "assets/wizardCast.png")
+    self:loadImage("evilWizardIdle", "assets/evilWizardIdle.png")
+    self:loadImage("evilWizardDeath", "assets/evilWizardDeath.png")
+    self:loadImage("evilWizardCast", "assets/evilWizardCast.png")
+
     self:loadImage("placeholder", "assets/placeholder.png")
 
-    self:loadCards()
-    self:loadDictionary()
-end
-
-function ResourceManager:loadCards()
-    -- Get all available card names from the CardFactory
-    local cardNames = cardFactory:getAllCardNames()
-
-    -- Create cards directly using CardFactory
+    -- Load all card images
+    local cardNames = cardManager:getAllCardNames()
     for i, cardName in ipairs(cardNames) do
-        -- Load card image
         local path = "assets/cards/" .. cardName .. ".png"
         local cardImageFile = io.open(path, "r")
         if cardImageFile then
             cardImageFile:close()
             self:loadImage("card_" .. cardName, path)
         end
-
-        -- Create basic card data structure
-        local cardData = {
-            x = 0,
-            y = 0,
-            index = i,
-            name = cardName,
-            loc = "hand" -- default location
-        }
-
-        -- Create animation for the card
-        local cardImage = self:getImage("card_" .. cardName)
-        if cardImage then
-            cardData.anim = self:newAnimation(cardImage, SPRITE_PIXEL_SIZE, SPRITE_PIXEL_SIZE)
-        else
-            local placeholderImage = self:getImage("placeholder")
-            cardData.anim = self:newAnimation(placeholderImage, SPRITE_PIXEL_SIZE, SPRITE_PIXEL_SIZE)
+        if not self:getImage("card_" .. cardName) then
+            self.images["card_" .. cardName] = self:getImage("placeholder")
         end
-
-        -- Use CardFactory to create the appropriate card class
-        local card = cardFactory:createCard(cardName, cardData)
-        gameManager:setCard(i, card)
     end
+
+    self:loadDictionary()
 end
 
-function ResourceManager:newAnimation(image, width, height)
+function ResourceManager:newAnimation(imageName, width, height)
     local animation = {}
-    animation.spriteSheet = image
+    animation.spriteSheet = self.images[imageName]
     animation.quads = {}
 
-    for y = 0, image:getHeight() - height, height do
-        for x = 0, image:getWidth() - width, width do
-            table.insert(animation.quads, lg.newQuad(x, y, width, height, image:getDimensions()))
+    width = width or SPRITE_PIXEL_SIZE
+    height = height or SPRITE_PIXEL_SIZE
+
+    for y = 0, animation.spriteSheet:getHeight() - height, height do
+        for x = 0, animation.spriteSheet:getWidth() - width, width do
+            table.insert(animation.quads, lg.newQuad(x, y, width, height, animation.spriteSheet:getDimensions()))
         end
     end
 
-    -- Fixed 12 FPS animation system
-    animation.fps = 12
-    animation.frameDuration = 1 / animation.fps
+    local fps = 12
+    animation.frameDuration = 1 / fps
     animation.currentFrame = 1
     animation.accumulator = 0
-    animation.loopMode = "loop"
-    animation.loopTime = nil
-    animation.elapsed = 0
+    animation.timeLeft = nil
+    animation.playMode = nil -- loop | once | loop_for
+
+    -- transformations
+    animation.rotation = 0
+    animation.scaleX = PIXEL_TO_GAME_SCALE
+    animation.scaleY = PIXEL_TO_GAME_SCALE
+    animation.offsetX = 0
+    animation.offsetY = 0
 
     return animation
 end

@@ -1,4 +1,5 @@
 require "cards.BaseCard"
+require "spells.SliceSpell"
 
 SliceCard = {}
 setmetatable(SliceCard, {
@@ -6,23 +7,19 @@ setmetatable(SliceCard, {
 })
 SliceCard.__index = SliceCard
 
-function SliceCard:new(cardData)
-    local card = BaseCard:new(cardData)
+function SliceCard:new(x, y)
+    local card = BaseCard:new(x, y)
     card.name = "slice"
     card.mana = 15
-    card.ratio = 1 / 2
-    card.type = "misc"
     card.elem = "fire"
-    card.loc = "other"
+    card.anim = resourceManager:newAnimation("card_" .. card.name)
+
+    card.SpellClass = SliceSpell
+    card.spellData = { ratio = 1 / 2 }
     setmetatable(card, self)
     return card
 end
 
 function SliceCard:getDescription()
-    return "deal damage equal to " .. math.floor(self.ratio * 100) .. "% of enemy health."
+    return "deal damage equal to " .. math.floor(self.spellData.ratio * 100) .. "% of enemy health."
 end
-
-function SliceCard:cast(caster, target)
-    target:damage(math.floor(target.health * self.ratio))
-end
-    

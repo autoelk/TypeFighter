@@ -11,23 +11,22 @@ function InstructionsState:new()
     state.seen = false
     state.instructionsText = "choose " ..
         MAX_DECK_SIZE ..
-        " cards by typing their names before player2 can chose them.\n\nyou can remove cards from your deck by typing their name again."
+        " cards by typing their names.\n\nyou can remove cards from your deck by typing their name again."
     return state
 end
 
 function InstructionsState:enter()
     if self.seen then
-        self.stateManager:changeState("cardSelect")
+        self.sceneManager:changeState("cardSelect")
         return
     end
-    gameManager.currentState = "InstructionsState"
     message2 = "[p] to skip [q] to go back"
     self.endTime = gameTime + 20
 end
 
 function InstructionsState:update(dt)
     if gameTime >= self.endTime then
-        self.stateManager:changeState("cardSelect")
+        self.sceneManager:changeState("cardSelect")
     end
 end
 
@@ -51,9 +50,9 @@ function InstructionsState:keypressed(key)
     if key == "return" then
         local userInput = self:processInput()
         if userInput == "p" or userInput == "play game" then
-            self.stateManager:changeState("cardSelect")
+            self.sceneManager:changeState("cardSelect")
         elseif userInput == "q" then
-            self.stateManager:changeState("menu")
+            self.sceneManager:changeState("menu")
         end
         input = ""
     end

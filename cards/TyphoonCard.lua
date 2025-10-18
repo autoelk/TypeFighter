@@ -1,4 +1,5 @@
 require "cards.BaseCard"
+require "spells.TyphoonSpell"
 
 TyphoonCard = {}
 setmetatable(TyphoonCard, {
@@ -6,23 +7,19 @@ setmetatable(TyphoonCard, {
 })
 TyphoonCard.__index = TyphoonCard
 
-function TyphoonCard:new(cardData)
-    local card = BaseCard:new(cardData)
+function TyphoonCard:new(x, y)
+    local card = BaseCard:new(x, y)
     card.name = "typhoon"
-    card.damage = 100
     card.mana = 50
-    card.type = "attack"
     card.elem = "water"
-    card.loc = "other"
+    card.anim = resourceManager:newAnimation("card_" .. card.name)
+
+    card.SpellClass = TyphoonSpell
+    card.spellData = { damage = 100 }
     setmetatable(card, self)
     return card
 end
 
 function TyphoonCard:getDescription()
-    return "deal " .. self.damage .. " damage."
-end
-
-function TyphoonCard:cast(caster, target)
-    target:damage(self.damage)
-    return true
+    return "deal " .. self.spellData.damage .. " damage."
 end

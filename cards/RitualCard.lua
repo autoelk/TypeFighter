@@ -1,4 +1,5 @@
 require "cards.BaseCard"
+require "spells.RitualSpell"
 
 RitualCard = {}
 setmetatable(RitualCard, {
@@ -6,25 +7,19 @@ setmetatable(RitualCard, {
 })
 RitualCard.__index = RitualCard
 
-function RitualCard:new(cardData)
-    local card = BaseCard:new(cardData)
+function RitualCard:new(x, y)
+    local card = BaseCard:new(x, y)
     card.name = "ritual"
-    card.healthCost = 30 -- Health cost
-    card.manaGain = 20   -- Mana gained
     card.mana = 5
-    card.type = "misc"
     card.elem = "fire"
-    card.loc = "self"
+    card.anim = resourceManager:newAnimation("card_" .. card.name)
+
+    card.SpellClass = RitualSpell
+    card.spellData = { healthCost = 30, manaGain = 20 }
     setmetatable(card, self)
     return card
 end
 
 function RitualCard:getDescription()
-    return "lose " .. self.healthCost .. " health, gain " .. self.manaGain .. " mana."
-end
-
-function RitualCard:cast(caster, target)
-    caster:damage(self.healthCost)            -- Take damage
-    caster.mana = caster.mana + self.manaGain -- Gain mana
-    return true
+    return "lose " .. self.spellData.healthCost .. " health, gain " .. self.spellData.manaGain .. " mana."
 end

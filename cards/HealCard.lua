@@ -1,4 +1,5 @@
 require "cards.BaseCard"
+require "spells.HealSpell"
 
 HealCard = {}
 setmetatable(HealCard, {
@@ -6,24 +7,19 @@ setmetatable(HealCard, {
 })
 HealCard.__index = HealCard
 
-function HealCard:new(cardData)
-    local card = BaseCard:new(cardData)
+function HealCard:new(x, y)
+    local card = BaseCard:new(x, y)
     card.name = "heal"
-    card.healAmount = 10
     card.mana = 5
-    card.type = "heal"
     card.elem = "earth"
-    card.loc = "self"
+    card.anim = resourceManager:newAnimation("card_heal")
+
+    card.SpellClass = HealSpell
+    card.spellData = { healAmount = 10 }
     setmetatable(card, self)
     return card
 end
 
 function HealCard:getDescription()
-    return "gain " .. self.healAmount .. " health."
-end
-
-function HealCard:cast(caster, target)
-    -- Heal the caster (negative damage)
-    caster:damage(-self.healAmount)
-    return true
+    return "gain " .. self.spellData.healAmount .. " health."
 end

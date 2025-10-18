@@ -1,4 +1,5 @@
 require "cards.BaseCard"
+require "spells.BlessingSpell"
 
 BlessingCard = {}
 setmetatable(BlessingCard, {
@@ -6,34 +7,22 @@ setmetatable(BlessingCard, {
 })
 BlessingCard.__index = BlessingCard
 
-function BlessingCard:new(cardData)
-    local card = BaseCard:new(cardData)
+function BlessingCard:new(x, y)
+    local card = BaseCard:new(x, y)
     card.name = "blessing"
-    card.regenAmount = 1 -- Health regen amount
-    card.duration = 15   -- Duration of the effect in seconds
     card.mana = 8
-    card.type = "misc"
     card.elem = "earth"
-    card.loc = "self"
-    card.offsetY = 20
-    card.offsetX = 10
+    card.anim = resourceManager:newAnimation("card_" .. card.name)
+
+    card.SpellClass = BlessingSpell
+    card.spellData = {
+        regenAmount = 1,
+        duration = 15
+    }
     setmetatable(card, self)
     return card
 end
 
 function BlessingCard:getDescription()
-    return "+" .. self.regenAmount .. " health/sec for " .. self.duration .. " seconds."
-end
-
-function BlessingCard:cast(caster, target)
-    caster:applyEffect("blessing", {
-        duration = 10,
-        onApply = function(p, eff)
-            p.healthRegen = p.healthRegen + self.regenAmount
-        end,
-        onExpire = function(p, eff)
-            p.healthRegen = p.healthRegen - self.regenAmount
-        end
-    })
-    return true
+    return "+" .. self.spellData.regenAmount .. " health/sec for " .. self.spellData.duration .. " seconds."
 end

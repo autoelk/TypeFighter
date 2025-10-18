@@ -1,4 +1,5 @@
 require "cards.BaseCard"
+require "spells.GemSpell"
 
 GemCard = {}
 setmetatable(GemCard, {
@@ -6,24 +7,19 @@ setmetatable(GemCard, {
 })
 GemCard.__index = GemCard
 
-function GemCard:new(cardData)
-    local card = BaseCard:new(cardData)
+function GemCard:new(x, y)
+    local card = BaseCard:new(x, y)
     card.name = "gem"
-    card.regenAmount = 0.5 -- Amount of mana regen to add
     card.mana = 10
-    card.type = "misc"
     card.elem = "water"
-    card.loc = "self"
-    card.offsetY = -100
+    card.anim = resourceManager:newAnimation("card_" .. card.name)
+
+    card.SpellClass = GemSpell
+    card.spellData = { regenAmount = 0.5 }
     setmetatable(card, self)
     return card
 end
 
 function GemCard:getDescription()
-    return "+" .. self.regenAmount .. " mana/sec."
-end
-
-function GemCard:cast(caster, target)
-    caster.manaRegen = caster.manaRegen + self.regenAmount
-    return true
+    return "+" .. self.spellData.regenAmount .. " mana/sec."
 end

@@ -1,4 +1,5 @@
 require "cards.BaseCard"
+require "spells.PunchSpell"
 
 PunchCard = {}
 setmetatable(PunchCard, {
@@ -6,25 +7,19 @@ setmetatable(PunchCard, {
 })
 PunchCard.__index = PunchCard
 
-function PunchCard:new(cardData)
-    local card = BaseCard:new(cardData)
+function PunchCard:new(x, y)
+    local card = BaseCard:new(x, y)
     card.name = "punch"
-    card.damage = 2
     card.mana = 0
-    card.type = "attack"
     card.elem = "earth"
-    card.loc = "other"
-    card.offsetX = -90
-    card.offsetY = 15
+    card.anim = resourceManager:newAnimation("card_" .. card.name)
+
+    card.SpellClass = PunchSpell
+    card.spellData = { damage = 2 }
     setmetatable(card, self)
     return card
 end
 
 function PunchCard:getDescription()
-    return "deal " .. self.damage .. " damage."
-end
-
-function PunchCard:cast(caster, target)
-    target:damage(self.damage)
-    return true
+    return "deal " .. self.spellData.damage .. " damage."
 end

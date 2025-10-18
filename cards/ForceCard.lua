@@ -1,4 +1,5 @@
 require "cards.BaseCard"
+require "spells.ForceSpell"
 
 ForceCard = {}
 setmetatable(ForceCard, {
@@ -6,24 +7,20 @@ setmetatable(ForceCard, {
 })
 ForceCard.__index = ForceCard
 
-function ForceCard:new(cardData)
-    local card = BaseCard:new(cardData)
+function ForceCard:new(x, y)
+    local card = BaseCard:new(x, y)
     card.name = "force"
     card.mana = 15
-    card.tradeAmount = 1 -- Amount of health/mana regen to trade
-    card.type = "misc"
     card.elem = "fire"
-    card.loc = "self"
+    card.anim = resourceManager:newAnimation("card_" .. card.name)
+
+    card.SpellClass = ForceSpell
+    card.spellData = { tradeAmount = 1 }
     setmetatable(card, self)
     return card
 end
 
 function ForceCard:getDescription()
-    return "gain " .. self.tradeAmount .. " health regen, lose " .. self.tradeAmount .. " mana regen."
-end
-
-function ForceCard:cast(caster, target)
-    caster.manaRegen = caster.manaRegen - self.tradeAmount
-    caster.healthRegen = caster.healthRegen + self.tradeAmount
-    return true
+    return "gain " ..
+        self.spellData.tradeAmount .. " health regen, lose " .. self.spellData.tradeAmount .. " mana regen."
 end

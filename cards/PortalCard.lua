@@ -1,4 +1,5 @@
 require "cards.BaseCard"
+require "spells.PortalSpell"
 
 PortalCard = {}
 setmetatable(PortalCard, {
@@ -6,23 +7,19 @@ setmetatable(PortalCard, {
 })
 PortalCard.__index = PortalCard
 
-function PortalCard:new(cardData)
-    local card = BaseCard:new(cardData)
+function PortalCard:new(x, y)
+    local card = BaseCard:new(x, y)
     card.name = "portal"
-    card.damage = 40
     card.mana = 20
-    card.type = "attack"
     card.elem = "water"
-    card.loc = "other"
+    card.anim = resourceManager:newAnimation("card_" .. card.name)
+
+    card.SpellClass = PortalSpell
+    card.spellData = { damage = 40 }
     setmetatable(card, self)
     return card
 end
 
 function PortalCard:getDescription()
-    return "deal " .. self.damage .. " damage."
-end
-
-function PortalCard:cast(caster, target)
-    target:damage(self.damage)
-    return true
+    return "deal " .. self.spellData.damage .. " damage."
 end

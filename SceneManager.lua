@@ -1,55 +1,62 @@
-GameStateManager = {}
-GameStateManager.__index = GameStateManager
+-- Manages different game scenes and transitions between them
+SceneManager = {}
+SceneManager.__index = SceneManager
 
-function GameStateManager:new()
+function SceneManager:new()
     return setmetatable({
         states = {},
         currentState = nil,
+        currentStateName = nil,
         previousState = nil
     }, self)
 end
 
-function GameStateManager:addState(name, state)
+function SceneManager:addState(name, state)
     self.states[name] = state
-    state.stateManager = self
+    state.sceneManager = self
 end
 
-function GameStateManager:changeState(stateName)
+function SceneManager:changeState(stateName)
     if self.currentState and self.currentState.exit then
         self.currentState:exit()
     end
 
     self.previousState = self.currentState
     self.currentState = self.states[stateName]
+    self.currentStateName = stateName
 
     if self.currentState and self.currentState.enter then
         self.currentState:enter()
     end
 end
 
-function GameStateManager:getCurrentState()
+function SceneManager:getCurrentState()
     return self.currentState
 end
 
-function GameStateManager:update(dt)
+function SceneManager:getCurrentStateName()
+    return self.currentStateName
+end
+
+function SceneManager:update(dt)
     if self.currentState and self.currentState.update then
         self.currentState:update(dt)
     end
 end
 
-function GameStateManager:draw()
+function SceneManager:draw()
     if self.currentState and self.currentState.draw then
         self.currentState:draw()
     end
 end
 
-function GameStateManager:keypressed(key)
+function SceneManager:keypressed(key)
     if self.currentState and self.currentState.keypressed then
         self.currentState:keypressed(key)
     end
 end
 
-function GameStateManager:wheelmoved(x, y)
+function SceneManager:wheelmoved(x, y)
     if self.currentState and self.currentState.wheelmoved then
         self.currentState:wheelmoved(x, y)
     end

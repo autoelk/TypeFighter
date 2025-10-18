@@ -1,4 +1,5 @@
 require "cards.BaseCard"
+require "spells.BoltSpell"
 
 BoltCard = {}
 setmetatable(BoltCard, {
@@ -6,23 +7,21 @@ setmetatable(BoltCard, {
 })
 BoltCard.__index = BoltCard
 
-function BoltCard:new(cardData)
-    local card = BaseCard:new(cardData)
+function BoltCard:new(x, y)
+    local card = BaseCard:new(x, y)
     card.name = "bolt"
-    card.damage = 4
     card.mana = 1
-    card.type = "attack"
     card.elem = "fire"
-    card.loc = "other"
+    card.anim = resourceManager:newAnimation("card_" .. card.name)
+
+    card.SpellClass = BoltSpell
+    card.spellData = {
+        damage = 4
+    }
     setmetatable(card, self)
     return card
 end
 
 function BoltCard:getDescription()
-    return "deal " .. self.damage .. " damage."
-end
-
-function BoltCard:cast(caster, target)
-    target:damage(self.damage)
-    return true
+    return "deal " .. self.spellData.damage .. " damage."
 end

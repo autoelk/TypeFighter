@@ -1,4 +1,5 @@
 require "cards.BaseCard"
+require "spells.FireballSpell"
 
 FireballCard = {}
 setmetatable(FireballCard, {
@@ -6,24 +7,21 @@ setmetatable(FireballCard, {
 })
 FireballCard.__index = FireballCard
 
-function FireballCard:new(cardData)
-    local card = BaseCard:new(cardData)
+function FireballCard:new(x, y)
+    local card = BaseCard:new(x, y)
     card.name = "fireball"
-    card.damage = 9
     card.mana = 3
-    card.type = "attack"
     card.elem = "fire"
-    card.loc = "proj"
+    card.anim = resourceManager:newAnimation("card_" .. card.name)
+
+    card.SpellClass = FireballSpell
+    card.spellData = {
+        damage = 9
+    }
     setmetatable(card, self)
     return card
 end
 
 function FireballCard:getDescription()
-    return "deal " .. self.damage .. " damage."
-end
-
-function FireballCard:cast(caster, target)
-    -- Apply damage to target
-    target:damage(self.damage)
-    return true
+    return "deal " .. self.spellData.damage .. " damage."
 end
