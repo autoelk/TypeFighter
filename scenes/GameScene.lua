@@ -1,17 +1,17 @@
-require "states.BaseState"
+require "scenes.BaseScene"
 
--- Game State (main gameplay)
-GameState = {}
-setmetatable(GameState, {
-    __index = BaseState
+-- Game Scene (main gameplay)
+GameScene = {}
+setmetatable(GameScene, {
+    __index = BaseScene
 })
-GameState.__index = GameState
+GameScene.__index = GameScene
 
-function GameState:new()
-    return setmetatable(BaseState:new(), self)
+function GameScene:new()
+    return setmetatable(BaseScene:new(), self)
 end
 
-function GameState:enter()
+function GameScene:enter()
     -- Initialize players for gameplay
     HUMANPLAYER:reset()
     AIPLAYER:reset()
@@ -33,7 +33,7 @@ function GameState:enter()
     self.activeSpells = {}
 end
 
-function GameState:update(dt)
+function GameScene:update(dt)
     -- Health and mana regen
     HUMANPLAYER.mana = HUMANPLAYER.mana + dt * HUMANPLAYER.manaRegen
     if HUMANPLAYER.mana < 0 then
@@ -74,11 +74,11 @@ function GameState:update(dt)
 
 
     if not HUMANPLAYER.isAlive or not AIPLAYER.isAlive then
-        self.sceneManager:changeState("gameOver")
+        self.sceneManager:changeScene("gameOver")
     end
 end
 
-function GameState:draw()
+function GameScene:draw()
     -- Display decks
     local margin = 10
 
@@ -107,15 +107,15 @@ function GameState:draw()
     AIPLAYER:drawUI()
 end
 
-function GameState:keypressed(key)
+function GameScene:keypressed(key)
     if key == "escape" then
-        self.sceneManager:changeState("pause")
+        self.sceneManager:changeScene("pause")
     elseif key == "return" then
         local userInput = self:processInput()
         local result = HUMANPLAYER:handleInput(userInput)
 
         if result == "quit" then
-            self.sceneManager:changeState("menu")
+            self.sceneManager:changeScene("menu")
         elseif result == "unknown_card" then
             message = "type card names to cast them"
         elseif result == "insufficient_mana" then

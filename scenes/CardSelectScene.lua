@@ -1,21 +1,21 @@
-require "states.BaseState"
+require "scenes.BaseScene"
 
--- Card Selection State
-CardSelectState = {}
-setmetatable(CardSelectState, {
-    __index = BaseState
+-- Card Selection Scene
+CardSelectScene = {}
+setmetatable(CardSelectScene, {
+    __index = BaseScene
 })
-CardSelectState.__index = CardSelectState
+CardSelectScene.__index = CardSelectScene
 
-function CardSelectState:new()
-    local state = setmetatable(BaseState:new(), self)
-    state.posy = 10 -- scroll position
-    state.cardsPerRow = 4
-    state.cardPool = {}
-    return state
+function CardSelectScene:new()
+    local scene = setmetatable(BaseScene:new(), self)
+    scene.posy = 10 -- scroll position
+    scene.cardsPerRow = 4
+    scene.cardPool = {}
+    return scene
 end
 
-function CardSelectState:enter()
+function CardSelectScene:enter()
     message2 = "[P]lay [Q] to go back"
     self.cardPool = {}
     for _, cardName in ipairs(cardManager:getAllCardNames()) do
@@ -36,7 +36,7 @@ function CardSelectState:enter()
     end
 end
 
-function CardSelectState:update(dt)
+function CardSelectScene:update(dt)
     local margin = 10
 
     for i = 1, #self.cardPool do
@@ -68,7 +68,7 @@ function CardSelectState:update(dt)
     end
 end
 
-function CardSelectState:draw()
+function CardSelectScene:draw()
     local margin = 10
 
     lg.setFont(fontM)
@@ -99,7 +99,7 @@ function CardSelectState:draw()
     end
 end
 
-function CardSelectState:keypressed(key)
+function CardSelectScene:keypressed(key)
     if key == "return" then
         local userInput = self:processInput()
 
@@ -117,7 +117,7 @@ function CardSelectState:keypressed(key)
         elseif userInput == "start" or userInput == "p" then
             self:handleGameStart()
         elseif userInput == "q" or userInput == "quit" then
-            self.sceneManager:changeState("menu")
+            self.sceneManager:changeScene("menu")
         else
             message = "type card names to choose them"
         end
@@ -125,7 +125,7 @@ function CardSelectState:keypressed(key)
     end
 end
 
-function CardSelectState:handleCardSelection(cardName)
+function CardSelectScene:handleCardSelection(cardName)
     for i = 1, #HUMANPLAYER.deck do
         if HUMANPLAYER.deck[i].name:lower() == cardName then
             table.insert(self.cardPool, HUMANPLAYER.deck[i])
@@ -158,18 +158,18 @@ function CardSelectState:handleCardSelection(cardName)
     end
 end
 
-function CardSelectState:handleGameStart()
+function CardSelectScene:handleGameStart()
     if HUMANPLAYER and HUMANPLAYER.picks > 0 then
         message = "you have " .. HUMANPLAYER.picks .. " picks left"
     elseif AIPLAYER and AIPLAYER.picks > 0 then
         message = "player2 has " .. AIPLAYER.picks .. " picks left"
     else
         message = "game started"
-        self.sceneManager:changeState("game")
+        self.sceneManager:changeScene("game")
     end
 end
 
-function CardSelectState:wheelmoved(x, y)
+function CardSelectScene:wheelmoved(x, y)
     self.posy = self.posy + y * SCROLL_SPEED
 
     -- Calculate bounds based on grid height

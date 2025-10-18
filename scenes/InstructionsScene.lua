@@ -1,36 +1,36 @@
-require "states.BaseState"
+require "scenes.BaseScene"
 
--- Instructions State
-InstructionsState = {}
-setmetatable(InstructionsState, { __index = BaseState })
-InstructionsState.__index = InstructionsState
+-- Instructions Scene
+InstructionsScene = {}
+setmetatable(InstructionsScene, { __index = BaseScene })
+InstructionsScene.__index = InstructionsScene
 
-function InstructionsState:new()
-    local state = setmetatable(BaseState:new(), self)
-    state.endTime = 0
-    state.seen = false
-    state.instructionsText = "choose " ..
+function InstructionsScene:new()
+    local scene = setmetatable(BaseScene:new(), self)
+    scene.endTime = 0
+    scene.seen = false
+    scene.instructionsText = "choose " ..
         MAX_DECK_SIZE ..
         " cards by typing their names.\n\nyou can remove cards from your deck by typing their name again."
-    return state
+    return scene
 end
 
-function InstructionsState:enter()
+function InstructionsScene:enter()
     if self.seen then
-        self.sceneManager:changeState("cardSelect")
+        self.sceneManager:changeScene("cardSelect")
         return
     end
     message2 = "[p] to skip [q] to go back"
     self.endTime = gameTime + 20
 end
 
-function InstructionsState:update(dt)
+function InstructionsScene:update(dt)
     if gameTime >= self.endTime then
-        self.sceneManager:changeState("cardSelect")
+        self.sceneManager:changeScene("cardSelect")
     end
 end
 
-function InstructionsState:draw()
+function InstructionsScene:draw()
     local margin = 10
     local width = 400
     local height = 320
@@ -42,17 +42,17 @@ function InstructionsState:draw()
     lg.printf(self.instructionsText, startX + margin, 160, width - 2 * margin, "center")
 end
 
-function InstructionsState:exit()
+function InstructionsScene:exit()
     self.seen = true
 end
 
-function InstructionsState:keypressed(key)
+function InstructionsScene:keypressed(key)
     if key == "return" then
         local userInput = self:processInput()
         if userInput == "p" or userInput == "play game" then
-            self.sceneManager:changeState("cardSelect")
+            self.sceneManager:changeScene("cardSelect")
         elseif userInput == "q" then
-            self.sceneManager:changeState("menu")
+            self.sceneManager:changeScene("menu")
         end
         input = ""
     end

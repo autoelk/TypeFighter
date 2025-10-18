@@ -192,7 +192,7 @@ function BasePlayer:castCard(card)
 
     -- Use the card's cast method
     local spell = card:cast(self, self:other())
-    table.insert(sceneManager:getCurrentState().activeSpells, spell)
+    table.insert(sceneManager:getCurrentScene().activeSpells, spell)
     return "success"
 end
 

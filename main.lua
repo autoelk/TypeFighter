@@ -7,14 +7,14 @@ require "SceneManager"
 require "CardManager"
 require "ResourceManager"
 
-require "states.BaseState"
-require "states.MenuState"
-require "states.CardBrowseState"
-require "states.InstructionsState"
-require "states.CardSelectState"
-require "states.GameState"
-require "states.PauseState"
-require "states.GameOverState"
+require "scenes.BaseScene"
+require "scenes.MenuScene"
+require "scenes.CardBrowseScene"
+require "scenes.InstructionsScene"
+require "scenes.CardSelectScene"
+require "scenes.GameScene"
+require "scenes.PauseScene"
+require "scenes.GameOverScene"
 
 -- Global game state
 gameTime = 0
@@ -82,14 +82,14 @@ function love.load()
     HUMANPLAYER = HumanPlayer:new(1)
     AIPLAYER = AIPlayer:new(2, "normal")
 
-    sceneManager:addState("menu", MenuState:new())
-    sceneManager:addState("cardBrowse", CardBrowseState:new())
-    sceneManager:addState("instructions", InstructionsState:new())
-    sceneManager:addState("cardSelect", CardSelectState:new())
-    sceneManager:addState("game", GameState:new())
-    sceneManager:addState("pause", PauseState:new())
-    sceneManager:addState("gameOver", GameOverState:new())
-    sceneManager:changeState("menu")
+    sceneManager:addScene("menu", MenuScene:new())
+    sceneManager:addScene("cardBrowse", CardBrowseScene:new())
+    sceneManager:addScene("instructions", InstructionsScene:new())
+    sceneManager:addScene("cardSelect", CardSelectScene:new())
+    sceneManager:addScene("game", GameScene:new())
+    sceneManager:addScene("pause", PauseScene:new())
+    sceneManager:addScene("gameOver", GameOverScene:new())
+    sceneManager:changeScene("menu")
 end
 
 function love.keypressed(key)
@@ -105,7 +105,7 @@ function love.update(dt)
     HUMANPLAYER:update(dt)
     AIPLAYER:update(dt)
 
-    -- Update current state
+    -- Update current scene
     sceneManager:update(dt)
 end
 
@@ -125,7 +125,7 @@ function love.draw()
     HUMANPLAYER:draw()
     AIPLAYER:draw()
 
-    -- Draw current state
+    -- Draw current scene
     sceneManager:draw()
 
     -- Draw input interface

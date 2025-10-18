@@ -4,60 +4,60 @@ SceneManager.__index = SceneManager
 
 function SceneManager:new()
     return setmetatable({
-        states = {},
-        currentState = nil,
-        currentStateName = nil,
-        previousState = nil
+        scenes = {},
+        currentScene = nil,
+        currentSceneName = nil,
+        previousScene = nil
     }, self)
 end
 
-function SceneManager:addState(name, state)
-    self.states[name] = state
-    state.sceneManager = self
+function SceneManager:addScene(name, scene)
+    self.scenes[name] = scene
+    scene.sceneManager = self
 end
 
-function SceneManager:changeState(stateName)
-    if self.currentState and self.currentState.exit then
-        self.currentState:exit()
+function SceneManager:changeScene(sceneName)
+    if self.currentScene and self.currentScene.exit then
+        self.currentScene:exit()
     end
 
-    self.previousState = self.currentState
-    self.currentState = self.states[stateName]
-    self.currentStateName = stateName
+    self.previousScene = self.currentScene
+    self.currentScene = self.scenes[sceneName]
+    self.currentSceneName = sceneName
 
-    if self.currentState and self.currentState.enter then
-        self.currentState:enter()
+    if self.currentScene and self.currentScene.enter then
+        self.currentScene:enter()
     end
 end
 
-function SceneManager:getCurrentState()
-    return self.currentState
+function SceneManager:getCurrentScene()
+    return self.currentScene
 end
 
-function SceneManager:getCurrentStateName()
-    return self.currentStateName
+function SceneManager:getCurrentSceneName()
+    return self.currentSceneName
 end
 
 function SceneManager:update(dt)
-    if self.currentState and self.currentState.update then
-        self.currentState:update(dt)
+    if self.currentScene and self.currentScene.update then
+        self.currentScene:update(dt)
     end
 end
 
 function SceneManager:draw()
-    if self.currentState and self.currentState.draw then
-        self.currentState:draw()
+    if self.currentScene and self.currentScene.draw then
+        self.currentScene:draw()
     end
 end
 
 function SceneManager:keypressed(key)
-    if self.currentState and self.currentState.keypressed then
-        self.currentState:keypressed(key)
+    if self.currentScene and self.currentScene.keypressed then
+        self.currentScene:keypressed(key)
     end
 end
 
 function SceneManager:wheelmoved(x, y)
-    if self.currentState and self.currentState.wheelmoved then
-        self.currentState:wheelmoved(x, y)
+    if self.currentScene and self.currentScene.wheelmoved then
+        self.currentScene:wheelmoved(x, y)
     end
 end

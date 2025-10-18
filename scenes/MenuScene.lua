@@ -1,35 +1,35 @@
-require "states.BaseState"
+require "scenes.BaseScene"
 
--- Menu State
-MenuState = {}
-setmetatable(MenuState, {
-    __index = BaseState
+-- Menu Scene
+MenuScene = {}
+setmetatable(MenuScene, {
+    __index = BaseScene
 })
-MenuState.__index = MenuState
+MenuScene.__index = MenuScene
 
-function MenuState:new()
-    local state = BaseState:new()
-    state.torrentAnimation = resourceManager:newAnimation("card_torrent")
-    state.fireballAnimation = resourceManager:newAnimation("card_fireball")
+function MenuScene:new()
+    local scene = BaseScene:new()
+    scene.torrentAnimation = resourceManager:newAnimation("card_torrent")
+    scene.fireballAnimation = resourceManager:newAnimation("card_fireball")
 
     local margin = 280
-    state.torrentAnimation.x = margin
-    state.torrentAnimation.y = 180
-    state.torrentAnimation.rotation = 0
-    state.fireballAnimation.x = GAME_WIDTH - margin
-    state.fireballAnimation.y = 345
-    state.fireballAnimation.rotation = 180
-    setmetatable(state, self)
-    return state
+    scene.torrentAnimation.x = margin
+    scene.torrentAnimation.y = 180
+    scene.torrentAnimation.rotation = 0
+    scene.fireballAnimation.x = GAME_WIDTH - margin
+    scene.fireballAnimation.y = 345
+    scene.fireballAnimation.rotation = 180
+    setmetatable(scene, self)
+    return scene
 end
 
-function MenuState:enter()
+function MenuScene:enter()
     input = ""
     message = "type p to start"
     message2 = "[p]lay [b]rowse [q]uit"
 end
 
-function MenuState:draw()
+function MenuScene:draw()
     lg.setColor(COLORS.WHITE)
     lg.setFont(fontXL)
     lg.printf("typefighter", 0, 200, GAME_WIDTH, "center")
@@ -48,7 +48,7 @@ function MenuState:draw()
         math.rad(self.fireballAnimation.rotation), self.fireballAnimation.scaleX, self.fireballAnimation.scaleY)
 end
 
-function MenuState:update(dt)
+function MenuScene:update(dt)
     -- Update animations
     self.torrentAnimation.accumulator = self.torrentAnimation.accumulator + dt
     while self.torrentAnimation.accumulator >= self.torrentAnimation.frameDuration do
@@ -71,13 +71,13 @@ function MenuState:update(dt)
     end
 end
 
-function MenuState:keypressed(key)
+function MenuScene:keypressed(key)
     if key == "return" then
         local userInput = self:processInput()
         if userInput == "p" or userInput == "play game" then
-            self.sceneManager:changeState("instructions")
+            self.sceneManager:changeScene("instructions")
         elseif userInput == "b" then
-            self.sceneManager:changeState("cardBrowse")
+            self.sceneManager:changeScene("cardBrowse")
         elseif userInput == "q" or userInput == "quit" then
             love.event.quit()
         end

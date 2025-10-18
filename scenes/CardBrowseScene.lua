@@ -1,28 +1,28 @@
-require "states.BaseState"
+require "scenes.BaseScene"
 
--- Card Browse State
-CardBrowseState = {}
-setmetatable(CardBrowseState, {
-    __index = BaseState
+-- Card Browse Scene
+CardBrowseScene = {}
+setmetatable(CardBrowseScene, {
+    __index = BaseScene
 })
-CardBrowseState.__index = CardBrowseState
+CardBrowseScene.__index = CardBrowseScene
 
-function CardBrowseState:new()
-    local state = setmetatable(BaseState:new(), self)
-    state.posy = 10 -- Scroll position
-    state.cardsPerRow = 4
-    state.cards = {}
+function CardBrowseScene:new()
+    local scene = setmetatable(BaseScene:new(), self)
+    scene.posy = 10 -- Scroll position
+    scene.cardsPerRow = 4
+    scene.cards = {}
     for _, cardName in ipairs(cardManager:getAllCardNames()) do
-        table.insert(state.cards, cardManager:createCard(cardName))
+        table.insert(scene.cards, cardManager:createCard(cardName))
     end
-    return state
+    return scene
 end
 
-function CardBrowseState:enter()
+function CardBrowseScene:enter()
     message2 = "[Q] to go back"
 end
 
-function CardBrowseState:update(dt)
+function CardBrowseScene:update(dt)
     -- Update card positions for browsing layout
     local margin = 15
     local colSpacing = LARGE_CARD_WIDTH + margin
@@ -39,23 +39,23 @@ function CardBrowseState:update(dt)
     end
 end
 
-function CardBrowseState:draw()
+function CardBrowseScene:draw()
     for i = 1, #self.cards do
         self.cards[i]:draw()
     end
 end
 
-function CardBrowseState:keypressed(key)
+function CardBrowseScene:keypressed(key)
     if key == "return" then
         if self:processInput() == "q" then
-            self.sceneManager:changeState("menu")
+            self.sceneManager:changeScene("menu")
         end
         input = ""
     end
-    BaseState.keypressed(self, key)
+    BaseScene.keypressed(self, key)
 end
 
-function CardBrowseState:wheelmoved(x, y)
+function CardBrowseScene:wheelmoved(x, y)
     self.posy = self.posy + y * SCROLL_SPEED
 
     -- Scrolling boundaries

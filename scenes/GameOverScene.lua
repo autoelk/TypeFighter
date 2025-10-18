@@ -1,19 +1,19 @@
-require "states.BaseState"
+require "scenes.BaseScene"
 
--- Game Over State
-GameOverState = {}
-setmetatable(GameOverState, {
-    __index = BaseState
+-- Game Over Scene
+GameOverScene = {}
+setmetatable(GameOverScene, {
+    __index = BaseScene
 })
-GameOverState.__index = GameOverState
+GameOverScene.__index = GameOverScene
 
-function GameOverState:new()
-    local state = setmetatable(BaseState:new(), self)
-    state.gameOverMessage = ""
-    return state
+function GameOverScene:new()
+    local scene = setmetatable(BaseScene:new(), self)
+    scene.gameOverMessage = ""
+    return scene
 end
 
-function GameOverState:enter()
+function GameOverScene:enter()
     message2 = "[r]estart [q]uit"
     local humanPlayer = HUMANPLAYER
     local aiPlayer = AIPLAYER
@@ -27,10 +27,10 @@ function GameOverState:enter()
     end
 end
 
-function GameOverState:update(dt)
+function GameOverScene:update(dt)
 end
 
-function GameOverState:draw()
+function GameOverScene:draw()
     lg.setFont(fontXL)
     lg.printf(self.gameOverMessage, 0, 200, GAME_WIDTH, "center")
     lg.setFont(fontM)
@@ -42,13 +42,13 @@ function GameOverState:draw()
     end
 end
 
-function GameOverState:keypressed(key)
+function GameOverScene:keypressed(key)
     if key == "return" then
         local userInput = self:processInput()
         if userInput == "q" or userInput == "quit" then
             love.event.quit()
         elseif userInput == "r" or userInput == "restart" then
-            self.sceneManager:changeState("menu")
+            self.sceneManager:changeScene("menu")
         end
         input = ""
     end
