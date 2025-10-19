@@ -16,6 +16,12 @@ function PauseScene:enter()
 end
 
 function PauseScene:draw()
+    -- Dim the background
+    lg.setColor(0, 0, 0, 0.5)
+    lg.rectangle("fill", 0, 0, GAME_WIDTH, GAME_HEIGHT)
+    lg.setColor(COLORS.WHITE)
+
+    -- Draw pause text on top
     lg.setFont(fontXL)
     lg.printf("pause", 0, 200, GAME_WIDTH, "center")
     lg.setFont(fontM)
