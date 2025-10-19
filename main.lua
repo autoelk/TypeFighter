@@ -17,7 +17,6 @@ require "scenes.PauseScene"
 require "scenes.GameOverScene"
 
 -- Global game state
-gameTime = 0
 sceneManager = nil
 cardManager = nil
 resourceManager = nil
@@ -102,11 +101,6 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
-    gameTime = gameTime + dt
-    HUMANPLAYER:update(dt)
-    AIPLAYER:update(dt)
-
-    -- Update current scene
     sceneManager:update(dt)
 end
 
@@ -121,10 +115,6 @@ function love.draw()
     -- Background
     lg.draw(background, 0, 0, 0, PIXEL_TO_GAME_SCALE, PIXEL_TO_GAME_SCALE)
     lg.setFont(fontM)
-
-    -- Draw players
-    HUMANPLAYER:draw()
-    AIPLAYER:draw()
 
     -- Draw current scene
     sceneManager:draw()

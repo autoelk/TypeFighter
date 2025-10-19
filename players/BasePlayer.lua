@@ -59,7 +59,7 @@ function BasePlayer:reset()
     self.castAnimFinished = false
     self.damageDisplay = {
         amount = 0,
-        endTime = 0,
+        timeLeft = 0,
         isActive = false
     }
     self.effects = {}
@@ -128,7 +128,7 @@ function BasePlayer:drawUI()
 end
 
 function BasePlayer:drawDamageNumbers()
-    if self.damageDisplay.isActive and gameTime < self.damageDisplay.endTime and self.damageDisplay.amount ~= 0 then
+    if self.damageDisplay.isActive and self.damageDisplay.timeLeft > 0 and self.damageDisplay.amount ~= 0 then
         if self.damageDisplay.amount > 0 then
             lg.setColor(COLORS.RED)
         else
@@ -144,7 +144,7 @@ function BasePlayer:drawDamageNumbers()
             lg.setFont(fontM)
         end
 
-        local damageY = self.y - 40 - (gameTime - self.damageDisplay.endTime) * 25
+        local damageY = self.y - 40 - self.damageDisplay.timeLeft * 25
         lg.printf(absAmount, self.x, damageY, SPRITE_SIZE, "center")
     end
 end
@@ -199,7 +199,7 @@ end
 function BasePlayer:damage(amtDamage)
     -- Update damage display state
     self.damageDisplay.amount = amtDamage
-    self.damageDisplay.endTime = gameTime + 1
+    self.damageDisplay.timeLeft = 1.0
     self.damageDisplay.isActive = true
 
     -- Apply damage to health

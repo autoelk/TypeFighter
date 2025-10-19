@@ -8,7 +8,7 @@ InstructionsScene.__index = InstructionsScene
 function InstructionsScene:new()
     local scene = setmetatable(BaseScene:new(), self)
     scene.name = "instructions"
-    scene.endTime = 0
+    scene.timeLeft = 0
     scene.seen = false
     scene.instructionsText = "choose " ..
         MAX_DECK_SIZE ..
@@ -22,11 +22,12 @@ function InstructionsScene:enter()
         return
     end
     message2 = "[p] to skip [q] to go back"
-    self.endTime = gameTime + 20
+    self.timeLeft = 20
 end
 
 function InstructionsScene:update(dt)
-    if gameTime >= self.endTime then
+    self.timeLeft = self.timeLeft - dt
+    if self.timeLeft <= 0 then
         self.sceneManager:changeScene("cardSelect")
     end
 end
