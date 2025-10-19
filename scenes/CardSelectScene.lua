@@ -9,6 +9,7 @@ CardSelectScene.__index = CardSelectScene
 
 function CardSelectScene:new()
     local scene = setmetatable(BaseScene:new(), self)
+    scene.name = "cardSelect"
     scene.posy = 10 -- scroll position
     scene.cardsPerRow = 4
     scene.cardPool = {}

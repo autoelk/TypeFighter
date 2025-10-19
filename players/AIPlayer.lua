@@ -45,7 +45,7 @@ end
 function AIPlayer:update(dt)
     BasePlayer.update(self, dt)
 
-    if sceneManager:getCurrentSceneName() == "game" then
+    if sceneManager:getCurrentScene().name == "game" then
         self.castCooldown = self.castCooldown - dt
         self.warningCooldown = self.warningCooldown - dt
         self.drawCooldown = self.drawCooldown - dt

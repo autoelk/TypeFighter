@@ -9,6 +9,7 @@ CardBrowseScene.__index = CardBrowseScene
 
 function CardBrowseScene:new()
     local scene = setmetatable(BaseScene:new(), self)
+    scene.name = "cardBrowse"
     scene.posy = 10 -- Scroll position
     scene.cardsPerRow = 4
     scene.cards = {}

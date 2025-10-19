@@ -82,13 +82,14 @@ function love.load()
     HUMANPLAYER = HumanPlayer:new(1)
     AIPLAYER = AIPlayer:new(2, "normal")
 
-    sceneManager:addScene("menu", MenuScene:new())
-    sceneManager:addScene("cardBrowse", CardBrowseScene:new())
-    sceneManager:addScene("instructions", InstructionsScene:new())
-    sceneManager:addScene("cardSelect", CardSelectScene:new())
-    sceneManager:addScene("game", GameScene:new())
-    sceneManager:addScene("pause", PauseScene:new())
-    sceneManager:addScene("gameOver", GameOverScene:new())
+    sceneManager:addScene(MenuScene:new())
+    sceneManager:addScene(CardBrowseScene:new())
+    sceneManager:addScene(InstructionsScene:new())
+    sceneManager:addScene(CardSelectScene:new())
+    sceneManager:addScene(GameScene:new())
+    sceneManager:addScene(PauseScene:new())
+    sceneManager:addScene(GameOverScene:new())
+
     sceneManager:changeScene("menu")
 end
 

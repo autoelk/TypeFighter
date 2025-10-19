@@ -6,7 +6,9 @@ setmetatable(PauseScene, { __index = BaseScene })
 PauseScene.__index = PauseScene
 
 function PauseScene:new()
-    return setmetatable(BaseScene:new(), self)
+    local scene = setmetatable(BaseScene:new(), self)
+    scene.name = "pause"
+    return scene
 end
 
 function PauseScene:enter()
@@ -22,7 +24,7 @@ end
 
 function PauseScene:keypressed(key)
     if key == "escape" then
-        self.sceneManager:changeScene("game")
+        self.sceneManager:popScene()
     elseif key == "return" and self:processInput() == "q" then
         self.sceneManager:changeScene("menu")
         input = ""

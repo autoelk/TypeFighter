@@ -8,7 +8,9 @@ setmetatable(GameScene, {
 GameScene.__index = GameScene
 
 function GameScene:new()
-    return setmetatable(BaseScene:new(), self)
+    local scene = setmetatable(BaseScene:new(), self)
+    scene.name = "game"
+    return scene
 end
 
 function GameScene:enter()
@@ -109,7 +111,7 @@ end
 
 function GameScene:keypressed(key)
     if key == "escape" then
-        self.sceneManager:changeScene("pause")
+        self.sceneManager:pushScene("pause")
     elseif key == "return" then
         local userInput = self:processInput()
         local result = HUMANPLAYER:handleInput(userInput)

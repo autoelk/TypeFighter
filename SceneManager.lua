@@ -5,59 +5,63 @@ SceneManager.__index = SceneManager
 function SceneManager:new()
     return setmetatable({
         scenes = {},
-        currentScene = nil,
-        currentSceneName = nil,
-        previousScene = nil
+        sceneStack = {} -- stack to manage overlay scenes
     }, self)
 end
 
-function SceneManager:addScene(name, scene)
-    self.scenes[name] = scene
+function SceneManager:addScene(scene)
+    self.scenes[scene.name] = scene
     scene.sceneManager = self
 end
 
+-- Change to a new scene, clearing the scene stack
 function SceneManager:changeScene(sceneName)
-    if self.currentScene and self.currentScene.exit then
-        self.currentScene:exit()
+    while #self.sceneStack > 0 do
+        self:popScene()
     end
+    self:pushScene(sceneName)
+end
 
-    self.previousScene = self.currentScene
-    self.currentScene = self.scenes[sceneName]
-    self.currentSceneName = sceneName
-
-    if self.currentScene and self.currentScene.enter then
-        self.currentScene:enter()
+function SceneManager:pushScene(sceneName)
+    local scene = self.scenes[sceneName]
+    if not scene then
+        error("Scene not found: " .. tostring(sceneName))
     end
+    table.insert(self.sceneStack, scene)
+    scene:enter()
+end
+
+function SceneManager:popScene()
+    if #self.sceneStack == 0 then
+        return
+    end
+    local scene = table.remove(self.sceneStack)
+    scene:exit()
+end
+
+function SceneManager:getScene(name)
+    return self.scenes[name]
 end
 
 function SceneManager:getCurrentScene()
-    return self.currentScene
-end
-
-function SceneManager:getCurrentSceneName()
-    return self.currentSceneName
+    return self.sceneStack[#self.sceneStack]
 end
 
 function SceneManager:update(dt)
-    if self.currentScene and self.currentScene.update then
-        self.currentScene:update(dt)
-    end
+    -- for now, we only update the top scene in the stack
+    self:getCurrentScene():update(dt)
 end
 
 function SceneManager:draw()
-    if self.currentScene and self.currentScene.draw then
-        self.currentScene:draw()
+    for _, scene in ipairs(self.sceneStack) do
+        scene:draw()
     end
 end
 
 function SceneManager:keypressed(key)
-    if self.currentScene and self.currentScene.keypressed then
-        self.currentScene:keypressed(key)
-    end
+    self:getCurrentScene():keypressed(key)
 end
 
 function SceneManager:wheelmoved(x, y)
-    if self.currentScene and self.currentScene.wheelmoved then
-        self.currentScene:wheelmoved(x, y)
-    end
+    self:getCurrentScene():wheelmoved(x, y)
 end

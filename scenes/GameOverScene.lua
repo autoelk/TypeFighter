@@ -9,6 +9,7 @@ GameOverScene.__index = GameOverScene
 
 function GameOverScene:new()
     local scene = setmetatable(BaseScene:new(), self)
+    scene.name = "gameOver"
     scene.gameOverMessage = ""
     return scene
 end

@@ -7,6 +7,7 @@ InstructionsScene.__index = InstructionsScene
 
 function InstructionsScene:new()
     local scene = setmetatable(BaseScene:new(), self)
+    scene.name = "instructions"
     scene.endTime = 0
     scene.seen = false
     scene.instructionsText = "choose " ..

@@ -9,6 +9,7 @@ MenuScene.__index = MenuScene
 
 function MenuScene:new()
     local scene = BaseScene:new()
+    scene.name = "menu"
     scene.torrentAnimation = resourceManager:newAnimation("card_torrent")
     scene.fireballAnimation = resourceManager:newAnimation("card_fireball")
 
