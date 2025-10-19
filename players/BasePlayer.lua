@@ -128,10 +128,11 @@ function BasePlayer:drawUI()
 end
 
 function BasePlayer:drawDamageNumbers()
-    if self.damageDisplay.isActive and self.damageDisplay.timeLeft > 0 and self.damageDisplay.amount ~= 0 then
+    if self.damageDisplay.isActive then
         if self.damageDisplay.amount > 0 then
             lg.setColor(COLORS.RED)
         else
+            -- Healing
             lg.setColor(COLORS.GREEN)
         end
 
@@ -155,7 +156,7 @@ function BasePlayer:castCard(card)
 
     if not handIdx then
         if not self.suppressMessages then
-            message = "that card is not in your hand"
+            messageLeft = "that card is not in your hand"
         end
         return "not_in_hand"
     end
@@ -164,7 +165,7 @@ function BasePlayer:castCard(card)
     local canCast, errorMessage = card:canCast(self, self:other())
     if not canCast then
         if not self.suppressMessages then
-            message = errorMessage
+            messageLeft = errorMessage
         end
         if errorMessage == "you don't have enough mana" then
             return "insufficient_mana"
@@ -183,7 +184,7 @@ function BasePlayer:castCard(card)
     -- Deduct mana cost
     self.mana = self.mana - card.mana
     if not self.suppressMessages then
-        message2 = "player " .. self.id .. " cast " .. card.name
+        messageRight = "player " .. self.id .. " cast " .. card.name
     end
 
     -- Remove card from hand
@@ -208,6 +209,23 @@ function BasePlayer:damage(amtDamage)
 end
 
 function BasePlayer:update(dt)
+    if sceneManager:getCurrentScene().name == "game" then
+        self.mana = self.mana + dt * self.manaRegen
+        if self.mana < 0 then
+            self.mana = 0
+        end
+        self.health = self.health + dt * self.healthRegen
+    end
+
+    -- Update damage display
+    if self.damageDisplay.isActive then
+        self.damageDisplay.timeLeft = self.damageDisplay.timeLeft - dt
+        if self.damageDisplay.timeLeft <= 0 then
+            self.damageDisplay.isActive = false
+            self.damageDisplay.amount = 0
+        end
+    end
+
     -- Hold first frame while alive
     if self.isAlive then
         self.deathAnim.currentFrame = 1

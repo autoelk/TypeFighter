@@ -11,24 +11,25 @@ function GameOverScene:new()
     local scene = setmetatable(BaseScene:new(), self)
     scene.name = "gameOver"
     scene.gameOverMessage = ""
+    scene.controlsHint = "[r]estart [q]uit"
     return scene
 end
 
 function GameOverScene:enter()
-    message2 = "[r]estart [q]uit"
-    local humanPlayer = HUMANPLAYER
-    local aiPlayer = AIPLAYER
+    messageRight = self.controlsHint
     -- Decide game over message based on isAlive flags
-    if not humanPlayer.isAlive and not aiPlayer.isAlive then
+    if not HUMANPLAYER.isAlive and not AIPLAYER.isAlive then
         self.gameOverMessage = "tie"
-    elseif not humanPlayer.isAlive then
+    elseif not HUMANPLAYER.isAlive then
         self.gameOverMessage = "player 2 wins"
-    elseif not aiPlayer.isAlive then
+    elseif not AIPLAYER.isAlive then
         self.gameOverMessage = "player 1 wins"
     end
 end
 
 function GameOverScene:update(dt)
+    HUMANPLAYER:update(dt)
+    AIPLAYER:update(dt)
 end
 
 function GameOverScene:draw()
@@ -36,6 +37,9 @@ function GameOverScene:draw()
     lg.printf(self.gameOverMessage, 0, 200, GAME_WIDTH, "center")
     lg.setFont(fontM)
     lg.printf("[r]estart game\n[q]uit", 0, 300, GAME_WIDTH, "center")
+
+    HUMANPLAYER:draw()
+    AIPLAYER:draw()
 
     for i = 1, #activeSpells do
         local s = activeSpells[i]

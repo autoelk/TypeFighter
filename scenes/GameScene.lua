@@ -10,6 +10,7 @@ GameScene.__index = GameScene
 function GameScene:new()
     local scene = setmetatable(BaseScene:new(), self)
     scene.name = "game"
+    scene.controlsHint = "[q]uit to menu [esc] pause"
     return scene
 end
 
@@ -28,25 +29,16 @@ function GameScene:enter()
     end
 
     -- Set game interface messages
-    message = "type card names to cast them"
-    message2 = "[q]uit to menu [esc] pause"
+    messageLeft = "type card names to cast them"
+    messageRight = self.controlsHint
 
     -- Initialize active spells list for this game
     self.activeSpells = {}
 end
 
 function GameScene:update(dt)
-    -- Health and mana regen
-    HUMANPLAYER.mana = HUMANPLAYER.mana + dt * HUMANPLAYER.manaRegen
-    if HUMANPLAYER.mana < 0 then
-        HUMANPLAYER.mana = 0
-    end
-    HUMANPLAYER.health = HUMANPLAYER.health + dt * HUMANPLAYER.healthRegen
-    AIPLAYER.mana = AIPLAYER.mana + dt * AIPLAYER.manaRegen
-    if AIPLAYER.mana < 0 then
-        AIPLAYER.mana = 0
-    end
-    AIPLAYER.health = AIPLAYER.health + dt * AIPLAYER.healthRegen
+    HUMANPLAYER:update(dt)
+    AIPLAYER:update(dt)
 
     -- Update active spells
     for i = #self.activeSpells, 1, -1 do
@@ -97,6 +89,10 @@ function GameScene:draw()
         AIPLAYER.hand[i]:drawMini()
     end
 
+    lg.setColor(COLORS.WHITE)
+    HUMANPLAYER:draw()
+    AIPLAYER:draw()
+
     -- Draw active spells
     if self.activeSpells then
         for i = 1, #self.activeSpells do
@@ -119,10 +115,10 @@ function GameScene:keypressed(key)
         if result == "quit" then
             self.sceneManager:changeScene("menu")
         elseif result == "unknown_card" then
-            message = "type card names to cast them"
+            messageLeft = "type card names to cast them"
         elseif result == "insufficient_mana" then
         elseif result == "not_your_card" then
-            message = "that card is not in your deck"
+            messageLeft = "that card is not in your deck"
         elseif result == "cannot_cast" then
         end
         input = ""

@@ -5,7 +5,8 @@ SceneManager.__index = SceneManager
 function SceneManager:new()
     return setmetatable({
         scenes = {},
-        sceneStack = {} -- stack to manage overlay scenes
+        sceneStack = {}, -- stack to manage overlay scenes
+        paused = false   -- if paused, only update the top scene
     }, self)
 end
 
@@ -48,8 +49,13 @@ function SceneManager:getCurrentScene()
 end
 
 function SceneManager:update(dt)
-    -- for now, we only update the top scene in the stack
-    self:getCurrentScene():update(dt)
+    if self.paused then
+        self:getCurrentScene():update(dt)
+    else
+        for _, scene in ipairs(self.sceneStack) do
+            scene:update(dt)
+        end
+    end
 end
 
 function SceneManager:draw()
@@ -64,4 +70,8 @@ end
 
 function SceneManager:wheelmoved(x, y)
     self:getCurrentScene():wheelmoved(x, y)
+end
+
+function SceneManager:pause(val)
+    self.paused = val
 end

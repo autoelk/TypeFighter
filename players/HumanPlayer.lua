@@ -24,7 +24,7 @@ end
 function HumanPlayer:handleInput(userInput)
     if self.drawWord ~= "" and userInput == self.drawWord then
         if not self:drawCard() then
-            message2 = "hand full, can't draw"
+            messageRight = "hand full, can't draw"
         end
         self.drawWord = resourceManager:getRandomWord()
         -- Don't return here to allow casting a card named the same as the draw word

@@ -10,6 +10,7 @@ MenuScene.__index = MenuScene
 function MenuScene:new()
     local scene = BaseScene:new()
     scene.name = "menu"
+    scene.controlsHint = "[p]lay game [b]rowse cards [q]uit"
     scene.torrentAnimation = resourceManager:newAnimation("card_torrent")
     scene.fireballAnimation = resourceManager:newAnimation("card_fireball")
 
@@ -26,8 +27,8 @@ end
 
 function MenuScene:enter()
     input = ""
-    message = "type p to start"
-    message2 = "[p]lay [b]rowse [q]uit"
+    messageLeft = "type p to start"
+    messageRight = self.controlsHint
 end
 
 function MenuScene:draw()
@@ -47,6 +48,9 @@ function MenuScene:draw()
     lg.draw(self.fireballAnimation.spriteSheet, self.fireballAnimation.quads[fireballSpriteNum],
         self.fireballAnimation.x, self.fireballAnimation.y,
         math.rad(self.fireballAnimation.rotation), self.fireballAnimation.scaleX, self.fireballAnimation.scaleY)
+
+    HUMANPLAYER:draw()
+    AIPLAYER:draw()
 end
 
 function MenuScene:update(dt)
@@ -70,13 +74,17 @@ function MenuScene:update(dt)
             self.fireballAnimation.currentFrame = 1
         end
     end
+
+    HUMANPLAYER:update(dt)
+    AIPLAYER:update(dt)
 end
 
 function MenuScene:keypressed(key)
     if key == "return" then
         local userInput = self:processInput()
         if userInput == "p" or userInput == "play game" then
-            self.sceneManager:changeScene("instructions")
+            self.sceneManager:changeScene("cardSelect")
+            self.sceneManager:pushScene("instructions")
         elseif userInput == "b" then
             self.sceneManager:changeScene("cardBrowse")
         elseif userInput == "q" or userInput == "quit" then

@@ -13,11 +13,12 @@ function CardSelectScene:new()
     scene.posy = 10 -- scroll position
     scene.cardsPerRow = 4
     scene.cardPool = {}
+    scene.controlsHint = "[p]lay [q] to go back"
     return scene
 end
 
 function CardSelectScene:enter()
-    message2 = "[P]lay [Q] to go back"
+    messageRight = self.controlsHint
     self.cardPool = {}
     for _, cardName in ipairs(cardManager:getAllCardNames()) do
         table.insert(self.cardPool, cardManager:createCard(cardName))
@@ -120,7 +121,7 @@ function CardSelectScene:keypressed(key)
         elseif userInput == "q" or userInput == "quit" then
             self.sceneManager:changeScene("menu")
         else
-            message = "type card names to choose them"
+            messageLeft = "type card names to choose them"
         end
         input = ""
     end
@@ -131,14 +132,14 @@ function CardSelectScene:handleCardSelection(cardName)
         if HUMANPLAYER.deck[i].name:lower() == cardName then
             table.insert(self.cardPool, HUMANPLAYER.deck[i])
             HUMANPLAYER:removeCard(HUMANPLAYER.deck[i])
-            message = "removed " .. HUMANPLAYER.deck[i].name
+            messageLeft = "removed " .. HUMANPLAYER.deck[i].name
             return
         end
     end
 
     for i = 1, #AIPLAYER.deck do
         if AIPLAYER.deck[i].name:lower() == cardName then
-            message = cardName .. " is in opponent's deck"
+            messageLeft = cardName .. " is in opponent's deck"
             return
         end
     end
@@ -146,12 +147,12 @@ function CardSelectScene:handleCardSelection(cardName)
     for i = 1, #self.cardPool do
         if self.cardPool[i].name:lower() == cardName then
             if #HUMANPLAYER.deck >= MAX_DECK_SIZE then
-                message = "your deck is full"
+                messageLeft = "your deck is full"
             elseif HUMANPLAYER.picks <= 0 then
-                message = "no picks remaining"
+                messageLeft = "no picks remaining"
             else
                 HUMANPLAYER:addCard(self.cardPool[i])
-                message = "added " .. self.cardPool[i].name
+                messageLeft = "added " .. self.cardPool[i].name
                 table.remove(self.cardPool, i)
             end
             return
@@ -161,11 +162,11 @@ end
 
 function CardSelectScene:handleGameStart()
     if HUMANPLAYER and HUMANPLAYER.picks > 0 then
-        message = "you have " .. HUMANPLAYER.picks .. " picks left"
+        messageLeft = "you have " .. HUMANPLAYER.picks .. " picks left"
     elseif AIPLAYER and AIPLAYER.picks > 0 then
-        message = "player2 has " .. AIPLAYER.picks .. " picks left"
+        messageLeft = "player2 has " .. AIPLAYER.picks .. " picks left"
     else
-        message = "game started"
+        messageLeft = "game started"
         self.sceneManager:changeScene("game")
     end
 end

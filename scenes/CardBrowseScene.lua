@@ -13,6 +13,7 @@ function CardBrowseScene:new()
     scene.posy = 10 -- Scroll position
     scene.cardsPerRow = 4
     scene.cards = {}
+    scene.controlsHint = "[q] to go back"
     for _, cardName in ipairs(cardManager:getAllCardNames()) do
         table.insert(scene.cards, cardManager:createCard(cardName))
     end
@@ -20,7 +21,7 @@ function CardBrowseScene:new()
 end
 
 function CardBrowseScene:enter()
-    message2 = "[Q] to go back"
+    messageRight = self.controlsHint
 end
 
 function CardBrowseScene:update(dt)

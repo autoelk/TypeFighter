@@ -8,11 +8,12 @@ PauseScene.__index = PauseScene
 function PauseScene:new()
     local scene = setmetatable(BaseScene:new(), self)
     scene.name = "pause"
+    scene.controlsHint = "[q]uit to menu [esc] to return"
     return scene
 end
 
 function PauseScene:enter()
-    message2 = "[q]uit to menu [esc] to return"
+    messageRight = self.controlsHint
 end
 
 function PauseScene:draw()

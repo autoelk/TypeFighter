@@ -20,9 +20,9 @@ require "scenes.GameOverScene"
 sceneManager = nil
 cardManager = nil
 resourceManager = nil
-input = ""    -- player input
-message = ""  -- left side text
-message2 = "" -- right side text
+input = ""        -- player input
+messageLeft = ""  -- left side text
+messageRight = "" -- right side text
 activeSpells = {}
 
 -- Colors
@@ -125,14 +125,14 @@ function love.draw()
     lg.rectangle("fill", 0, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, inputRectHeight)
     lg.setFont(fontM)
     lg.setColor(COLORS.WHITE)
-    lg.printf(message, 5, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "left")
-    lg.printf(message2, -5, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "right")
+    lg.printf(messageLeft, 5, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "left")
+    lg.printf(messageRight, -5, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "right")
     lg.printf(input, 5, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "left")
 end
 
 function love.textinput(t)
     input = input .. t
-    message = "" -- Clear message when user starts typing
+    messageLeft = "" -- Clear message when user starts typing
 end
 
 function love.wheelmoved(dx, dy)
