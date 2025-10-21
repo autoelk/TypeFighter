@@ -6,12 +6,14 @@ AIPlayerController.__index = AIPlayerController
 
 function AIPlayerController:new(player, difficulty)
     local controller = BasePlayerController:new(player)
+    controller.mirror = true
+    controller.tint = COLORS.RED
+
     controller.x = GAME_WIDTH - 250 - SPRITE_SIZE
     controller.y = 375
-    controller.mirror = true
     controller.uiX = GAME_WIDTH - 25
     controller.textOffsetX = -25
-    controller.tint = COLORS.RED
+    controller.libraryX = GAME_WIDTH - MINI_CARD_WIDTH - 10
 
     controller.idleAnim = resourceManager:newAnimation("wizardIdle")
     controller.deathAnim = resourceManager:newAnimation("wizardDeath")
@@ -39,39 +41,70 @@ function AIPlayerController:new(player, difficulty)
     return setmetatable(controller, self)
 end
 
+function AIPlayerController:drawLibrary()
+    if #self.player.hand >= MAX_HAND_SIZE then
+        lg.setColor(COLORS.GREY)
+    else
+        lg.setColor(COLORS.YELLOW)
+    end
+
+    lg.rectangle("fill", self.libraryX, self.libraryY, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
+    lg.setColor(COLORS.BLACK)
+    lg.setFont(fontL)
+    lg.printf("DECK", self.libraryX, self.libraryY + 5, MINI_CARD_WIDTH, "center")
+end
+
 function AIPlayerController:update(dt)
     BasePlayerController.update(self, dt)
 
     if sceneManager:getCurrentScene().name == "game" then
-        self.castCooldown = self.castCooldown - dt
-        self.warningCooldown = self.warningCooldown - dt
-        self.drawCooldown = self.drawCooldown - dt
+        self:updateActions(dt)
+    end
+end
 
-        if self.castCooldown <= 0 then
-            -- Decide on the next spell to cast
-            local availableCards = {}
-            for _, card in ipairs(self.player.hand) do
-                if card:canCast(self.player) == CastResult.Success then
-                    table.insert(availableCards, card)
-                end
+function AIPlayerController:updateCards(dt)
+    local margin = 10
+    for i, card in ipairs(self.player.hand) do
+        card:update(dt)
+        if card == self.nextSpell then
+            card:move(self.libraryX - 40,
+                (MINI_CARD_HEIGHT + margin) * i + 100)
+        else
+            card:move(self.libraryX,
+                (MINI_CARD_HEIGHT + margin) * i + 100)
+        end
+    end
+end
+
+function AIPlayerController:updateActions(dt)
+    self.castCooldown = self.castCooldown - dt
+    self.warningCooldown = self.warningCooldown - dt
+    self.drawCooldown = self.drawCooldown - dt
+
+    if self.castCooldown <= 0 then
+        -- Decide on the next spell to cast
+        local availableCards = {}
+        for _, card in ipairs(self.player.hand) do
+            if card:canCast(self.player) == CastResult.Success then
+                table.insert(availableCards, card)
             end
-
-            if #availableCards > 0 then
-                local card = availableCards[math.random(1, #availableCards)]
-                self.nextSpell = card
-                self.warningCooldown = self.castSpeed - self.warningTime
-            end
-            self.castCooldown = self.castSpeed
         end
 
-        if self.nextSpell and self.warningCooldown <= 0 then
-            self:castCard(self.nextSpell)
-            self.nextSpell = nil
+        if #availableCards > 0 then
+            local card = availableCards[math.random(1, #availableCards)]
+            self.nextSpell = card
+            self.warningCooldown = self.castSpeed - self.warningTime
         end
+        self.castCooldown = self.castSpeed
+    end
 
-        if self.drawCooldown <= 0 and #self.player.hand < MAX_HAND_SIZE then
-            self:drawCard()
-            self.drawCooldown = self.drawSpeed
-        end
+    if self.nextSpell and self.warningCooldown <= 0 then
+        self:castCard(self.nextSpell)
+        self.nextSpell = nil
+    end
+
+    if self.drawCooldown <= 0 and #self.player.hand < MAX_HAND_SIZE then
+        self:drawCard()
+        self.drawCooldown = self.drawSpeed
     end
 end

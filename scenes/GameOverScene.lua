@@ -28,8 +28,8 @@ function GameOverScene:enter()
 end
 
 function GameOverScene:update(dt)
-    HUMANPLAYERCONTROLLER:update(dt)
-    AIPLAYERCONTROLLER:update(dt)
+    HUMANPLAYERCONTROLLER:updateCharAnimations(dt)
+    AIPLAYERCONTROLLER:updateCharAnimations(dt)
 end
 
 function GameOverScene:draw()
@@ -38,13 +38,8 @@ function GameOverScene:draw()
     lg.setFont(fontM)
     lg.printf("[r]estart game\n[q]uit", 0, 300, GAME_WIDTH, "center")
 
-    HUMANPLAYERCONTROLLER:draw()
-    AIPLAYERCONTROLLER:draw()
-
-    for i = 1, #activeSpells do
-        local s = activeSpells[i]
-        s:draw()
-    end
+    HUMANPLAYERCONTROLLER:drawChar()
+    AIPLAYERCONTROLLER:drawChar()
 end
 
 function GameOverScene:keypressed(key)

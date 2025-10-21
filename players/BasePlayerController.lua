@@ -8,12 +8,16 @@ function BasePlayerController:new(player)
     local controller = {
         player = player,
         opponent = nil,
+
+        mirror = nil,
+        tint = COLORS.WHITE,
+
         x = nil,
         y = nil,
-        mirror = nil,
         uiX = nil,
         textOffsetX = nil,
-        tint = COLORS.WHITE,
+        libraryX = nil,
+        libraryY = (MINI_CARD_HEIGHT + 10) * (MAX_HAND_SIZE + 1) + 160,
 
         idleAnim = nil,
         deathAnim = nil,
@@ -23,7 +27,7 @@ function BasePlayerController:new(player)
 
         damageDisplay = {
             amount = 0,
-            endTime = 0,
+            timeLeft = 0,
             isActive = false
         },
     }
@@ -69,6 +73,7 @@ function BasePlayerController:draw()
     self:drawDamageDisplay()
     self:drawHealthAndManaBars()
     self:drawCardPreviews()
+    self:drawLibrary()
 end
 
 function BasePlayerController:drawChar()
@@ -165,15 +170,43 @@ function BasePlayerController:drawCardPreviews()
     end
 end
 
+function BasePlayerController:drawLibrary()
+    error("BasePlayerController:drawLibrary() must be implemented by subclass")
+end
+
 function BasePlayerController:update(dt)
-    if self.damageDisplay.isActive then
-        self.damageDisplay.timeLeft = self.damageDisplay.timeLeft - dt
-        if self.damageDisplay.timeLeft <= 0 then
-            self.damageDisplay.isActive = false
-            self.damageDisplay.amount = 0
-        end
+    self:updateDamageDisplay(dt)
+    self:updateCharAnimations(dt)
+    self:updateCards(dt)
+
+    self.player:update(dt)
+end
+
+function BasePlayerController:updateCards(dt)
+    local margin = 10
+    for i, card in ipairs(self.player.hand) do
+        card:update(dt)
+        card:move(self.libraryX, (MINI_CARD_HEIGHT + margin) * i + 100)
     end
 
+    for i, card in ipairs(self.player.library) do
+        card:move(self.libraryX, self.libraryY)
+    end
+end
+
+function BasePlayerController:updateDamageDisplay(dt)
+    if not self.damageDisplay.isActive then
+        return
+    end
+
+    self.damageDisplay.timeLeft = self.damageDisplay.timeLeft - dt
+    if self.damageDisplay.timeLeft <= 0 then
+        self.damageDisplay.isActive = false
+        self.damageDisplay.amount = 0
+    end
+end
+
+function BasePlayerController:updateCharAnimations(dt)
     if not self.player.isAlive then
         self.deathAnim.accumulator = self.deathAnim.accumulator + dt
         while self.deathAnim.accumulator >= self.deathAnim.frameDuration do
@@ -206,8 +239,6 @@ function BasePlayerController:update(dt)
             end
         end
     end
-
-    self.player:update(dt)
 end
 
 function BasePlayerController:damage(amt)

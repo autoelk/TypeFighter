@@ -8,12 +8,13 @@ HumanPlayerController.__index = HumanPlayerController
 
 function HumanPlayerController:new(player)
     local controller = BasePlayerController:new(player)
-    controller.x = 250
-    controller.y = 375
     controller.mirror = false
 
+    controller.x = 250
+    controller.y = 375
     controller.uiX = 25
     controller.textOffsetX = 30
+    controller.libraryX = 10
 
     controller.idleAnim = resourceManager:newAnimation("wizardIdle")
     controller.deathAnim = resourceManager:newAnimation("wizardDeath")
@@ -24,26 +25,21 @@ function HumanPlayerController:new(player)
     return setmetatable(controller, self)
 end
 
-function HumanPlayerController:draw()
-    BasePlayerController.draw(self)
-    local margin = 10
-
-    if #self.player.hand < MAX_HAND_SIZE then
-        self:drawDictWord(margin,
-            (MINI_CARD_HEIGHT + margin) * (#self.player.hand + 1) + 100)
+function HumanPlayerController:drawLibrary()
+    if #self.player.hand >= MAX_HAND_SIZE then
+        lg.setColor(COLORS.GREY)
+    else
+        lg.setColor(COLORS.YELLOW)
     end
-end
 
-function HumanPlayerController:drawDictWord(libraryX, libraryY)
-    lg.setColor(COLORS.YELLOW)
-    lg.rectangle("fill", libraryX, libraryY, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
+    lg.rectangle("fill", self.libraryX, self.libraryY, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
     lg.setColor(COLORS.BLACK)
     lg.setFont(fontS)
-    lg.printf("type", libraryX, libraryY, MINI_CARD_WIDTH, "center")
+    lg.printf("type", self.libraryX, self.libraryY, MINI_CARD_WIDTH, "center")
     lg.setFont(fontL)
-    lg.printf(self.drawWord, libraryX, libraryY + 5, MINI_CARD_WIDTH, "center")
+    lg.printf(self.drawWord, self.libraryX, self.libraryY + 5, MINI_CARD_WIDTH, "center")
     lg.setFont(fontS)
-    lg.printf("to draw", libraryX, libraryY + 35, MINI_CARD_WIDTH, "center")
+    lg.printf("to draw", self.libraryX, self.libraryY + 35, MINI_CARD_WIDTH, "center")
 end
 
 function HumanPlayerController:handleInput(userInput)

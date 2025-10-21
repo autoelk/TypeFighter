@@ -75,8 +75,8 @@ function MenuScene:update(dt)
         end
     end
 
-    HUMANPLAYERCONTROLLER:update(dt)
-    AIPLAYERCONTROLLER:update(dt)
+    HUMANPLAYERCONTROLLER:updateCharAnimations(dt)
+    AIPLAYERCONTROLLER:updateCharAnimations(dt)
 end
 
 function MenuScene:keypressed(key)

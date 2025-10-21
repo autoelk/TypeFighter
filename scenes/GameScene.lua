@@ -41,7 +41,6 @@ function GameScene:update(dt)
     HUMANPLAYERCONTROLLER:update(dt)
     AIPLAYERCONTROLLER:update(dt)
 
-    -- Update active spells
     for i = #self.activeSpells, 1, -1 do
         local spell = self.activeSpells[i]
         if spell.anim.timeLeft and spell.anim.timeLeft <= 0 then
@@ -50,23 +49,6 @@ function GameScene:update(dt)
             spell:update(dt)
         end
     end
-
-    local margin = 10
-    for i = 1, #HUMANPLAYERCONTROLLER.player.hand do
-        HUMANPLAYERCONTROLLER.player.hand[i]:update(dt)
-        HUMANPLAYERCONTROLLER.player.hand[i]:move(margin, (MINI_CARD_HEIGHT + margin) * i + 100)
-    end
-
-    for i = 1, #AIPLAYERCONTROLLER.player.hand do
-        if AIPLAYERCONTROLLER.player.hand[i] == AIPLAYERCONTROLLER.player.nextSpell then
-            AIPLAYERCONTROLLER.player.hand[i]:move(GAME_WIDTH - MINI_CARD_WIDTH - margin - 40,
-                (MINI_CARD_HEIGHT + margin) * i + 100)
-        else
-            AIPLAYERCONTROLLER.player.hand[i]:move(GAME_WIDTH - MINI_CARD_WIDTH - margin,
-                (MINI_CARD_HEIGHT + margin) * i + 100)
-        end
-    end
-
 
     if not HUMANPLAYERCONTROLLER.player.isAlive or not AIPLAYERCONTROLLER.player.isAlive then
         self.sceneManager:changeScene("gameOver")
