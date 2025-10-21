@@ -14,6 +14,8 @@ function CardSelectScene:new()
     scene.cardsPerRow = 4
     scene.cardPool = {}
     scene.controlsHint = "[p]lay [q] to go back"
+    scene.player1Controller = HUMANPLAYERCONTROLLER
+    scene.player2Controller = AIPLAYERCONTROLLER
     return scene
 end
 
@@ -24,16 +26,20 @@ function CardSelectScene:enter()
         table.insert(self.cardPool, cardManager:createCard(cardName))
     end
     -- Reset player picks for card selection
-    HUMANPLAYERCONTROLLER.player.picks = MAX_DECK_SIZE
-    HUMANPLAYERCONTROLLER.player.deck = {}
-    AIPLAYERCONTROLLER.player.picks = MAX_DECK_SIZE
-    AIPLAYERCONTROLLER.player.deck = {}
+    self.player1Controller.player.picks = MAX_DECK_SIZE
+    self.player1Controller.player.deck = {}
+    self.player2Controller.player.picks = MAX_DECK_SIZE
+    self.player2Controller.player.deck = {}
 
     -- TODO Change way AI deck is populated
-    while AIPLAYERCONTROLLER.player.picks > 0 do
-        local cardIdx = math.random(1, #self.cardPool)
-        AIPLAYERCONTROLLER.player:addCard(self.cardPool[cardIdx])
-        table.remove(self.cardPool, cardIdx)
+    for _, playerController in ipairs({ self.player1Controller, self.player2Controller }) do
+        if not playerController.isHuman then
+            while playerController.player.picks > 0 do
+                local cardIdx = math.random(1, #self.cardPool)
+                playerController.player:addCard(self.cardPool[cardIdx])
+                table.remove(self.cardPool, cardIdx)
+            end
+        end
     end
 end
 
@@ -44,17 +50,10 @@ function CardSelectScene:update(dt)
         self.cardPool[i]:update(dt)
     end
 
-    for i = 1, #AIPLAYERCONTROLLER.player.deck do
-        AIPLAYERCONTROLLER.player.deck[i]:update(dt)
-        AIPLAYERCONTROLLER.player.deck[i]:move(GAME_WIDTH - LARGE_CARD_WIDTH - margin, 25 * (i - 1) + margin + 40)
-    end
+    self.player1Controller:updateDeck(dt)
+    self.player2Controller:updateDeck(dt)
 
-    for i = 1, #HUMANPLAYERCONTROLLER.player.deck do
-        HUMANPLAYERCONTROLLER.player.deck[i]:update(dt)
-        HUMANPLAYERCONTROLLER.player.deck[i]:move(margin, 25 * (i - 1) + margin + 40)
-    end
-
-    -- draw remaining cards
+    -- Move card pool to grid layout
     local remCardIdx = 0
     local colSpacing = LARGE_CARD_WIDTH + margin
     local rowSpacing = LARGE_CARD_HEIGHT + margin
@@ -70,30 +69,25 @@ function CardSelectScene:update(dt)
 end
 
 function CardSelectScene:draw()
-    local margin = 10
+    local margin = 20
 
     lg.setFont(fontM)
     lg.setColor(COLORS.WHITE)
-    lg.printf("your deck " .. #HUMANPLAYERCONTROLLER.player.deck .. "/" .. MAX_DECK_SIZE, margin, margin,
+    lg.printf("your deck " .. #self.player1Controller.player.deck .. "/" .. MAX_DECK_SIZE, margin, margin + 100,
         LARGE_CARD_WIDTH, "center")
-    lg.printf("opp deck " .. #AIPLAYERCONTROLLER.player.deck .. "/" .. MAX_DECK_SIZE,
-        GAME_WIDTH - LARGE_CARD_WIDTH - margin, margin,
+    lg.printf("opp deck " .. #self.player2Controller.player.deck .. "/" .. MAX_DECK_SIZE,
+        GAME_WIDTH - LARGE_CARD_WIDTH - margin, margin + 100,
         LARGE_CARD_WIDTH, "center")
 
     for i = 1, #self.cardPool do
         self.cardPool[i]:draw()
     end
 
-    for i = 1, #HUMANPLAYERCONTROLLER.player.deck do
-        HUMANPLAYERCONTROLLER.player.deck[i]:draw()
-    end
-
-    for i = 1, #AIPLAYERCONTROLLER.player.deck do
-        AIPLAYERCONTROLLER.player.deck[i]:draw()
-    end
+    self.player1Controller:drawDeck()
+    self.player2Controller:drawDeck()
 
     -- When both players have full decks, prompt player to start
-    if #HUMANPLAYERCONTROLLER.player.deck == MAX_DECK_SIZE and #AIPLAYERCONTROLLER.player.deck == MAX_DECK_SIZE then
+    if #self.player1Controller.player.deck == MAX_DECK_SIZE and #self.player2Controller.player.deck == MAX_DECK_SIZE then
         lg.setFont(fontL)
         lg.setColor(COLORS.BLACK)
         lg.rectangle("fill", 0, 300, GAME_WIDTH, 50)
@@ -129,17 +123,17 @@ function CardSelectScene:keypressed(key)
 end
 
 function CardSelectScene:handleCardSelection(cardName)
-    for i = 1, #HUMANPLAYERCONTROLLER.player.deck do
-        if HUMANPLAYERCONTROLLER.player.deck[i].name:lower() == cardName then
-            table.insert(self.cardPool, HUMANPLAYERCONTROLLER.player.deck[i])
-            HUMANPLAYERCONTROLLER.player:removeCard(HUMANPLAYERCONTROLLER.player.deck[i])
-            messageLeft = "removed " .. HUMANPLAYERCONTROLLER.player.deck[i].name
+    for i = 1, #self.player1Controller.player.deck do
+        if self.player1Controller.player.deck[i].name:lower() == cardName then
+            table.insert(self.cardPool, self.player1Controller.player.deck[i])
+            self.player1Controller.player:removeCard(self.player1Controller.player.deck[i])
+            messageLeft = "removed " .. self.player1Controller.player.deck[i].name
             return
         end
     end
 
-    for i = 1, #AIPLAYERCONTROLLER.player.deck do
-        if AIPLAYERCONTROLLER.player.deck[i].name:lower() == cardName then
+    for i = 1, #self.player2Controller.player.deck do
+        if self.player2Controller.player.deck[i].name:lower() == cardName then
             messageLeft = cardName .. " is in opponent's deck"
             return
         end
@@ -147,12 +141,12 @@ function CardSelectScene:handleCardSelection(cardName)
 
     for i = 1, #self.cardPool do
         if self.cardPool[i].name:lower() == cardName then
-            if #HUMANPLAYERCONTROLLER.player.deck >= MAX_DECK_SIZE then
+            if #self.player1Controller.player.deck >= MAX_DECK_SIZE then
                 messageLeft = "your deck is full"
-            elseif HUMANPLAYERCONTROLLER.player.picks <= 0 then
+            elseif self.player1Controller.player.picks <= 0 then
                 messageLeft = "no picks remaining"
             else
-                HUMANPLAYERCONTROLLER.player:addCard(self.cardPool[i])
+                self.player1Controller.player:addCard(self.cardPool[i])
                 messageLeft = "added " .. self.cardPool[i].name
                 table.remove(self.cardPool, i)
             end
@@ -162,10 +156,10 @@ function CardSelectScene:handleCardSelection(cardName)
 end
 
 function CardSelectScene:handleGameStart()
-    if HUMANPLAYERCONTROLLER.player.picks > 0 then
-        messageLeft = "you have " .. HUMANPLAYERCONTROLLER.player.picks .. " picks left"
-    elseif AIPLAYERCONTROLLER.player.picks > 0 then
-        messageLeft = "opponent has " .. AIPLAYERCONTROLLER.player.picks .. " picks left"
+    if self.player1Controller.player.picks > 0 then
+        messageLeft = "you have " .. self.player1Controller.player.picks .. " picks left"
+    elseif self.player2Controller.player.picks > 0 then
+        messageLeft = "opponent has " .. self.player2Controller.player.picks .. " picks left"
     else
         messageLeft = "game started"
         self.sceneManager:changeScene("game")

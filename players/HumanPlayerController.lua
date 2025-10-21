@@ -8,6 +8,7 @@ HumanPlayerController.__index = HumanPlayerController
 
 function HumanPlayerController:new(player)
     local controller = BasePlayerController:new(player)
+    controller.isHuman = true
     controller.mirror = false
 
     controller.x = 250
@@ -15,6 +16,7 @@ function HumanPlayerController:new(player)
     controller.uiX = 25
     controller.textOffsetX = 30
     controller.libraryX = 10
+    controller.deckX = 25
 
     controller.idleAnim = resourceManager:newAnimation("wizardIdle")
     controller.deathAnim = resourceManager:newAnimation("wizardDeath")
@@ -28,18 +30,21 @@ end
 function HumanPlayerController:drawLibrary()
     if #self.player.hand >= MAX_HAND_SIZE then
         lg.setColor(COLORS.GREY)
+        lg.rectangle("fill", self.libraryX, self.libraryY, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
+        lg.setColor(COLORS.WHITE)
+        lg.setFont(fontL)
+        lg.printf("hand full", self.libraryX, self.libraryY + 5, MINI_CARD_WIDTH, "center")
     else
         lg.setColor(COLORS.YELLOW)
+        lg.rectangle("fill", self.libraryX, self.libraryY, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
+        lg.setColor(COLORS.BLACK)
+        lg.setFont(fontS)
+        lg.printf("type", self.libraryX, self.libraryY, MINI_CARD_WIDTH, "center")
+        lg.setFont(fontL)
+        lg.printf(self.drawWord, self.libraryX, self.libraryY + 5, MINI_CARD_WIDTH, "center")
+        lg.setFont(fontS)
+        lg.printf("to draw", self.libraryX, self.libraryY + 35, MINI_CARD_WIDTH, "center")
     end
-
-    lg.rectangle("fill", self.libraryX, self.libraryY, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
-    lg.setColor(COLORS.BLACK)
-    lg.setFont(fontS)
-    lg.printf("type", self.libraryX, self.libraryY, MINI_CARD_WIDTH, "center")
-    lg.setFont(fontL)
-    lg.printf(self.drawWord, self.libraryX, self.libraryY + 5, MINI_CARD_WIDTH, "center")
-    lg.setFont(fontS)
-    lg.printf("to draw", self.libraryX, self.libraryY + 35, MINI_CARD_WIDTH, "center")
 end
 
 function HumanPlayerController:handleInput(userInput)

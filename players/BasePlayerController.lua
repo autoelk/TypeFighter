@@ -7,6 +7,7 @@ BasePlayerController.__index = BasePlayerController
 function BasePlayerController:new(player)
     local controller = {
         player = player,
+        isHuman = nil,
         opponent = nil,
 
         mirror = nil,
@@ -18,6 +19,7 @@ function BasePlayerController:new(player)
         textOffsetX = nil,
         libraryX = nil,
         libraryY = (MINI_CARD_HEIGHT + 10) * (MAX_HAND_SIZE + 1) + 160,
+        deckX = nil,
 
         idleAnim = nil,
         deathAnim = nil,
@@ -72,7 +74,7 @@ function BasePlayerController:draw()
     self:drawChar()
     self:drawDamageDisplay()
     self:drawHealthAndManaBars()
-    self:drawCardPreviews()
+    self:drawHand()
     self:drawLibrary()
 end
 
@@ -164,33 +166,53 @@ function BasePlayerController:drawHealthAndManaBars()
     lg.printf(math.floor(self.player.mana), self.textOffsetX, 65, GAME_WIDTH, textAlign)
 end
 
-function BasePlayerController:drawCardPreviews()
+-- Draw cards in hand as mini cards
+function BasePlayerController:drawHand()
     for i, card in ipairs(self.player.hand) do
         card:drawMini()
     end
 end
 
+-- Draw library with draw word or card back
 function BasePlayerController:drawLibrary()
     error("BasePlayerController:drawLibrary() must be implemented by subclass")
+end
+
+-- Draw all cards in deck, only used in CardSelectScene
+function BasePlayerController:drawDeck()
+    for i, card in ipairs(self.player.deck) do
+        card:drawMini()
+    end
 end
 
 function BasePlayerController:update(dt)
     self:updateDamageDisplay(dt)
     self:updateCharAnimations(dt)
-    self:updateCards(dt)
+    self:updateHand(dt)
+    self:updateLibrary(dt)
 
     self.player:update(dt)
 end
 
-function BasePlayerController:updateCards(dt)
+-- Update positions of cards in hand
+function BasePlayerController:updateHand(dt)
     local margin = 10
     for i, card in ipairs(self.player.hand) do
-        card:update(dt)
         card:move(self.libraryX, (MINI_CARD_HEIGHT + margin) * i + 100)
     end
+end
 
+function BasePlayerController:updateLibrary(dt)
     for i, card in ipairs(self.player.library) do
         card:move(self.libraryX, self.libraryY)
+    end
+end
+
+-- Update positions of cards in deck, only used in CardSelectScene
+function BasePlayerController:updateDeck(dt)
+    local margin = 10
+    for i, card in ipairs(self.player.deck) do
+        card:move(self.deckX, (MINI_CARD_HEIGHT + margin) * i + 100)
     end
 end
 
