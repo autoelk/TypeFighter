@@ -1,10 +1,9 @@
--- Abstract base class for players
+-- Abstract model class for players
 BasePlayer = {}
 BasePlayer.__index = BasePlayer
 
 function BasePlayer:new(id)
     local player = {
-        -- Basic stats
         id = id,
         isAlive = true,
         health = 50,
@@ -18,194 +17,37 @@ function BasePlayer:new(id)
         hand = {},    -- Current cards in hand
         library = {}, -- All cards available to draw from
         deck = {},    -- All cards owned by the player
-
-        -- Drawing
-        x = nil,
-        y = nil,
-        idleAnim = nil,
-        deathAnim = nil,
-        castAnim = nil,
-        isCasting = false,
-        castAnimFinished = false,
-        deathAnimStarted = false,
-        deathAnimFinished = false,
-        mirror = false,
-        damageDisplay = {
-            amount = 0,
-            endTime = 0,
-            isActive = false
-        },
     }
     setmetatable(player, self)
     return player
 end
 
--- Reset player state for a new game, does not reset deck
 function BasePlayer:reset()
     self.health = 50
     self.isAlive = true
     self.healthRegen = 0
     self.mana = 0
     self.manaRegen = 1
-    self.deathAnim.currentFrame = 1
-    self.deathAnim.accumulator = 0
-    self.deathAnimStarted = false
-    self.deathAnimFinished = false
-    self.castAnim.currentFrame = 1
-    self.castAnim.accumulator = 0
-    self.idleAnim.currentFrame = 1
-    self.idleAnim.accumulator = 0
-    self.isCasting = false
-    self.castAnimFinished = false
-    self.damageDisplay = {
-        amount = 0,
-        timeLeft = 0,
-        isActive = false
-    }
     self.effects = {}
     self.hand = {}
 end
 
-function BasePlayer:draw()
-    if not self.isAlive then
-        lg.draw(self.deathAnim.spriteSheet, self.deathAnim.quads[self.deathAnim.currentFrame], self.x, self.y, 0,
-            PIXEL_TO_GAME_SCALE,
-            PIXEL_TO_GAME_SCALE)
-    elseif self.isCasting and self.castAnim then
-        lg.draw(self.castAnim.spriteSheet, self.castAnim.quads[self.castAnim.currentFrame], self.x, self.y, 0,
-            PIXEL_TO_GAME_SCALE,
-            PIXEL_TO_GAME_SCALE)
-    else
-        lg.draw(self.idleAnim.spriteSheet, self.idleAnim.quads[self.idleAnim.currentFrame], self.x, self.y, 0,
-            PIXEL_TO_GAME_SCALE,
-            PIXEL_TO_GAME_SCALE)
-    end
-end
-
-function BasePlayer:drawUI()
-    local barScale = 2
-    local healthSize = self.health * barScale
-    local manaSize = self.mana * barScale
-
-    local healthX = self.uiX
-    local manaX = self.uiX
-    if self.mirror then
-        healthX = healthX - healthSize
-        manaX = manaX - manaSize
-    end
-
-    -- Draw mana bar
-    lg.setColor(COLORS.BLUE)
-    lg.rectangle("fill", manaX, 75, manaSize, 30)
-
-    -- Draw health bar with color based on health level
-    if self.health <= 10 then
-        lg.setColor(COLORS.RED)
-        lg.rectangle("fill", healthX, 25, healthSize, 30)
-        lg.setColor(COLORS.WHITE)
-    elseif self.health <= 20 then
-        lg.setColor(COLORS.YELLOW)
-        lg.rectangle("fill", healthX, 25, healthSize, 30)
-        lg.setColor(COLORS.BLACK)
-    else
-        lg.setColor(COLORS.GREEN)
-        lg.rectangle("fill", healthX, 25, healthSize, 30)
-        lg.setColor(COLORS.WHITE)
-    end
-
-    -- Draw health and mana text
-    local textAlign = "left"
-    if self.mirror then
-        textAlign = "right"
-    end
-    lg.setFont(fontL)
-    lg.printf(math.ceil(self.health), self.textOffsetX, 15, GAME_WIDTH, textAlign)
-    lg.setColor(COLORS.WHITE)
-    lg.printf(math.floor(self.mana), self.textOffsetX, 65, GAME_WIDTH, textAlign)
-
-    -- Draw damage numbers
-    self:drawDamageNumbers()
-end
-
-function BasePlayer:drawDamageNumbers()
-    if self.damageDisplay.isActive then
-        if self.damageDisplay.amount > 0 then
-            lg.setColor(COLORS.RED)
-        else
-            -- Healing
-            lg.setColor(COLORS.GREEN)
-        end
-
-        local absAmount = math.abs(self.damageDisplay.amount)
-        if absAmount > 20 then
-            lg.setFont(fontXL)
-        elseif absAmount > 10 then
-            lg.setFont(fontL)
-        else
-            lg.setFont(fontM)
-        end
-
-        local damageY = self.y - 40 - self.damageDisplay.timeLeft * 25
-        lg.printf(absAmount, self.x, damageY, SPRITE_SIZE, "center")
-    end
-end
-
+-- Doesn't actually cast the card, just removes it from hand and deducts mana
 function BasePlayer:castCard(card)
-    -- Check if the card is in our hand
-    local handIdx = indexOf(self.hand, card)
-
-    if not handIdx then
-        if not self.suppressMessages then
-            messageLeft = "that card is not in your hand"
-        end
-        return "not_in_hand"
-    end
-
-    -- Check if we are able to cast the card
-    local canCast, errorMessage = card:canCast(self, self:other())
-    if not canCast then
-        if not self.suppressMessages then
-            messageLeft = errorMessage
-        end
-        if errorMessage == "you don't have enough mana" then
-            return "insufficient_mana"
-        else
-            -- For other conditions like health requirements
-            return "cannot_cast"
-        end
-    end
-
-    -- Start casting animation
-    self.isCasting = true
-    self.castAnim.currentFrame = 1
-    self.castAnim.accumulator = 0
-    self.castAnimFinished = false
-
-    -- Deduct mana cost
     self.mana = self.mana - card.mana
-    if not self.suppressMessages then
-        messageRight = "player " .. self.id .. " cast " .. card.name
-    end
-
-    -- Remove card from hand
-    table.remove(self.hand, handIdx)
+    table.remove(self.hand, indexOf(self.hand, card))
     table.insert(self.library, card)
-
-    -- Use the card's cast method
-    local spell = card:cast(self, self:other())
-    table.insert(sceneManager:getCurrentScene().activeSpells, spell)
-    return "success"
 end
 
-function BasePlayer:damage(amtDamage)
-    -- Update damage display state
-    self.damageDisplay.amount = amtDamage
-    self.damageDisplay.timeLeft = 1.0
-    self.damageDisplay.isActive = true
+function BasePlayer:cardInHand(card)
+    return indexOf(self.hand, card) ~= nil
+end
 
-    -- Apply damage to health
-    self.health = self.health - amtDamage
-    self.isAlive = self.health > 0
+function BasePlayer:damage(amt)
+    self.health = math.max(0, self.health - amt)
+    if self.health <= 0 then
+        self.isAlive = false
+    end
 end
 
 function BasePlayer:update(dt)
@@ -217,62 +59,7 @@ function BasePlayer:update(dt)
         self.health = self.health + dt * self.healthRegen
     end
 
-    -- Update damage display
-    if self.damageDisplay.isActive then
-        self.damageDisplay.timeLeft = self.damageDisplay.timeLeft - dt
-        if self.damageDisplay.timeLeft <= 0 then
-            self.damageDisplay.isActive = false
-            self.damageDisplay.amount = 0
-        end
-    end
-
-    -- Hold first frame while alive
-    if self.isAlive then
-        self.deathAnim.currentFrame = 1
-        self.deathAnim.accumulator = 0
-        self.deathAnimStarted = false
-        self.deathAnimFinished = false
-    elseif not self.deathAnimStarted then
-        self.deathAnim.currentFrame = 1
-        self.deathAnim.accumulator = 0
-        self.deathAnimStarted = true
-    elseif self.deathAnimFinished then
-        self.deathAnim.currentFrame = #self.deathAnim.quads
-        return
-    end
-
-    self.deathAnim.accumulator = self.deathAnim.accumulator + dt
-    while self.deathAnim.accumulator >= self.deathAnim.frameDuration do
-        self.deathAnim.accumulator = self.deathAnim.accumulator - self.deathAnim.frameDuration
-        self.deathAnim.currentFrame = (self.deathAnim.currentFrame or 1) + 1
-        if self.deathAnim.currentFrame >= #self.deathAnim.quads then
-            self.deathAnim.currentFrame = #self.deathAnim.quads
-            self.deathAnimFinished = true
-            break
-        end
-    end
-
-    self.castAnim.accumulator = self.castAnim.accumulator + dt
-    while self.castAnim.accumulator >= self.castAnim.frameDuration do
-        self.castAnim.accumulator = self.castAnim.accumulator - self.castAnim.frameDuration
-        self.castAnim.currentFrame = (self.castAnim.currentFrame or 1) + 1
-        if self.castAnim.currentFrame > #self.castAnim.quads then
-            self.castAnim.currentFrame = #self.castAnim.quads
-            self.isCasting = false
-            self.castAnimFinished = true
-            break
-        end
-    end
-
-    self.idleAnim.accumulator = self.idleAnim.accumulator + dt
-    while self.idleAnim.accumulator >= self.idleAnim.frameDuration do
-        self.idleAnim.accumulator = self.idleAnim.accumulator - self.idleAnim.frameDuration
-        self.idleAnim.currentFrame = (self.idleAnim.currentFrame or 1) + 1
-        if self.idleAnim.currentFrame > #self.idleAnim.quads then
-            self.idleAnim.currentFrame = 1
-            break
-        end
-    end
+    -- TODO: Fix this later
     self:updateEffects(dt)
 end
 
@@ -375,14 +162,6 @@ end
 
 function BasePlayer:canAfford(manaCost)
     return self.mana >= manaCost
-end
-
-function BasePlayer:other()
-    error("BasePlayer:other() must be implemented by subclass")
-end
-
-function BasePlayer:isMirrored()
-    return self.mirror
 end
 
 function indexOf(array, value)

@@ -16,7 +16,7 @@ function BlessingSpell:new(caster, target, spellData, anim)
 end
 
 function BlessingSpell:onStart()
-    self.caster:applyEffect("blessing", {
+    self.caster.player:applyEffect("blessing", {
         duration = self.spellData.duration,
         onApply = function(p, eff)
             p.healthRegen = p.healthRegen + self.spellData.regenAmount

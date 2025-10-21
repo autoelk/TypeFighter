@@ -21,5 +21,5 @@ end
 
 function TorrentSpell:onFinish()
     self.target:damage(self.spellData.damage)
-    self.caster:drawCard()
+    self.caster.player:drawCard()
 end

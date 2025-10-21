@@ -13,7 +13,7 @@ function ManatideSpell:new(caster, target, spellData, anim)
 end
 
 function ManatideSpell:onStart()
-    self.caster:applyEffect("manatide", {
+    self.caster.player:applyEffect("manatide", {
         duration = self.spellData.duration,
         onApply = function(p, eff)
             p.manaRegen = p.manaRegen + self.spellData.regenBonus

@@ -13,7 +13,7 @@ function PoisonSpell:new(caster, target, spellData, anim)
 end
 
 function PoisonSpell:onStart()
-    self.target:applyEffect("poison", {
+    self.target.player:applyEffect("poison", {
         duration = self.spellData.duration,
         tickInterval = 1,
         stackMode = "stack",

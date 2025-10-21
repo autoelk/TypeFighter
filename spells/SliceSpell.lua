@@ -13,6 +13,6 @@ function SliceSpell:new(caster, target, spellData, anim)
 end
 
 function SliceSpell:onFinish()
-    local dmg = math.floor(self.target.health * self.spellData.ratio)
+    local dmg = math.floor(self.target.player.health * self.spellData.ratio)
     self.target:damage(dmg)
 end

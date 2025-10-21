@@ -18,18 +18,18 @@ end
 function GameOverScene:enter()
     messageRight = self.controlsHint
     -- Decide game over message based on isAlive flags
-    if not HUMANPLAYER.isAlive and not AIPLAYER.isAlive then
+    if not HUMANPLAYERCONTROLLER.player.isAlive and not AIPLAYERCONTROLLER.player.isAlive then
         self.gameOverMessage = "tie"
-    elseif not HUMANPLAYER.isAlive then
+    elseif not HUMANPLAYERCONTROLLER.player.isAlive then
         self.gameOverMessage = "player 2 wins"
-    elseif not AIPLAYER.isAlive then
+    elseif not AIPLAYERCONTROLLER.player.isAlive then
         self.gameOverMessage = "player 1 wins"
     end
 end
 
 function GameOverScene:update(dt)
-    HUMANPLAYER:update(dt)
-    AIPLAYER:update(dt)
+    HUMANPLAYERCONTROLLER:update(dt)
+    AIPLAYERCONTROLLER:update(dt)
 end
 
 function GameOverScene:draw()
@@ -38,8 +38,8 @@ function GameOverScene:draw()
     lg.setFont(fontM)
     lg.printf("[r]estart game\n[q]uit", 0, 300, GAME_WIDTH, "center")
 
-    HUMANPLAYER:draw()
-    AIPLAYER:draw()
+    HUMANPLAYERCONTROLLER:draw()
+    AIPLAYERCONTROLLER:draw()
 
     for i = 1, #activeSpells do
         local s = activeSpells[i]

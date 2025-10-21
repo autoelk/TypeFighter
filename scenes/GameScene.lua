@@ -1,4 +1,5 @@
 require "scenes.BaseScene"
+local InputResult = require "enums.InputResult"
 
 -- Game Scene (main gameplay)
 GameScene = {}
@@ -16,16 +17,16 @@ end
 
 function GameScene:enter()
     -- Initialize players for gameplay
-    HUMANPLAYER:reset()
-    AIPLAYER:reset()
+    HUMANPLAYERCONTROLLER:reset()
+    AIPLAYERCONTROLLER:reset()
 
-    HUMANPLAYER.library = HUMANPLAYER.deck
-    AIPLAYER.library = AIPLAYER.deck
+    HUMANPLAYERCONTROLLER.player.library = HUMANPLAYERCONTROLLER.player.deck
+    AIPLAYERCONTROLLER.player.library = AIPLAYERCONTROLLER.player.deck
 
     -- Draw starting hands
     for i = 1, STARTING_HAND_SIZE do
-        HUMANPLAYER:drawCard()
-        AIPLAYER:drawCard()
+        HUMANPLAYERCONTROLLER.player:drawCard()
+        AIPLAYERCONTROLLER.player:drawCard()
     end
 
     -- Set game interface messages
@@ -37,8 +38,8 @@ function GameScene:enter()
 end
 
 function GameScene:update(dt)
-    HUMANPLAYER:update(dt)
-    AIPLAYER:update(dt)
+    HUMANPLAYERCONTROLLER:update(dt)
+    AIPLAYERCONTROLLER:update(dt)
 
     -- Update active spells
     for i = #self.activeSpells, 1, -1 do
@@ -51,23 +52,23 @@ function GameScene:update(dt)
     end
 
     local margin = 10
-    for i = 1, #HUMANPLAYER.hand do
-        HUMANPLAYER.hand[i]:update(dt)
-        HUMANPLAYER.hand[i]:move(margin, (MINI_CARD_HEIGHT + margin) * i + 100)
+    for i = 1, #HUMANPLAYERCONTROLLER.player.hand do
+        HUMANPLAYERCONTROLLER.player.hand[i]:update(dt)
+        HUMANPLAYERCONTROLLER.player.hand[i]:move(margin, (MINI_CARD_HEIGHT + margin) * i + 100)
     end
 
-    for i = 1, #AIPLAYER.hand do
-        if AIPLAYER.hand[i] == AIPLAYER.nextSpell then
-            AIPLAYER.hand[i]:move(GAME_WIDTH - MINI_CARD_WIDTH - margin - 40,
+    for i = 1, #AIPLAYERCONTROLLER.player.hand do
+        if AIPLAYERCONTROLLER.player.hand[i] == AIPLAYERCONTROLLER.player.nextSpell then
+            AIPLAYERCONTROLLER.player.hand[i]:move(GAME_WIDTH - MINI_CARD_WIDTH - margin - 40,
                 (MINI_CARD_HEIGHT + margin) * i + 100)
         else
-            AIPLAYER.hand[i]:move(GAME_WIDTH - MINI_CARD_WIDTH - margin,
+            AIPLAYERCONTROLLER.player.hand[i]:move(GAME_WIDTH - MINI_CARD_WIDTH - margin,
                 (MINI_CARD_HEIGHT + margin) * i + 100)
         end
     end
 
 
-    if not HUMANPLAYER.isAlive or not AIPLAYER.isAlive then
+    if not HUMANPLAYERCONTROLLER.player.isAlive or not AIPLAYERCONTROLLER.player.isAlive then
         self.sceneManager:changeScene("gameOver")
     end
 end
@@ -76,22 +77,23 @@ function GameScene:draw()
     -- Display decks
     local margin = 10
 
-    for i = 1, #HUMANPLAYER.hand do
-        HUMANPLAYER.hand[i]:drawMini()
+    for i = 1, #HUMANPLAYERCONTROLLER.player.hand do
+        HUMANPLAYERCONTROLLER.player.hand[i]:drawMini()
     end
 
     -- Display word for player to type in order to draw a card
-    if #HUMANPLAYER.hand < MAX_HAND_SIZE then
-        HUMANPLAYER:drawDictWord(margin, (MINI_CARD_HEIGHT + margin) * (#HUMANPLAYER.hand + 1) + 100)
+    if #HUMANPLAYERCONTROLLER.player.hand < MAX_HAND_SIZE then
+        HUMANPLAYERCONTROLLER:drawDictWord(margin,
+            (MINI_CARD_HEIGHT + margin) * (#HUMANPLAYERCONTROLLER.player.hand + 1) + 100)
     end
 
-    for i = 1, #AIPLAYER.hand do
-        AIPLAYER.hand[i]:drawMini()
+    for i = 1, #AIPLAYERCONTROLLER.player.hand do
+        AIPLAYERCONTROLLER.player.hand[i]:drawMini()
     end
 
     lg.setColor(COLORS.WHITE)
-    HUMANPLAYER:draw()
-    AIPLAYER:draw()
+    HUMANPLAYERCONTROLLER:draw()
+    AIPLAYERCONTROLLER:draw()
 
     -- Draw active spells
     if self.activeSpells then
@@ -101,8 +103,8 @@ function GameScene:draw()
         end
     end
 
-    HUMANPLAYER:drawUI()
-    AIPLAYER:drawUI()
+    HUMANPLAYERCONTROLLER:drawUI()
+    AIPLAYERCONTROLLER:drawUI()
 end
 
 function GameScene:keypressed(key)
@@ -110,17 +112,24 @@ function GameScene:keypressed(key)
         self.sceneManager:pushScene("pause")
     elseif key == "return" then
         local userInput = self:processInput()
-        local result = HUMANPLAYER:handleInput(userInput)
-
-        if result == "quit" then
+        local result = HUMANPLAYERCONTROLLER:handleInput(userInput)
+        if result == InputResult.Quit then
             self.sceneManager:changeScene("menu")
-        elseif result == "unknown_card" then
-            messageLeft = "type card names to cast them"
-        elseif result == "insufficient_mana" then
-        elseif result == "not_your_card" then
-            messageLeft = "that card is not in your deck"
-        elseif result == "cannot_cast" then
+        elseif result == InputResult.DrawFail then
+            messageLeft = "hand full, can't draw"
+        elseif result == InputResult.DrawSuccess then
+            messageLeft = "drew a card"
+        elseif result == InputResult.CastCard.Success then
+            messageLeft = "cast " .. userInput
+        elseif result == InputResult.CastCard.CardNotInHand then
+            messageLeft = "cannot cast " .. userInput .. ": card not in hand"
+        elseif result == InputResult.CastCard.InsufficientMana then
+            messageLeft = "cannot cast " .. userInput .. ": insufficient mana"
+        elseif result == InputResult.CastCard.CannotCast then
+            messageLeft = "cannot cast " .. userInput
+        elseif result == InputResult.Unknown then
+            messageLeft = "unknown command: " .. userInput
         end
-        input = ""
+        input = "" -- clear user input field
     end
 end

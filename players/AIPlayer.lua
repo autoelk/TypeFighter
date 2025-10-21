@@ -1,24 +1,11 @@
 require "players.BasePlayer"
 
 AIPlayer = {}
-setmetatable(AIPlayer, {
-    __index = BasePlayer
-})
+setmetatable(AIPlayer, { __index = BasePlayer })
 AIPlayer.__index = AIPlayer
 
 function AIPlayer:new(id, difficulty)
     local player = BasePlayer:new(id)
-    player.x = GAME_WIDTH - 250 - SPRITE_SIZE
-    player.y = 375
-
-    player.mirror = true
-    player.uiX = GAME_WIDTH - 25
-    player.textOffsetX = -25
-    player.idleAnim = resourceManager:newAnimation("evilWizardIdle")
-    player.deathAnim = resourceManager:newAnimation("evilWizardDeath")
-    player.castAnim = resourceManager:newAnimation("evilWizardCast")
-
-    -- AI-specific properties
     player.difficulty = difficulty or "normal"
     if difficulty == "easy" then
         player.castSpeed = 15  -- Time between cast attempts
@@ -36,10 +23,8 @@ function AIPlayer:new(id, difficulty)
     player.castCooldown = 0    -- Current cooldown from casting
     player.warningCooldown = 0 -- Current cooldown for showing warning
     player.drawCooldown = 0    -- Current cooldown from drawing
-    player.suppressMessages = true
     player.nextSpell = nil     -- The next spell the AI plans to cast
-    setmetatable(player, self)
-    return player
+    return setmetatable(player, self)
 end
 
 function AIPlayer:update(dt)
@@ -77,8 +62,4 @@ function AIPlayer:update(dt)
             self.drawCooldown = self.drawSpeed
         end
     end
-end
-
-function AIPlayer:other()
-    return HUMANPLAYER
 end

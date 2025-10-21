@@ -1,3 +1,5 @@
+local CastResult = require "enums.CastResult"
+
 -- Base Card class that all cards inherit from
 BaseCard = {}
 BaseCard.__index = BaseCard
@@ -35,11 +37,14 @@ function BaseCard:getDescription()
 end
 
 -- Check if we are able to cast the card, returns failure reason if not
-function BaseCard:canCast(caster, target)
-    if not caster:canAfford(self.mana) then
-        return false, "you don't have enough mana"
+function BaseCard:canCast(caster)
+    if not caster:cardInHand(self) then
+        return CastResult.CardNotInHand
     end
-    return true, nil
+    if not caster:canAfford(self.mana) then
+        return CastResult.InsufficientMana
+    end
+    return CastResult.Success
 end
 
 -- Draw large version of card

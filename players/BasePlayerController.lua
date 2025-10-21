@@ -1,0 +1,207 @@
+local CastResult = require "enums.CastResult"
+
+-- Abstract controller class for players
+BasePlayerController = {}
+BasePlayerController.__index = BasePlayerController
+
+function BasePlayerController:new(player)
+    local controller = {
+        player = player,
+        opponent = nil,
+        x = nil,
+        y = nil,
+        uiX = nil,
+        textOffsetX = nil,
+
+        idleAnim = nil,
+        deathAnim = nil,
+        castAnim = nil,
+        isCasting = false,
+        castAnimFinished = false,
+        mirror = nil,
+        damageDisplay = {
+            amount = 0,
+            endTime = 0,
+            isActive = false
+        },
+    }
+    return setmetatable(controller, self)
+end
+
+function BasePlayerController:reset()
+    self.isCasting = false
+
+    self.deathAnim.currentFrame = 1
+    self.deathAnim.accumulator = 0
+    self.castAnim.currentFrame = 1
+    self.castAnim.accumulator = 0
+    self.idleAnim.currentFrame = 1
+    self.idleAnim.accumulator = 0
+
+    self.damageDisplay = {
+        amount = 0,
+        timeLeft = 0,
+        isActive = false
+    }
+
+    self.player:reset()
+end
+
+function BasePlayerController:isMirrored()
+    return self.mirror
+end
+
+function BasePlayerController:getOpponent()
+    if not self.opponent then
+        error("Opponent not set for player controller")
+    end
+    return self.opponent
+end
+
+function BasePlayerController:setOpponent(opponentController)
+    self.opponent = opponentController
+end
+
+function BasePlayerController:draw()
+    -- draw player sprite
+    if not self.player.isAlive then
+        lg.draw(self.deathAnim.spriteSheet, self.deathAnim.quads[self.deathAnim.currentFrame],
+            self.x, self.y, 0, PIXEL_TO_GAME_SCALE, PIXEL_TO_GAME_SCALE)
+    elseif self.isCasting then
+        lg.draw(self.castAnim.spriteSheet, self.castAnim.quads[self.castAnim.currentFrame],
+            self.x, self.y, 0, PIXEL_TO_GAME_SCALE, PIXEL_TO_GAME_SCALE)
+    else
+        lg.draw(self.idleAnim.spriteSheet, self.idleAnim.quads[self.idleAnim.currentFrame],
+            self.x, self.y, 0, PIXEL_TO_GAME_SCALE, PIXEL_TO_GAME_SCALE)
+    end
+
+    -- draw damage/healing display
+    if self.damageDisplay.isActive then
+        if self.damageDisplay.amount > 0 then
+            lg.setColor(COLORS.RED)
+        else
+            lg.setColor(COLORS.GREEN)
+        end
+
+        local absAmount = math.abs(self.damageDisplay.amount)
+        if absAmount > 20 then
+            lg.setFont(fontXL)
+        elseif absAmount > 10 then
+            lg.setFont(fontL)
+        else
+            lg.setFont(fontM)
+        end
+
+        local damageY = self.y - 40 - self.damageDisplay.timeLeft * 25
+        lg.printf(absAmount, self.x, damageY, SPRITE_SIZE, "center")
+    end
+end
+
+function BasePlayerController:drawUI()
+    local barScale = 2
+    local healthSize = self.player.health * barScale
+    local manaSize = self.player.mana * barScale
+
+    local healthX = self.uiX
+    local manaX = self.uiX
+    if self.mirror then
+        healthX = healthX - healthSize
+        manaX = manaX - manaSize
+    end
+
+    -- Draw mana bar
+    lg.setColor(COLORS.BLUE)
+    lg.rectangle("fill", manaX, 75, manaSize, 30)
+
+    -- Draw health bar with color based on health level
+    if self.player.health <= 10 then
+        lg.setColor(COLORS.RED)
+        lg.rectangle("fill", healthX, 25, healthSize, 30)
+        lg.setColor(COLORS.WHITE)
+    elseif self.player.health <= 20 then
+        lg.setColor(COLORS.YELLOW)
+        lg.rectangle("fill", healthX, 25, healthSize, 30)
+        lg.setColor(COLORS.BLACK)
+    else
+        lg.setColor(COLORS.GREEN)
+        lg.rectangle("fill", healthX, 25, healthSize, 30)
+        lg.setColor(COLORS.WHITE)
+    end
+
+    -- Draw health and mana text
+    local textAlign = "left"
+    if self.mirror then
+        textAlign = "right"
+    end
+    lg.setFont(fontL)
+    lg.printf(math.ceil(self.player.health), self.textOffsetX, 15, GAME_WIDTH, textAlign)
+    lg.setColor(COLORS.WHITE)
+    lg.printf(math.floor(self.player.mana), self.textOffsetX, 65, GAME_WIDTH, textAlign)
+end
+
+function BasePlayerController:update(dt)
+    if self.damageDisplay.isActive then
+        self.damageDisplay.timeLeft = self.damageDisplay.timeLeft - dt
+        if self.damageDisplay.timeLeft <= 0 then
+            self.damageDisplay.isActive = false
+            self.damageDisplay.amount = 0
+        end
+    end
+
+    if not self.player.isAlive then
+        self.deathAnim.accumulator = self.deathAnim.accumulator + dt
+        while self.deathAnim.accumulator >= self.deathAnim.frameDuration do
+            self.deathAnim.accumulator = self.deathAnim.accumulator - self.deathAnim.frameDuration
+            self.deathAnim.currentFrame = (self.deathAnim.currentFrame or 1) + 1
+            if self.deathAnim.currentFrame >= #self.deathAnim.quads then
+                self.deathAnim.currentFrame = #self.deathAnim.quads
+                break
+            end
+        end
+    elseif self.isCasting then
+        self.castAnim.accumulator = self.castAnim.accumulator + dt
+        while self.castAnim.accumulator >= self.castAnim.frameDuration do
+            self.castAnim.accumulator = self.castAnim.accumulator - self.castAnim.frameDuration
+            self.castAnim.currentFrame = (self.castAnim.currentFrame or 1) + 1
+            if self.castAnim.currentFrame > #self.castAnim.quads then
+                self.castAnim.currentFrame = #self.castAnim.quads
+                self.isCasting = false
+                break
+            end
+        end
+    else
+        self.idleAnim.accumulator = self.idleAnim.accumulator + dt
+        while self.idleAnim.accumulator >= self.idleAnim.frameDuration do
+            self.idleAnim.accumulator = self.idleAnim.accumulator - self.idleAnim.frameDuration
+            self.idleAnim.currentFrame = (self.idleAnim.currentFrame or 1) + 1
+            if self.idleAnim.currentFrame > #self.idleAnim.quads then
+                self.idleAnim.currentFrame = 1
+                break
+            end
+        end
+    end
+
+    self.player:update(dt)
+end
+
+function BasePlayerController:damage(amt)
+    self.damageDisplay.amount = amt
+    self.damageDisplay.timeLeft = 1.0
+    self.damageDisplay.isActive = true
+
+    self.player:damage(amt)
+end
+
+function BasePlayerController:castCard(card)
+    self.isCasting = true
+    self.castAnim.currentFrame = 1
+    self.castAnim.accumulator = 0
+
+    local castResult = card:canCast(self.player)
+    if castResult == CastResult.Success then
+        self.player:castCard(card)
+        local spell = card:cast(self, self:getOpponent())
+        table.insert(sceneManager:getCurrentScene().activeSpells, spell)
+    end
+    return castResult
+end

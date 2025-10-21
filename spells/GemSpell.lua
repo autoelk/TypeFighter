@@ -14,5 +14,5 @@ function GemSpell:new(caster, target, spellData, anim)
 end
 
 function GemSpell:onStart()
-    self.caster.manaRegen = self.caster.manaRegen + self.spellData.regenAmount
+    self.caster.player.manaRegen = self.caster.player.manaRegen + self.spellData.regenAmount
 end

@@ -14,5 +14,5 @@ end
 
 function RitualSpell:onStart()
     self.caster:damage(self.spellData.healthCost)
-    self.caster.mana = self.caster.mana + self.spellData.manaGain
+    self.caster.player.mana = self.caster.player.mana + self.spellData.manaGain
 end

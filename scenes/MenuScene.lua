@@ -49,8 +49,8 @@ function MenuScene:draw()
         self.fireballAnimation.x, self.fireballAnimation.y,
         math.rad(self.fireballAnimation.rotation), self.fireballAnimation.scaleX, self.fireballAnimation.scaleY)
 
-    HUMANPLAYER:draw()
-    AIPLAYER:draw()
+    HUMANPLAYERCONTROLLER:draw()
+    AIPLAYERCONTROLLER:draw()
 end
 
 function MenuScene:update(dt)
@@ -75,8 +75,8 @@ function MenuScene:update(dt)
         end
     end
 
-    HUMANPLAYER:update(dt)
-    AIPLAYER:update(dt)
+    HUMANPLAYERCONTROLLER:update(dt)
+    AIPLAYERCONTROLLER:update(dt)
 end
 
 function MenuScene:keypressed(key)

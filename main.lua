@@ -3,6 +3,10 @@ require "players.BasePlayer"
 require "players.HumanPlayer"
 require "players.AIPlayer"
 
+require "players.BasePlayerController"
+require "players.HumanPlayerController"
+require "players.AIPlayerController"
+
 require "SceneManager"
 require "CardManager"
 require "ResourceManager"
@@ -78,8 +82,10 @@ function love.load()
     background = resourceManager:getImage("background")
 
     -- TODO: Create a better solution for storing players
-    HUMANPLAYER = HumanPlayer:new(1)
-    AIPLAYER = AIPlayer:new(2, "normal")
+    HUMANPLAYERCONTROLLER = HumanPlayerController:new(HumanPlayer:new(1))
+    AIPLAYERCONTROLLER = AIPlayerController:new(AIPlayer:new(2, "normal"))
+    HUMANPLAYERCONTROLLER:setOpponent(AIPLAYERCONTROLLER)
+    AIPLAYERCONTROLLER:setOpponent(HUMANPLAYERCONTROLLER)
 
     sceneManager:addScene(MenuScene:new())
     sceneManager:addScene(CardBrowseScene:new())
