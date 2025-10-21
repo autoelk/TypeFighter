@@ -10,15 +10,17 @@ function BasePlayerController:new(player)
         opponent = nil,
         x = nil,
         y = nil,
+        mirror = nil,
         uiX = nil,
         textOffsetX = nil,
+        tint = COLORS.WHITE,
 
         idleAnim = nil,
         deathAnim = nil,
         castAnim = nil,
         isCasting = false,
         castAnimFinished = false,
-        mirror = nil,
+
         damageDisplay = {
             amount = 0,
             endTime = 0,
@@ -63,41 +65,59 @@ function BasePlayerController:setOpponent(opponentController)
 end
 
 function BasePlayerController:draw()
-    -- draw player sprite
-    if not self.player.isAlive then
-        lg.draw(self.deathAnim.spriteSheet, self.deathAnim.quads[self.deathAnim.currentFrame],
-            self.x, self.y, 0, PIXEL_TO_GAME_SCALE, PIXEL_TO_GAME_SCALE)
-    elseif self.isCasting then
-        lg.draw(self.castAnim.spriteSheet, self.castAnim.quads[self.castAnim.currentFrame],
-            self.x, self.y, 0, PIXEL_TO_GAME_SCALE, PIXEL_TO_GAME_SCALE)
-    else
-        lg.draw(self.idleAnim.spriteSheet, self.idleAnim.quads[self.idleAnim.currentFrame],
-            self.x, self.y, 0, PIXEL_TO_GAME_SCALE, PIXEL_TO_GAME_SCALE)
+    self:drawChar()
+    self:drawDamageDisplay()
+    self:drawHealthAndManaBars()
+    self:drawCardPreviews()
+end
+
+function BasePlayerController:drawChar()
+    lg.setColor(self.tint)
+    local scaleX = PIXEL_TO_GAME_SCALE
+    local x = self.x
+    if self.mirror then
+        scaleX = -PIXEL_TO_GAME_SCALE
+        x = self.x + SPRITE_SIZE
     end
 
-    -- draw damage/healing display
-    if self.damageDisplay.isActive then
-        if self.damageDisplay.amount > 0 then
-            lg.setColor(COLORS.RED)
-        else
-            lg.setColor(COLORS.GREEN)
-        end
-
-        local absAmount = math.abs(self.damageDisplay.amount)
-        if absAmount > 20 then
-            lg.setFont(fontXL)
-        elseif absAmount > 10 then
-            lg.setFont(fontL)
-        else
-            lg.setFont(fontM)
-        end
-
-        local damageY = self.y - 40 - self.damageDisplay.timeLeft * 25
-        lg.printf(absAmount, self.x, damageY, SPRITE_SIZE, "center")
+    if not self.player.isAlive then
+        lg.draw(self.deathAnim.spriteSheet, self.deathAnim.quads[self.deathAnim.currentFrame],
+            x, self.y, 0, scaleX, PIXEL_TO_GAME_SCALE)
+    elseif self.isCasting then
+        lg.draw(self.castAnim.spriteSheet, self.castAnim.quads[self.castAnim.currentFrame],
+            x, self.y, 0, scaleX, PIXEL_TO_GAME_SCALE)
+    else
+        lg.draw(self.idleAnim.spriteSheet, self.idleAnim.quads[self.idleAnim.currentFrame],
+            x, self.y, 0, scaleX, PIXEL_TO_GAME_SCALE)
     end
 end
 
-function BasePlayerController:drawUI()
+-- Display damage or healing above the character
+function BasePlayerController:drawDamageDisplay()
+    if not self.damageDisplay.isActive then
+        return
+    end
+
+    if self.damageDisplay.amount > 0 then
+        lg.setColor(COLORS.RED)
+    else
+        lg.setColor(COLORS.GREEN)
+    end
+
+    local absAmount = math.abs(self.damageDisplay.amount)
+    if absAmount > 20 then
+        lg.setFont(fontXL)
+    elseif absAmount > 10 then
+        lg.setFont(fontL)
+    else
+        lg.setFont(fontM)
+    end
+
+    local damageY = self.y - 40 - self.damageDisplay.timeLeft * 25
+    lg.printf(absAmount, self.x, damageY, SPRITE_SIZE, "center")
+end
+
+function BasePlayerController:drawHealthAndManaBars()
     local barScale = 2
     local healthSize = self.player.health * barScale
     local manaSize = self.player.mana * barScale
@@ -137,6 +157,12 @@ function BasePlayerController:drawUI()
     lg.printf(math.ceil(self.player.health), self.textOffsetX, 15, GAME_WIDTH, textAlign)
     lg.setColor(COLORS.WHITE)
     lg.printf(math.floor(self.player.mana), self.textOffsetX, 65, GAME_WIDTH, textAlign)
+end
+
+function BasePlayerController:drawCardPreviews()
+    for i, card in ipairs(self.player.hand) do
+        card:drawMini()
+    end
 end
 
 function BasePlayerController:update(dt)
@@ -193,15 +219,18 @@ function BasePlayerController:damage(amt)
 end
 
 function BasePlayerController:castCard(card)
-    self.isCasting = true
-    self.castAnim.currentFrame = 1
-    self.castAnim.accumulator = 0
-
     local castResult = card:canCast(self.player)
     if castResult == CastResult.Success then
+        self.isCasting = true
+        self.castAnim.currentFrame = 1
+        self.castAnim.accumulator = 0
         self.player:castCard(card)
         local spell = card:cast(self, self:getOpponent())
         table.insert(sceneManager:getCurrentScene().activeSpells, spell)
     end
     return castResult
+end
+
+function BasePlayerController:drawCard()
+    return self.player:drawCard()
 end

@@ -74,24 +74,6 @@ function GameScene:update(dt)
 end
 
 function GameScene:draw()
-    -- Display decks
-    local margin = 10
-
-    for i = 1, #HUMANPLAYERCONTROLLER.player.hand do
-        HUMANPLAYERCONTROLLER.player.hand[i]:drawMini()
-    end
-
-    -- Display word for player to type in order to draw a card
-    if #HUMANPLAYERCONTROLLER.player.hand < MAX_HAND_SIZE then
-        HUMANPLAYERCONTROLLER:drawDictWord(margin,
-            (MINI_CARD_HEIGHT + margin) * (#HUMANPLAYERCONTROLLER.player.hand + 1) + 100)
-    end
-
-    for i = 1, #AIPLAYERCONTROLLER.player.hand do
-        AIPLAYERCONTROLLER.player.hand[i]:drawMini()
-    end
-
-    lg.setColor(COLORS.WHITE)
     HUMANPLAYERCONTROLLER:draw()
     AIPLAYERCONTROLLER:draw()
 
@@ -102,9 +84,6 @@ function GameScene:draw()
             s:draw()
         end
     end
-
-    HUMANPLAYERCONTROLLER:drawUI()
-    AIPLAYERCONTROLLER:drawUI()
 end
 
 function GameScene:keypressed(key)

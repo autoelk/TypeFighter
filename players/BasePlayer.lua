@@ -1,4 +1,4 @@
--- Abstract model class for players
+-- Model class for a player
 BasePlayer = {}
 BasePlayer.__index = BasePlayer
 
@@ -59,7 +59,6 @@ function BasePlayer:update(dt)
         self.health = self.health + dt * self.healthRegen
     end
 
-    -- TODO: Fix this later
     self:updateEffects(dt)
 end
 

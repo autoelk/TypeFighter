@@ -49,8 +49,8 @@ function MenuScene:draw()
         self.fireballAnimation.x, self.fireballAnimation.y,
         math.rad(self.fireballAnimation.rotation), self.fireballAnimation.scaleX, self.fireballAnimation.scaleY)
 
-    HUMANPLAYERCONTROLLER:draw()
-    AIPLAYERCONTROLLER:draw()
+    HUMANPLAYERCONTROLLER:drawChar()
+    AIPLAYERCONTROLLER:drawChar()
 end
 
 function MenuScene:update(dt)
