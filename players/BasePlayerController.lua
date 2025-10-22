@@ -31,7 +31,7 @@ function BasePlayerController:new(player)
             amount = 0,
             timeLeft = 0,
             isActive = false
-        },
+        }
     }
     return setmetatable(controller, self)
 end
@@ -88,14 +88,14 @@ function BasePlayerController:drawChar()
     end
 
     if not self.player.isAlive then
-        lg.draw(self.deathAnim.spriteSheet, self.deathAnim.quads[self.deathAnim.currentFrame],
-            x, self.y, 0, scaleX, PIXEL_TO_GAME_SCALE)
+        lg.draw(self.deathAnim.spriteSheet, self.deathAnim.quads[self.deathAnim.currentFrame], x, self.y, 0, scaleX,
+            PIXEL_TO_GAME_SCALE)
     elseif self.isCasting then
-        lg.draw(self.castAnim.spriteSheet, self.castAnim.quads[self.castAnim.currentFrame],
-            x, self.y, 0, scaleX, PIXEL_TO_GAME_SCALE)
+        lg.draw(self.castAnim.spriteSheet, self.castAnim.quads[self.castAnim.currentFrame], x, self.y, 0, scaleX,
+            PIXEL_TO_GAME_SCALE)
     else
-        lg.draw(self.idleAnim.spriteSheet, self.idleAnim.quads[self.idleAnim.currentFrame],
-            x, self.y, 0, scaleX, PIXEL_TO_GAME_SCALE)
+        lg.draw(self.idleAnim.spriteSheet, self.idleAnim.quads[self.idleAnim.currentFrame], x, self.y, 0, scaleX,
+            PIXEL_TO_GAME_SCALE)
     end
 end
 
@@ -120,7 +120,7 @@ function BasePlayerController:drawDamageDisplay()
         lg.setFont(fontM)
     end
 
-    local damageY = self.y - 40 - self.damageDisplay.timeLeft * 25
+    local damageY = self.y - 55 + self.damageDisplay.timeLeft * 40
     lg.printf(absAmount, self.x, damageY, SPRITE_SIZE, "center")
 end
 
