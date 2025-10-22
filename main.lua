@@ -21,20 +21,20 @@ require "scenes.GameOverScene"
 sceneManager = nil
 cardManager = nil
 resourceManager = nil
-input = ""        -- player input
-messageLeft = ""  -- left side text
+input = "" -- player input
+messageLeft = "" -- left side text
 messageRight = "" -- right side text
 
 -- Colors
 COLORS = {
-    RED = { 250 / 255, 89 / 255, 52 / 255 },
-    ORANGE = { 250 / 255, 121 / 255, 33 / 255 },
-    YELLOW = { 253 / 255, 231 / 255, 76 / 255 },
-    GREEN = { 155 / 255, 197 / 255, 61 / 255 },
-    BLUE = { 91 / 255, 192 / 255, 235 / 255 },
-    GREY = { 77 / 255, 80 / 255, 87 / 255 },
-    WHITE = { 1, 1, 1 },
-    BLACK = { 0, 0, 0 }
+    RED = {250 / 255, 89 / 255, 52 / 255},
+    ORANGE = {250 / 255, 121 / 255, 33 / 255},
+    YELLOW = {253 / 255, 231 / 255, 76 / 255},
+    GREEN = {155 / 255, 197 / 255, 61 / 255},
+    BLUE = {91 / 255, 192 / 255, 235 / 255},
+    GREY = {77 / 255, 80 / 255, 87 / 255},
+    WHITE = {1, 1, 1},
+    BLACK = {0, 0, 0}
 }
 
 -- UI constants
@@ -107,11 +107,12 @@ function love.update(dt)
 end
 
 function love.draw()
-    lg.clear(COLORS.WHITE)
-    lg.setColor(COLORS.WHITE)
+    lg.clear(COLORS.BLACK)
     -- Setup
     local scale = math.min(lg.getWidth() / GAME_WIDTH, lg.getHeight() / GAME_HEIGHT)
-    lg.translate((lg.getWidth() - GAME_WIDTH * scale) / 2, (lg.getHeight() - GAME_HEIGHT * scale) / 2)
+    local offsetX = (lg.getWidth() - GAME_WIDTH * scale) / 2
+    local offsetY = (lg.getHeight() - GAME_HEIGHT * scale) / 2
+    lg.translate(offsetX, offsetY)
     lg.scale(scale, scale)
 
     -- Background
@@ -124,7 +125,8 @@ function love.draw()
     -- Draw input interface
     local inputRectHeight = 30
     lg.setColor(COLORS.BLACK)
-    lg.rectangle("fill", 0, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, inputRectHeight)
+    lg.rectangle("fill", 0, -offsetY, GAME_WIDTH, offsetY)
+    lg.rectangle("fill", 0, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, inputRectHeight + offsetY)
     lg.setFont(fontM)
     lg.setColor(COLORS.WHITE)
     lg.printf(messageLeft, 5, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "left")
