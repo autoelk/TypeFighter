@@ -2,34 +2,39 @@
 BasePlayer = {}
 BasePlayer.__index = BasePlayer
 
-function BasePlayer:new(id)
+function BasePlayer:new(character)
     local player = {
-        id = id,
+        character = character,
         isAlive = true,
-        health = 50,
-        healthRegen = 0,
-        mana = 0,
-        manaRegen = 1,
+        health = nil,
+        healthRegen = nil,
+        mana = nil,
+        manaRegen = nil,
         effects = {},
 
         -- Cards
         picks = MAX_DECK_SIZE,
-        hand = {},    -- Current cards in hand
+        hand = {}, -- Current cards in hand
         library = {}, -- All cards available to draw from
-        deck = {},    -- All cards owned by the player
+        deck = {} -- All cards owned by the player
     }
     setmetatable(player, self)
     return player
 end
 
 function BasePlayer:reset()
-    self.health = 50
     self.isAlive = true
-    self.healthRegen = 0
-    self.mana = 0
-    self.manaRegen = 1
+    self.health = self.character.health
+    self.healthRegen = self.character.healthRegen
+    self.mana = self.character.mana
+    self.manaRegen = self.character.manaRegen
     self.effects = {}
     self.hand = {}
+    self.deck = {}
+
+    for _, cardName in ipairs(self.character.startingDeck) do
+        self:addCard(cardManager:createCard(cardName))
+    end
 end
 
 -- Doesn't actually cast the card, just removes it from hand and deducts mana

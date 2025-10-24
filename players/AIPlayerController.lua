@@ -1,31 +1,21 @@
 local CastResult = require "enums.CastResult"
 
 AIPlayerController = {}
-setmetatable(AIPlayerController, { __index = BasePlayerController })
+setmetatable(AIPlayerController, {
+    __index = BasePlayerController
+})
 AIPlayerController.__index = AIPlayerController
 
 function AIPlayerController:new(player, difficulty)
     local controller = BasePlayerController:new(player)
     controller.isHuman = false
-    controller.mirror = true
     controller.tint = COLORS.RED
-
-    controller.x = GAME_WIDTH - 250 - SPRITE_SIZE
-    controller.y = 375
-    controller.uiX = GAME_WIDTH - 25
-    controller.textOffsetX = -25
-    controller.libraryX = GAME_WIDTH - MINI_CARD_WIDTH - 10
-    controller.deckX = GAME_WIDTH - MINI_CARD_WIDTH - 25
-
-    controller.idleAnim = resourceManager:newAnimation("wizardIdle")
-    controller.deathAnim = resourceManager:newAnimation("wizardDeath")
-    controller.castAnim = resourceManager:newAnimation("wizardCast")
 
     controller.difficulty = difficulty or "normal"
     if difficulty == "easy" then
-        controller.castSpeed = 15  -- Time between cast attempts
+        controller.castSpeed = 15 -- Time between cast attempts
         controller.warningTime = 8 -- Time before casting to show warning
-        controller.drawSpeed = 10  -- Time between draw attempts
+        controller.drawSpeed = 10 -- Time between draw attempts
     elseif difficulty == "normal" then
         controller.castSpeed = 7
         controller.warningTime = 5
@@ -35,10 +25,10 @@ function AIPlayerController:new(player, difficulty)
         controller.warningTime = 2
         controller.drawSpeed = 3
     end
-    controller.castCooldown = 0    -- Current cooldown from casting
+    controller.castCooldown = 0 -- Current cooldown from casting
     controller.warningCooldown = 0 -- Current cooldown for showing warning
-    controller.drawCooldown = 0    -- Current cooldown from drawing
-    controller.nextSpell = nil     -- The next spell the AI plans to cast
+    controller.drawCooldown = 0 -- Current cooldown from drawing
+    controller.nextSpell = nil -- The next spell the AI plans to cast
 
     return setmetatable(controller, self)
 end
@@ -72,11 +62,9 @@ function AIPlayerController:updateHand(dt)
     for i, card in ipairs(self.player.hand) do
         card:update(dt)
         if card == self.nextSpell then
-            card:move(self.libraryX - 40,
-                (MINI_CARD_HEIGHT + margin) * i + 100)
+            card:move(self.libraryX - 40, (MINI_CARD_HEIGHT + margin) * i + 100)
         else
-            card:move(self.libraryX,
-                (MINI_CARD_HEIGHT + margin) * i + 100)
+            card:move(self.libraryX, (MINI_CARD_HEIGHT + margin) * i + 100)
         end
     end
 end

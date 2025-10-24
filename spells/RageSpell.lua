@@ -13,7 +13,6 @@ function RageSpell:new(caster, target, spellData, anim)
 
     spell.x = spell.startX
     spell.y = spell.startY
-    spell.anim.offsetY = 15
     spell:playOnce()
     spell.speedX = math.abs(spell.endX - spell.startX) / anim.timeLeft
     spell.speedY = math.abs(spell.endY - spell.startY) / anim.timeLeft

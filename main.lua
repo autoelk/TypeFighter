@@ -1,4 +1,4 @@
-local utf8 = require("utf8")
+require "constants"
 require "players.BasePlayer"
 require "players.BasePlayerController"
 require "players.HumanPlayerController"
@@ -6,57 +6,27 @@ require "players.AIPlayerController"
 
 require "SceneManager"
 require "CardManager"
+require "CharacterManager"
 require "ResourceManager"
 
 require "scenes.BaseScene"
 require "scenes.MenuScene"
 require "scenes.CardBrowseScene"
-require "scenes.InstructionsScene"
-require "scenes.CardSelectScene"
+require "scenes.CharacterSelectScene"
 require "scenes.GameScene"
 require "scenes.PauseScene"
 require "scenes.GameOverScene"
+require "scenes.InstructionsScene"
 
 -- Global game state
 sceneManager = nil
 cardManager = nil
+characterManager = nil
 resourceManager = nil
-input = "" -- player input
-messageLeft = "" -- left side text
+
+input = ""        -- player input
+messageLeft = ""  -- left side text
 messageRight = "" -- right side text
-
--- Colors
-COLORS = {
-    RED = {250 / 255, 89 / 255, 52 / 255},
-    ORANGE = {250 / 255, 121 / 255, 33 / 255},
-    YELLOW = {253 / 255, 231 / 255, 76 / 255},
-    GREEN = {155 / 255, 197 / 255, 61 / 255},
-    BLUE = {91 / 255, 192 / 255, 235 / 255},
-    GREY = {77 / 255, 80 / 255, 87 / 255},
-    WHITE = {1, 1, 1},
-    BLACK = {0, 0, 0}
-}
-
--- UI constants
-GAME_WIDTH = 1280
-GAME_HEIGHT = 720
-PIXEL_TO_GAME_SCALE = 5
-SCROLL_SPEED = 75
-
--- Sprite constants
-SPRITE_PIXEL_SIZE = 32
-SPRITE_SIZE = SPRITE_PIXEL_SIZE * PIXEL_TO_GAME_SCALE
-
--- Card dimensions
-LARGE_CARD_WIDTH = SPRITE_SIZE + 20
-LARGE_CARD_HEIGHT = SPRITE_SIZE + 100
-MINI_CARD_WIDTH = SPRITE_SIZE
-MINI_CARD_HEIGHT = 60
-
--- Game constants
-MAX_DECK_SIZE = 5
-MAX_HAND_SIZE = 5
-STARTING_HAND_SIZE = 3
 
 function love.load()
     lg = love.graphics
@@ -67,6 +37,7 @@ function love.load()
 
     sceneManager = SceneManager:new()
     cardManager = CardManager:new()
+    characterManager = CharacterManager:new()
     resourceManager = ResourceManager:new()
     resourceManager:loadAllAssets()
 
@@ -77,28 +48,18 @@ function love.load()
     fontXS = resourceManager:getFont("fontXS")
     background = resourceManager:getImage("background")
 
-    -- TODO: Create a better solution for storing players
-    HUMANPLAYERCONTROLLER = HumanPlayerController:new(BasePlayer:new(1))
-    AIPLAYERCONTROLLER = AIPlayerController:new(BasePlayer:new(2), "normal")
-    HUMANPLAYERCONTROLLER:setOpponent(AIPLAYERCONTROLLER)
-    AIPLAYERCONTROLLER:setOpponent(HUMANPLAYERCONTROLLER)
-
     sceneManager:addScene(MenuScene:new())
     sceneManager:addScene(CardBrowseScene:new())
-    sceneManager:addScene(InstructionsScene:new())
-    sceneManager:addScene(CardSelectScene:new())
+    sceneManager:addScene(CharacterSelectScene:new())
     sceneManager:addScene(GameScene:new())
     sceneManager:addScene(PauseScene:new())
     sceneManager:addScene(GameOverScene:new())
+    sceneManager:addScene(InstructionsScene:new())
 
     sceneManager:changeScene("menu")
 end
 
 function love.keypressed(key)
-    if key == "backspace" and utf8.offset(input, -1) then
-        input = string.sub(input, 1, utf8.offset(input, -1) - 1)
-        return
-    end
     sceneManager:keypressed(key)
 end
 

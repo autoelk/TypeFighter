@@ -10,6 +10,7 @@ function BaseCard:new(x, y)
         y = y,
 
         -- Attributes to be set by subclasses
+        name = nil,
         mana = nil,
         elem = nil,
         SpellClass = nil,
@@ -101,10 +102,8 @@ end
 
 -- Smoothly move card to new position
 function BaseCard:move(destX, destY)
-    self:setPosition(
-        math.abs(self.x - destX) < 1 and destX or self.x + ((destX - self.x) / 20),
-        math.abs(self.y - destY) < 1 and destY or self.y + ((destY - self.y) / 20)
-    )
+    self:setPosition(math.abs(self.x - destX) < 1 and destX or self.x + ((destX - self.x) / 20),
+        math.abs(self.y - destY) < 1 and destY or self.y + ((destY - self.y) / 20))
 end
 
 function BaseCard:cast(caster, target)

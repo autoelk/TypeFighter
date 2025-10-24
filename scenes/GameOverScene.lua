@@ -17,39 +17,39 @@ end
 
 function GameOverScene:enter()
     messageRight = self.controlsHint
-    -- Decide game over message based on isAlive flags
-    if not HUMANPLAYERCONTROLLER.player.isAlive and not AIPLAYERCONTROLLER.player.isAlive then
+    -- Decide game over message
+    local player1Controller = sceneManager:getScene("game").player1Controller
+    local player2Controller = sceneManager:getScene("game").player2Controller
+    if not player1Controller.player.isAlive and not player2Controller.player.isAlive then
         self.gameOverMessage = "tie"
-    elseif not HUMANPLAYERCONTROLLER.player.isAlive then
+    elseif not player1Controller.player.isAlive then
         self.gameOverMessage = "player 2 wins"
-    elseif not AIPLAYERCONTROLLER.player.isAlive then
+    elseif not player2Controller.player.isAlive then
         self.gameOverMessage = "player 1 wins"
+    else
+        -- This should never happen
+        self.gameOverMessage = "game over"
     end
 end
 
-function GameOverScene:update(dt)
-    HUMANPLAYERCONTROLLER:updateCharAnimations(dt)
-    AIPLAYERCONTROLLER:updateCharAnimations(dt)
-end
-
 function GameOverScene:draw()
+    -- Dim the background
+    lg.setColor(0, 0, 0, 0.5)
+    lg.rectangle("fill", 0, 0, GAME_WIDTH, GAME_HEIGHT)
+
+    -- Draw game over text on top
+    lg.setColor(COLORS.WHITE)
     lg.setFont(fontXL)
     lg.printf(self.gameOverMessage, 0, 200, GAME_WIDTH, "center")
     lg.setFont(fontM)
-    lg.printf("[r]estart game\n[q]uit", 0, 300, GAME_WIDTH, "center")
-
-    HUMANPLAYERCONTROLLER:drawChar()
-    AIPLAYERCONTROLLER:drawChar()
+    lg.printf("[r]estart\n[q]uit", 0, 300, GAME_WIDTH, "center")
 end
 
-function GameOverScene:keypressed(key)
-    if key == "return" then
-        local userInput = self:processInput()
-        if userInput == "q" or userInput == "quit" then
-            love.event.quit()
-        elseif userInput == "r" or userInput == "restart" then
-            self.sceneManager:changeScene("menu")
-        end
-        input = ""
+function GameOverScene:handleInput(userInput)
+    -- TODO: Decide what restart should do with new game structure
+    if userInput == "q" or userInput == "quit" then
+        love.event.quit()
+    elseif userInput == "r" or userInput == "restart" then
+        self.sceneManager:changeScene("menu")
     end
 end

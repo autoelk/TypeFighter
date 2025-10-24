@@ -11,7 +11,7 @@ function BasePlayerController:new(player)
         opponent = nil,
 
         mirror = nil,
-        tint = COLORS.WHITE,
+        tint = player.character.tint,
 
         x = nil,
         y = nil,
@@ -21,9 +21,9 @@ function BasePlayerController:new(player)
         libraryY = (MINI_CARD_HEIGHT + 10) * (MAX_HAND_SIZE + 1) + 160,
         deckX = nil,
 
-        idleAnim = nil,
-        deathAnim = nil,
-        castAnim = nil,
+        idleAnim = resourceManager:newAnimation(player.character.idleSprite),
+        castAnim = resourceManager:newAnimation(player.character.castSprite),
+        deathAnim = resourceManager:newAnimation(player.character.deathSprite),
         isCasting = false,
         castAnimFinished = false,
 
@@ -101,6 +101,7 @@ end
 
 -- Display damage or healing above the character
 function BasePlayerController:drawDamageDisplay()
+    -- TODO: Make multiple damage numbers visible at the same time
     if not self.damageDisplay.isActive then
         return
     end

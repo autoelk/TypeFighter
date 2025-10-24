@@ -56,13 +56,16 @@ function InstructionsScene:exit()
 end
 
 function InstructionsScene:keypressed(key)
-    if key == "return" then
-        local userInput = self:processInput()
-        if userInput == "p" or userInput == "play game" then
-            self.sceneManager:popScene()
-        elseif userInput == "q" then
-            self.sceneManager:changeScene("menu")
-        end
-        input = ""
+    if key == "escape" then
+        self.sceneManager:popScene()
+    end
+end
+
+function InstructionsScene:handleInput(userInput)
+    if userInput == "p" or userInput == "play game" then
+        self.sceneManager:popScene()
+    elseif userInput == "q" then
+        self.sceneManager:popScene()
+        self.sceneManager:popScene()
     end
 end

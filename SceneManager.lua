@@ -1,3 +1,5 @@
+local utf8 = require("utf8")
+
 -- Manages different game scenes and transitions between them
 SceneManager = {}
 SceneManager.__index = SceneManager
@@ -65,6 +67,17 @@ function SceneManager:draw()
 end
 
 function SceneManager:keypressed(key)
+    if key == "backspace" and utf8.offset(input, -1) then
+        input = string.sub(input, 1, utf8.offset(input, -1) - 1)
+        return
+    end
+
+    if key == "return" then
+        local userInput = string.gsub(string.lower(input), "%s+", "")
+        input = "" -- clear user input field
+        self:getCurrentScene():handleInput(userInput)
+        return
+    end
     self:getCurrentScene():keypressed(key)
 end
 

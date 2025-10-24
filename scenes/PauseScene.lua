@@ -13,16 +13,21 @@ function PauseScene:new()
 end
 
 function PauseScene:enter()
+    sceneManager:pause(true)
     messageRight = self.controlsHint
+end
+
+function PauseScene:exit()
+    sceneManager:pause(false)
 end
 
 function PauseScene:draw()
     -- Dim the background
     lg.setColor(0, 0, 0, 0.5)
     lg.rectangle("fill", 0, 0, GAME_WIDTH, GAME_HEIGHT)
-    lg.setColor(COLORS.WHITE)
-
+    
     -- Draw pause text on top
+    lg.setColor(COLORS.WHITE)
     lg.setFont(fontXL)
     lg.printf("pause", 0, 200, GAME_WIDTH, "center")
     lg.setFont(fontM)
@@ -32,8 +37,11 @@ end
 function PauseScene:keypressed(key)
     if key == "escape" then
         self.sceneManager:popScene()
-    elseif key == "return" and self:processInput() == "q" then
+    end
+end
+
+function PauseScene:handleInput(userInput)
+    if userInput == "q " then
         self.sceneManager:changeScene("menu")
-        input = ""
     end
 end

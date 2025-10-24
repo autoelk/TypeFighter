@@ -2,25 +2,13 @@ local InputResult = require "enums.InputResult"
 
 HumanPlayerController = {}
 setmetatable(HumanPlayerController, {
-    __index = BasePlayerController,
+    __index = BasePlayerController
 })
 HumanPlayerController.__index = HumanPlayerController
 
 function HumanPlayerController:new(player)
     local controller = BasePlayerController:new(player)
     controller.isHuman = true
-    controller.mirror = false
-
-    controller.x = 250
-    controller.y = 375
-    controller.uiX = 25
-    controller.textOffsetX = 30
-    controller.libraryX = 10
-    controller.deckX = 25
-
-    controller.idleAnim = resourceManager:newAnimation("wizardIdle")
-    controller.deathAnim = resourceManager:newAnimation("wizardDeath")
-    controller.castAnim = resourceManager:newAnimation("wizardCast")
 
     controller.drawWord = resourceManager:getRandomWord()
 

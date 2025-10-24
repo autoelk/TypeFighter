@@ -47,14 +47,10 @@ function CardBrowseScene:draw()
     end
 end
 
-function CardBrowseScene:keypressed(key)
-    if key == "return" then
-        if self:processInput() == "q" then
-            self.sceneManager:changeScene("menu")
-        end
-        input = ""
+function CardBrowseScene:handleInput(userInput)
+    if userInput == "q" then
+        self.sceneManager:changeScene("menu")
     end
-    BaseScene.keypressed(self, key)
 end
 
 function CardBrowseScene:wheelmoved(x, y)
