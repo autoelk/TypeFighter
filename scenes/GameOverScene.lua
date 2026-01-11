@@ -1,6 +1,7 @@
 require "scenes.BaseScene"
 
 -- Game Over Scene
+-- TODO: Include a run summary/stats
 GameOverScene = {}
 setmetatable(GameOverScene, {
     __index = BaseScene
@@ -17,24 +18,12 @@ end
 
 function GameOverScene:enter()
     messageRight = self.controlsHint
-    -- Decide game over message
-    local player1Controller = sceneManager:getScene("game").player1Controller
-    local player2Controller = sceneManager:getScene("game").player2Controller
-    if not player1Controller.player.isAlive and not player2Controller.player.isAlive then
-        self.gameOverMessage = "tie"
-    elseif not player1Controller.player.isAlive then
-        self.gameOverMessage = "player 2 wins"
-    elseif not player2Controller.player.isAlive then
-        self.gameOverMessage = "player 1 wins"
-    else
-        -- This should never happen
-        self.gameOverMessage = "game over"
-    end
+    self.gameOverMessage = "game over"
 end
 
 function GameOverScene:draw()
     -- Dim the background
-    lg.setColor(0, 0, 0, 0.5)
+    lg.setColor(COLORS.BLACK)
     lg.rectangle("fill", 0, 0, GAME_WIDTH, GAME_HEIGHT)
 
     -- Draw game over text on top
@@ -46,7 +35,6 @@ function GameOverScene:draw()
 end
 
 function GameOverScene:handleInput(userInput)
-    -- TODO: Decide what restart should do with new game structure
     if userInput == "q" or userInput == "quit" then
         love.event.quit()
     elseif userInput == "r" or userInput == "restart" then

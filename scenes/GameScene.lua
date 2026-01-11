@@ -1,7 +1,7 @@
 require "scenes.BaseScene"
 local InputResult = require "enums.InputResult"
 
--- Game Scene (main gameplay)
+-- Game Scene (main gameplay), represents a single match between two players
 GameScene = {}
 setmetatable(GameScene, {
     __index = BaseScene
@@ -102,9 +102,18 @@ function GameScene:update(dt)
         end
     end
 
-    if not self.gameOverTriggered and (not self.player1Controller.player.isAlive or not self.player2Controller.player.isAlive) then
-        self.gameOverTriggered = true
-        self.sceneManager:pushScene("gameOver")
+    if not self.gameOverTriggered then
+        local p1Dead = not self.player1Controller.player.isAlive
+        local p2Dead = not self.player2Controller.player.isAlive
+        if p1Dead then
+            self.gameOverTriggered = true
+            -- Player defeated: go straight to Game Over
+            self.sceneManager:changeScene("gameOver")
+        elseif p2Dead then
+            self.gameOverTriggered = true
+            -- Opponent defeated: show stage end overlay
+            self.sceneManager:pushScene("stageEnd")
+        end
     end
 end
 

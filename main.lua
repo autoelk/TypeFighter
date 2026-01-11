@@ -8,6 +8,7 @@ require "SceneManager"
 require "CardManager"
 require "CharacterManager"
 require "ResourceManager"
+require "RunState"
 
 require "scenes.BaseScene"
 require "scenes.MenuScene"
@@ -17,12 +18,14 @@ require "scenes.GameScene"
 require "scenes.PauseScene"
 require "scenes.GameOverScene"
 require "scenes.InstructionsScene"
+require "scenes.StageEndScene"
 
 -- Global game state
 sceneManager = nil
 cardManager = nil
 characterManager = nil
 resourceManager = nil
+runState = nil
 
 input = ""        -- player input
 messageLeft = ""  -- left side text
@@ -40,6 +43,7 @@ function love.load()
     characterManager = CharacterManager:new()
     resourceManager = ResourceManager:new()
     resourceManager:loadAllAssets()
+    runState = RunState:new()
 
     fontXL = resourceManager:getFont("fontXL")
     fontL = resourceManager:getFont("fontL")
@@ -55,6 +59,7 @@ function love.load()
     sceneManager:addScene(PauseScene:new())
     sceneManager:addScene(GameOverScene:new())
     sceneManager:addScene(InstructionsScene:new())
+    sceneManager:addScene(StageEndScene:new())
 
     sceneManager:changeScene("menu")
 end

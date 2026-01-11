@@ -97,11 +97,13 @@ function CharacterSelectScene:handleInput(userInput)
             return
         end
         local selectedName = self.charSelected.player.character.name
+        -- Seed a simple linear run of opponents and start at stage 1
+        runState:startRun(selectedName, { "wizard", "wizard", "wizard", "wizard", "wizard" })
+        local oppName = runState:getCurrentOpponent()
         self.sceneManager:getScene("game"):setPlayer1(
             HumanPlayerController:new(BasePlayer:new(characterManager:createCharacter(selectedName))))
-        -- TODO: Make this change based on level
         self.sceneManager:getScene("game"):setPlayer2(
-            AIPlayerController:new(BasePlayer:new(characterManager:createCharacter("wizard")), "normal"))
+            AIPlayerController:new(BasePlayer:new(characterManager:createCharacter(oppName)), "normal"))
         self.sceneManager:changeScene("game")
     elseif userInput == "q" or userInput == "quit" then
         if self.charSelected then
