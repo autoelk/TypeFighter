@@ -73,7 +73,7 @@ function StageEndScene:handleInput(userInput)
         return
     end
 
-    if userInput == "c" or userInput == "continue" then
+    if userInput == "p" or userInput == "play" then
         -- Only called on victory; advance or end run
         if runState:hasNextStage() then
             runState:advanceStage()
