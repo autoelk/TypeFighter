@@ -1,4 +1,5 @@
 require "scenes.BaseScene"
+local SceneId = require "enums.SceneId"
 
 -- Stage End Scene: handles post-battle routing in a linear run
 StageEndScene = {}
@@ -9,7 +10,7 @@ StageEndScene.__index = StageEndScene
 
 function StageEndScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
-    scene.name = "stageEnd"
+    scene.name = SceneId.StageEnd
     scene.controlsHint = "[p]lay next level [q]uit"
     scene.message = ""
     return scene
@@ -18,7 +19,7 @@ end
 function StageEndScene:enter()
     -- Pause underlying game updates while on overlay
     self.ctx.sceneManager:pause(true)
-    local game = self.ctx.sceneManager:getScene("game")
+    local game = self.ctx.sceneManager:getScene(SceneId.Game)
     local p1Alive = game.player1Controller.player.isAlive
     local p2Alive = game.player2Controller.player.isAlive
 
@@ -61,14 +62,14 @@ end
 
 local function restartStage(scene)
     -- Reconfigure GameScene for the current stage and restart
-    local game = scene.ctx.sceneManager:getScene("game")
+    local game = scene.ctx.sceneManager:getScene(SceneId.Game)
     local rs = scene.ctx.runState
     local playerCharName = rs.playerCharacterName
     local oppName = rs:getCurrentOpponent()
     
     game:setPlayer1(HumanPlayerController:new(scene.ctx, BasePlayer:new(scene.ctx, scene.ctx.characterManager:createCharacter(playerCharName))))
     game:setPlayer2(AIPlayerController:new(scene.ctx, BasePlayer:new(scene.ctx, scene.ctx.characterManager:createCharacter(oppName)), "normal"))
-    scene.ctx.sceneManager:changeScene("game")
+    scene.ctx.sceneManager:changeScene(SceneId.Game)
 end
 
 function StageEndScene:handleInput(userInput)
@@ -85,7 +86,7 @@ function StageEndScene:handleInput(userInput)
             restartStage(self)
         else
             rs:endRun()
-            self.ctx.sceneManager:changeScene("gameOver")
+            self.ctx.sceneManager:changeScene(SceneId.GameOver)
         end
     end
 end

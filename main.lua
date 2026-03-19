@@ -1,5 +1,6 @@
 require "constants"
 require "app.Context"
+local SceneId = require "enums.SceneId"
 require "players.BasePlayer"
 require "players.BasePlayerController"
 require "players.HumanPlayerController"
@@ -52,7 +53,7 @@ function love.load()
     ctx.sceneManager:addScene(InstructionsScene:new(ctx))
     ctx.sceneManager:addScene(StageEndScene:new(ctx))
 
-    ctx.sceneManager:changeScene("menu")
+    ctx.sceneManager:changeScene(SceneId.Menu)
 end
 
 function love.keypressed(key)

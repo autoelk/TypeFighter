@@ -1,4 +1,5 @@
 require "scenes.BaseScene"
+local SceneId = require "enums.SceneId"
 
 -- Pause Scene
 PauseScene = {}
@@ -7,7 +8,7 @@ PauseScene.__index = PauseScene
 
 function PauseScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
-    scene.name = "pause"
+    scene.name = SceneId.Pause
     scene.controlsHint = "[q]uit to menu [esc] to return"
     return scene
 end
@@ -44,6 +45,6 @@ end
 
 function PauseScene:handleInput(userInput)
     if userInput == "q" then
-        self.ctx.sceneManager:changeScene("menu")
+        self.ctx.sceneManager:changeScene(SceneId.Menu)
     end
 end

@@ -1,4 +1,5 @@
 require "scenes.BaseScene"
+local SceneId = require "enums.SceneId"
 
 CharacterSelectScene = {}
 setmetatable(CharacterSelectScene, {
@@ -9,7 +10,7 @@ CharacterSelectScene.__index = CharacterSelectScene
 -- TODO: Make the selected character automatically cast spells on a target dummy
 function CharacterSelectScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
-    scene.name = "characterSelect"
+    scene.name = SceneId.CharacterSelect
     scene.controlsHint = "[p] to continue [q] to go back"
     scene.controllers = {}
     for i, charName in ipairs(ctx.characterManager:getAllCharNames()) do
@@ -102,11 +103,11 @@ function CharacterSelectScene:handleInput(userInput)
         -- Seed a simple linear run of opponents and start at stage 1
         self.ctx.runState:startRun(selectedName, { "wizard", "wizard", "wizard", "wizard", "wizard" })
         local oppName = self.ctx.runState:getCurrentOpponent()
-        self.ctx.sceneManager:getScene("game"):setPlayer1(
+        self.ctx.sceneManager:getScene(SceneId.Game):setPlayer1(
             HumanPlayerController:new(self.ctx, BasePlayer:new(self.ctx, self.ctx.characterManager:createCharacter(selectedName))))
-        self.ctx.sceneManager:getScene("game"):setPlayer2(
+        self.ctx.sceneManager:getScene(SceneId.Game):setPlayer2(
             AIPlayerController:new(self.ctx, BasePlayer:new(self.ctx, self.ctx.characterManager:createCharacter(oppName)), "normal"))
-        self.ctx.sceneManager:changeScene("game")
+        self.ctx.sceneManager:changeScene(SceneId.Game)
     elseif userInput == "q" or userInput == "quit" then
         if self.charSelected then
             -- Deselect the character
@@ -114,6 +115,6 @@ function CharacterSelectScene:handleInput(userInput)
             self.ctx.ui.messageLeft = "choose your character"
             return
         end
-        self.ctx.sceneManager:changeScene("menu")
+        self.ctx.sceneManager:changeScene(SceneId.Menu)
     end
 end

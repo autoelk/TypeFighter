@@ -1,5 +1,6 @@
 require "scenes.BaseScene"
 local InputResult = require "enums.InputResult"
+local SceneId = require "enums.SceneId"
 
 -- Game Scene (main gameplay), represents a single match between two players
 GameScene = {}
@@ -28,7 +29,7 @@ local playerPositions = { {
 
 function GameScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
-    scene.name = "game"
+    scene.name = SceneId.Game
     scene.controlsHint = "[q]uit to menu [esc] pause"
     scene.player1Controller = nil
     scene.player2Controller = nil
@@ -108,11 +109,11 @@ function GameScene:update(dt)
         if p1Dead then
             self.gameOverTriggered = true
             -- Player defeated: go to Game Over screen
-            self.ctx.sceneManager:changeScene("gameOver")
+            self.ctx.sceneManager:changeScene(SceneId.GameOver)
         elseif p2Dead then
             self.gameOverTriggered = true
             -- Opponent defeated: show stage end overlay
-            self.ctx.sceneManager:pushScene("stageEnd")
+            self.ctx.sceneManager:pushScene(SceneId.StageEnd)
         end
     end
 end
@@ -132,7 +133,7 @@ end
 
 function GameScene:keypressed(key)
     if key == "escape" then
-        self.ctx.sceneManager:pushScene("pause")
+        self.ctx.sceneManager:pushScene(SceneId.Pause)
     end
 end
 
@@ -141,7 +142,7 @@ function GameScene:handleInput(userInput)
         if playerController.isHuman then
             local result = playerController:handleInput(userInput)
             if result == InputResult.Quit then
-                self.ctx.sceneManager:changeScene("menu")
+                self.ctx.sceneManager:changeScene(SceneId.Menu)
             elseif result == InputResult.DrawFail then
                 self.ctx.ui.messageLeft = "hand full, can't draw"
             elseif result == InputResult.DrawSuccess then

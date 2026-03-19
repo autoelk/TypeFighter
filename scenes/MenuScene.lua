@@ -1,4 +1,5 @@
 require "scenes.BaseScene"
+local SceneId = require "enums.SceneId"
 
 -- Menu Scene
 MenuScene = {}
@@ -9,7 +10,7 @@ MenuScene.__index = MenuScene
 
 function MenuScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
-    scene.name = "menu"
+    scene.name = SceneId.Menu
     scene.controlsHint = "[p]lay game [b]rowse cards [q]uit"
 
     -- Load characters for display
@@ -94,9 +95,9 @@ end
 
 function MenuScene:handleInput(userInput)
     if userInput == "p" or userInput == "play game" then
-        self.ctx.sceneManager:changeScene("characterSelect")
+        self.ctx.sceneManager:changeScene(SceneId.CharacterSelect)
     elseif userInput == "b" then
-        self.ctx.sceneManager:changeScene("cardBrowse")
+        self.ctx.sceneManager:changeScene(SceneId.CardBrowse)
     elseif userInput == "q" or userInput == "quit" then
         love.event.quit()
     end

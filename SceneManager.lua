@@ -19,17 +19,17 @@ function SceneManager:addScene(scene)
 end
 
 -- Change to a new scene, clearing the scene stack
-function SceneManager:changeScene(sceneName)
+function SceneManager:changeScene(sceneId)
     while #self.sceneStack > 0 do
         self:popScene()
     end
-    self:pushScene(sceneName)
+    self:pushScene(sceneId)
 end
 
-function SceneManager:pushScene(sceneName)
-    local scene = self.scenes[sceneName]
+function SceneManager:pushScene(sceneId)
+    local scene = self.scenes[sceneId]
     if not scene then
-        error("Scene not found: " .. tostring(sceneName))
+        error("Scene not found: " .. tostring(sceneId))
     end
     table.insert(self.sceneStack, scene)
     scene:enter()

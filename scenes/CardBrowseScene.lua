@@ -1,4 +1,5 @@
 require "scenes.BaseScene"
+local SceneId = require "enums.SceneId"
 
 -- Card Browse Scene
 CardBrowseScene = {}
@@ -9,7 +10,7 @@ CardBrowseScene.__index = CardBrowseScene
 
 function CardBrowseScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
-    scene.name = "cardBrowse"
+    scene.name = SceneId.CardBrowse
     scene.posy = 10 -- Scroll position
     scene.cardsPerRow = 4
     scene.cards = {}
@@ -50,7 +51,7 @@ end
 
 function CardBrowseScene:handleInput(userInput)
     if userInput == "q" then
-        self.ctx.sceneManager:changeScene("menu")
+        self.ctx.sceneManager:changeScene(SceneId.Menu)
     end
 end
 

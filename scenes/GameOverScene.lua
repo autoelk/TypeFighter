@@ -1,4 +1,5 @@
 require "scenes.BaseScene"
+local SceneId = require "enums.SceneId"
 
 -- Game Over Scene
 -- TODO: Include a run summary/stats
@@ -10,7 +11,7 @@ GameOverScene.__index = GameOverScene
 
 function GameOverScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
-    scene.name = "gameOver"
+    scene.name = SceneId.GameOver
     scene.gameOverMessage = ""
     scene.controlsHint = "[r]estart [q]uit"
     return scene
@@ -40,6 +41,6 @@ function GameOverScene:handleInput(userInput)
     if userInput == "q" or userInput == "quit" then
         love.event.quit()
     elseif userInput == "r" or userInput == "restart" then
-        self.ctx.sceneManager:changeScene("menu")
+        self.ctx.sceneManager:changeScene(SceneId.Menu)
     end
 end

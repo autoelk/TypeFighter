@@ -1,4 +1,5 @@
 require "scenes.BaseScene"
+local SceneId = require "enums.SceneId"
 
 -- Instructions Scene
 InstructionsScene = {}
@@ -7,7 +8,7 @@ InstructionsScene.__index = InstructionsScene
 
 function InstructionsScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
-    scene.name = "instructions"
+    scene.name = SceneId.Instructions
     scene.timeLeft = 0
     scene.seen = false
     scene.instructionsText = "choose " ..
