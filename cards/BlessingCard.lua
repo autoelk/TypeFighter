@@ -7,12 +7,12 @@ setmetatable(BlessingCard, {
 })
 BlessingCard.__index = BlessingCard
 
-function BlessingCard:new(x, y)
-    local card = BaseCard:new(x, y)
+function BlessingCard:new(ctx, x, y)
+    local card = BaseCard:new(ctx, x, y)
     card.name = "blessing"
     card.mana = 8
     card.elem = "earth"
-    card.anim = resourceManager:newAnimation("card_" .. card.name)
+    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = BlessingSpell
     card.spellData = {

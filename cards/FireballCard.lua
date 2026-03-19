@@ -7,12 +7,12 @@ setmetatable(FireballCard, {
 })
 FireballCard.__index = FireballCard
 
-function FireballCard:new(x, y)
-    local card = BaseCard:new(x, y)
+function FireballCard:new(ctx, x, y)
+    local card = BaseCard:new(ctx, x, y)
     card.name = "fireball"
     card.mana = 3
     card.elem = "fire"
-    card.anim = resourceManager:newAnimation("card_" .. card.name)
+    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = FireballSpell
     card.spellData = {

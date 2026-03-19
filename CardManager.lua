@@ -19,8 +19,12 @@ require "cards.PortalCard"
 CardManager = {}
 CardManager.__index = CardManager
 
-function CardManager:new()
-    local factory = {
+function CardManager:new(ctx)
+    if not ctx then
+        error("CardManager:new(ctx) requires ctx")
+    end
+    local manager = {
+        ctx = ctx,
         cardTypes = {
             ["fireball"] = FireballCard,
             ["heal"] = HealCard,
@@ -40,17 +44,17 @@ function CardManager:new()
         },
         cardNames = {}
     }
-    for cardName, _ in pairs(factory.cardTypes) do
-        table.insert(factory.cardNames, cardName)
+    for cardName, _ in pairs(manager.cardTypes) do
+        table.insert(manager.cardNames, cardName)
     end
-    setmetatable(factory, self)
-    return factory
+    
+    return setmetatable(manager, self)
 end
 
 function CardManager:createCard(cardName)
     local CardClass = self.cardTypes[string.lower(cardName)]
     if CardClass then
-        return CardClass:new(0, 0)
+        return CardClass:new(self.ctx, 0, 0)
     else
         error("Unknown card type: " .. tostring(cardName))
     end

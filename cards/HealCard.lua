@@ -7,12 +7,12 @@ setmetatable(HealCard, {
 })
 HealCard.__index = HealCard
 
-function HealCard:new(x, y)
-    local card = BaseCard:new(x, y)
+function HealCard:new(ctx, x, y)
+    local card = BaseCard:new(ctx, x, y)
     card.name = "heal"
     card.mana = 5
     card.elem = "earth"
-    card.anim = resourceManager:newAnimation("card_heal")
+    card.anim = ctx.resourceManager:newAnimation("card_heal")
 
     card.SpellClass = HealSpell
     card.spellData = { healAmount = 10 }

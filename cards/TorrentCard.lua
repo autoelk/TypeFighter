@@ -7,12 +7,12 @@ setmetatable(TorrentCard, {
 })
 TorrentCard.__index = TorrentCard
 
-function TorrentCard:new(x, y)
-    local card = BaseCard:new(x, y)
+function TorrentCard:new(ctx, x, y)
+    local card = BaseCard:new(ctx, x, y)
     card.name = "torrent"
     card.mana = 7
     card.elem = "water"
-    card.anim = resourceManager:newAnimation("card_" .. card.name)
+    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = TorrentSpell
     card.spellData = { damage = 15 }

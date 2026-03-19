@@ -7,12 +7,12 @@ setmetatable(BoltCard, {
 })
 BoltCard.__index = BoltCard
 
-function BoltCard:new(x, y)
-    local card = BaseCard:new(x, y)
+function BoltCard:new(ctx, x, y)
+    local card = BaseCard:new(ctx, x, y)
     card.name = "bolt"
     card.mana = 1
     card.elem = "fire"
-    card.anim = resourceManager:newAnimation("card_" .. card.name)
+    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = BoltSpell
     card.spellData = {

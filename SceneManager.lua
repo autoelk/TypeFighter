@@ -4,11 +4,12 @@ local utf8 = require("utf8")
 SceneManager = {}
 SceneManager.__index = SceneManager
 
-function SceneManager:new()
+function SceneManager:new(ctx)
     return setmetatable({
         scenes = {},
         sceneStack = {}, -- stack to manage overlay scenes
-        paused = false   -- if paused, only update the top scene
+        paused = false,  -- if paused, only update the top scene
+        ctx = ctx
     }, self)
 end
 
@@ -67,14 +68,16 @@ function SceneManager:draw()
 end
 
 function SceneManager:keypressed(key)
-    if key == "backspace" and utf8.offset(input, -1) then
-        input = string.sub(input, 1, utf8.offset(input, -1) - 1)
+    local uiInput = self.ctx.ui.input
+    if key == "backspace" and utf8.offset(uiInput, -1) then
+        uiInput = string.sub(uiInput, 1, utf8.offset(uiInput, -1) - 1)
+        self.ctx.ui.input = uiInput
         return
     end
 
     if key == "return" then
-        local userInput = string.gsub(string.lower(input), "%s+", "")
-        input = "" -- clear user input field
+        local userInput = string.gsub(string.lower(uiInput), "%s+", "")
+        self.ctx.ui.input = "" -- clear user input field
         self:getCurrentScene():handleInput(userInput)
         return
     end

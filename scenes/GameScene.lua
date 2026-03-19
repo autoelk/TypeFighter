@@ -26,8 +26,8 @@ local playerPositions = { {
     mirror = true
 } }
 
-function GameScene:new()
-    local scene = setmetatable(BaseScene:new(), self)
+function GameScene:new(ctx)
+    local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = "game"
     scene.controlsHint = "[q]uit to menu [esc] pause"
     scene.player1Controller = nil
@@ -81,8 +81,8 @@ function GameScene:enter()
     end
 
     -- Set game interface messages
-    messageLeft = "type card names to cast them"
-    messageRight = self.controlsHint
+    self.ctx.ui.messageLeft = "type card names to cast them"
+    self.ctx.ui.messageRight = self.controlsHint
 
     -- Initialize active spells list for this game
     self.activeSpells = {}
@@ -107,12 +107,12 @@ function GameScene:update(dt)
         local p2Dead = not self.player2Controller.player.isAlive
         if p1Dead then
             self.gameOverTriggered = true
-            -- Player defeated: go straight to Game Over
-            self.sceneManager:changeScene("gameOver")
+            -- Player defeated: go to Game Over screen
+            self.ctx.sceneManager:changeScene("gameOver")
         elseif p2Dead then
             self.gameOverTriggered = true
             -- Opponent defeated: show stage end overlay
-            self.sceneManager:pushScene("stageEnd")
+            self.ctx.sceneManager:pushScene("stageEnd")
         end
     end
 end
@@ -132,7 +132,7 @@ end
 
 function GameScene:keypressed(key)
     if key == "escape" then
-        self.sceneManager:pushScene("pause")
+        self.ctx.sceneManager:pushScene("pause")
     end
 end
 
@@ -141,21 +141,21 @@ function GameScene:handleInput(userInput)
         if playerController.isHuman then
             local result = playerController:handleInput(userInput)
             if result == InputResult.Quit then
-                self.sceneManager:changeScene("menu")
+                self.ctx.sceneManager:changeScene("menu")
             elseif result == InputResult.DrawFail then
-                messageLeft = "hand full, can't draw"
+                self.ctx.ui.messageLeft = "hand full, can't draw"
             elseif result == InputResult.DrawSuccess then
-                messageLeft = "drew a card"
+                self.ctx.ui.messageLeft = "drew a card"
             elseif result == InputResult.CastCard.Success then
-                messageLeft = "cast " .. userInput
+                self.ctx.ui.messageLeft = "cast " .. userInput
             elseif result == InputResult.CastCard.CardNotInHand then
-                messageLeft = "cannot cast " .. userInput .. ": card not in hand"
+                self.ctx.ui.messageLeft = "cannot cast " .. userInput .. ": card not in hand"
             elseif result == InputResult.CastCard.InsufficientMana then
-                messageLeft = "cannot cast " .. userInput .. ": insufficient mana"
+                self.ctx.ui.messageLeft = "cannot cast " .. userInput .. ": insufficient mana"
             elseif result == InputResult.CastCard.CannotCast then
-                messageLeft = "cannot cast " .. userInput
+                self.ctx.ui.messageLeft = "cannot cast " .. userInput
             elseif result == InputResult.Unknown then
-                messageLeft = "unknown command: " .. userInput
+                self.ctx.ui.messageLeft = "unknown command: " .. userInput
             end
         end
     end

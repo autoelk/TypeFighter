@@ -7,12 +7,12 @@ setmetatable(PoisonCard, {
 })
 PoisonCard.__index = PoisonCard
 
-function PoisonCard:new(x, y)
-    local card = BaseCard:new(x, y)
+function PoisonCard:new(ctx, x, y)
+    local card = BaseCard:new(ctx, x, y)
     card.name = "poison"
     card.mana = 5
     card.elem = "fire"
-    card.anim = resourceManager:newAnimation("card_" .. card.name)
+    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = PoisonSpell
     card.spellData = { damagePerTick = 1, duration = 5, maxStacks = 5 }

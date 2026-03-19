@@ -6,8 +6,8 @@ setmetatable(AIPlayerController, {
 })
 AIPlayerController.__index = AIPlayerController
 
-function AIPlayerController:new(player, difficulty)
-    local controller = BasePlayerController:new(player)
+function AIPlayerController:new(ctx, player, difficulty)
+    local controller = BasePlayerController:new(ctx, player)
     controller.isHuman = false
     controller.tint = COLORS.RED
 
@@ -34,17 +34,18 @@ function AIPlayerController:new(player, difficulty)
 end
 
 function AIPlayerController:drawLibrary()
+    local fonts = self.ctx.fonts
     if #self.player.hand >= MAX_HAND_SIZE then
         lg.setColor(COLORS.GREY)
         lg.rectangle("fill", self.libraryX, self.libraryY, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
         lg.setColor(COLORS.WHITE)
-        lg.setFont(fontL)
+        lg.setFont(fonts.fontL)
         lg.printf("hand full", self.libraryX, self.libraryY + 5, MINI_CARD_WIDTH, "center")
     else
         lg.setColor(COLORS.YELLOW)
         lg.rectangle("fill", self.libraryX, self.libraryY, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
         lg.setColor(COLORS.BLACK)
-        lg.setFont(fontL)
+        lg.setFont(fonts.fontL)
         lg.printf("DECK", self.libraryX, self.libraryY + 5, MINI_CARD_WIDTH, "center")
     end
 end
@@ -52,7 +53,7 @@ end
 function AIPlayerController:update(dt)
     BasePlayerController.update(self, dt)
 
-    if sceneManager:getCurrentScene().name == "game" then
+    if self.ctx.sceneManager:getCurrentScene().name == "game" then
         self:updateActions(dt)
     end
 end

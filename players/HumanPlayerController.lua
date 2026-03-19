@@ -6,31 +6,32 @@ setmetatable(HumanPlayerController, {
 })
 HumanPlayerController.__index = HumanPlayerController
 
-function HumanPlayerController:new(player)
-    local controller = BasePlayerController:new(player)
+function HumanPlayerController:new(ctx, player)
+    local controller = BasePlayerController:new(ctx, player)
     controller.isHuman = true
 
-    controller.drawWord = resourceManager:getRandomWord()
+    controller.drawWord = ctx.resourceManager:getRandomWord()
 
     return setmetatable(controller, self)
 end
 
 function HumanPlayerController:drawLibrary()
+    local fonts = self.ctx.fonts
     if #self.player.hand >= MAX_HAND_SIZE then
         lg.setColor(COLORS.GREY)
         lg.rectangle("fill", self.libraryX, self.libraryY, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
         lg.setColor(COLORS.WHITE)
-        lg.setFont(fontL)
+        lg.setFont(fonts.fontL)
         lg.printf("hand full", self.libraryX, self.libraryY + 5, MINI_CARD_WIDTH, "center")
     else
         lg.setColor(COLORS.YELLOW)
         lg.rectangle("fill", self.libraryX, self.libraryY, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
         lg.setColor(COLORS.BLACK)
-        lg.setFont(fontS)
+        lg.setFont(fonts.fontS)
         lg.printf("type", self.libraryX, self.libraryY, MINI_CARD_WIDTH, "center")
-        lg.setFont(fontL)
+        lg.setFont(fonts.fontL)
         lg.printf(self.drawWord, self.libraryX, self.libraryY + 5, MINI_CARD_WIDTH, "center")
-        lg.setFont(fontS)
+        lg.setFont(fonts.fontS)
         lg.printf("to draw", self.libraryX, self.libraryY + 35, MINI_CARD_WIDTH, "center")
     end
 end
@@ -59,7 +60,7 @@ end
 function HumanPlayerController:drawCard()
     local drawResult = self.player:drawCard()
     if drawResult then
-        self.drawWord = resourceManager:getRandomWord()
+        self.drawWord = self.ctx.resourceManager:getRandomWord()
     end
     return drawResult
 end

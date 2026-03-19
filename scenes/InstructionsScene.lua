@@ -5,8 +5,8 @@ InstructionsScene = {}
 setmetatable(InstructionsScene, { __index = BaseScene })
 InstructionsScene.__index = InstructionsScene
 
-function InstructionsScene:new()
-    local scene = setmetatable(BaseScene:new(), self)
+function InstructionsScene:new(ctx)
+    local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = "instructions"
     scene.timeLeft = 0
     scene.seen = false
@@ -19,21 +19,23 @@ end
 
 function InstructionsScene:enter()
     if self.seen then
-        self.sceneManager:popScene()
+        self.ctx.sceneManager:popScene()
         return
     end
-    messageRight = self.controlsHint
+    self.ctx.ui.messageLeft = ""
+    self.ctx.ui.messageRight = self.controlsHint
     self.timeLeft = 20
 end
 
 function InstructionsScene:update(dt)
     self.timeLeft = self.timeLeft - dt
     if self.timeLeft <= 0 then
-        self.sceneManager:popScene()
+        self.ctx.sceneManager:popScene()
     end
 end
 
 function InstructionsScene:draw()
+    local fonts = self.ctx.fonts
     -- Dim the background
     lg.setColor(0, 0, 0, 0.5)
     lg.rectangle("fill", 0, 0, GAME_WIDTH, GAME_HEIGHT)
@@ -43,7 +45,7 @@ function InstructionsScene:draw()
     local width = 400
     local height = 320
     local startX = (GAME_WIDTH - width) / 2
-    lg.setFont(fontM)
+    lg.setFont(fonts.fontM)
     lg.setColor(COLORS.BLACK)
     lg.rectangle("fill", startX, 150, width, height)
     lg.setColor(COLORS.WHITE)
@@ -52,20 +54,28 @@ end
 
 function InstructionsScene:exit()
     self.seen = true
-    messageRight = self.sceneManager:getScene("cardSelect").controlsHint
+    self.ctx.ui.messageLeft = ""
+
+    -- Revert to message hint of scene from below
+    local currentScene = self.ctx.sceneManager:getCurrentScene()
+    if currentScene then
+        self.ctx.ui.messageRight = currentScene.controlsHint
+    else
+        self.ctx.ui.messageRight = self.controlsHint
+    end
 end
 
 function InstructionsScene:keypressed(key)
     if key == "escape" then
-        self.sceneManager:popScene()
+        self.ctx.sceneManager:popScene()
     end
 end
 
 function InstructionsScene:handleInput(userInput)
     if userInput == "p" or userInput == "play game" then
-        self.sceneManager:popScene()
+        self.ctx.sceneManager:popScene()
     elseif userInput == "q" then
-        self.sceneManager:popScene()
-        self.sceneManager:popScene()
+        self.ctx.sceneManager:popScene()
+        self.ctx.sceneManager:popScene()
     end
 end

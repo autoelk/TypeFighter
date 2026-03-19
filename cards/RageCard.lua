@@ -7,12 +7,12 @@ setmetatable(RageCard, {
 })
 RageCard.__index = RageCard
 
-function RageCard:new(x, y)
-    local card = BaseCard:new(x, y)
+function RageCard:new(ctx, x, y)
+    local card = BaseCard:new(ctx, x, y)
     card.name = "rage"
     card.mana = 10
     card.elem = "fire"
-    card.anim = resourceManager:newAnimation("card_" .. card.name)
+    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = RageSpell
     card.spellData = { damage = 30, healthCost = 10 }

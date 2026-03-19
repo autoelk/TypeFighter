@@ -2,8 +2,9 @@
 BasePlayer = {}
 BasePlayer.__index = BasePlayer
 
-function BasePlayer:new(character)
+function BasePlayer:new(ctx, character)
     local player = {
+        ctx = ctx,
         character = character,
         isAlive = true,
         health = nil,
@@ -33,7 +34,11 @@ function BasePlayer:reset()
     self.deck = {}
 
     for _, cardName in ipairs(self.character.startingDeck) do
-        self:addCard(cardManager:createCard(cardName))
+        local cm = self.ctx and self.ctx.cardManager
+        if not cm then
+            error("BasePlayer requires ctx.cardManager")
+        end
+        self:addCard(cm:createCard(cardName))
     end
 end
 
@@ -56,7 +61,13 @@ function BasePlayer:damage(amt)
 end
 
 function BasePlayer:update(dt)
-    if sceneManager:getCurrentScene().name == "game" then
+    local sm = self.ctx and self.ctx.sceneManager
+    if not (sm and sm.getCurrentScene) then
+        error("BasePlayer requires ctx.sceneManager")
+    end
+    local sceneName = sm:getCurrentScene().name
+
+    if sceneName == "game" then
         self.mana = self.mana + dt * self.manaRegen
         if self.mana < 0 then
             self.mana = 0

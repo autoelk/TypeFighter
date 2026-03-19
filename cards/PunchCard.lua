@@ -7,12 +7,12 @@ setmetatable(PunchCard, {
 })
 PunchCard.__index = PunchCard
 
-function PunchCard:new(x, y)
-    local card = BaseCard:new(x, y)
+function PunchCard:new(ctx, x, y)
+    local card = BaseCard:new(ctx, x, y)
     card.name = "punch"
     card.mana = 0
     card.elem = "earth"
-    card.anim = resourceManager:newAnimation("card_" .. card.name)
+    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = PunchSpell
     card.spellData = { damage = 2 }

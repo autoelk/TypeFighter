@@ -7,21 +7,22 @@ setmetatable(CardBrowseScene, {
 })
 CardBrowseScene.__index = CardBrowseScene
 
-function CardBrowseScene:new()
-    local scene = setmetatable(BaseScene:new(), self)
+function CardBrowseScene:new(ctx)
+    local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = "cardBrowse"
     scene.posy = 10 -- Scroll position
     scene.cardsPerRow = 4
     scene.cards = {}
     scene.controlsHint = "[q] to go back"
-    for _, cardName in ipairs(cardManager:getAllCardNames()) do
-        table.insert(scene.cards, cardManager:createCard(cardName))
+    for _, cardName in ipairs(ctx.cardManager:getAllCardNames()) do
+        table.insert(scene.cards, ctx.cardManager:createCard(cardName))
     end
     return scene
 end
 
 function CardBrowseScene:enter()
-    messageRight = self.controlsHint
+    self.ctx.ui.messageLeft = ""
+    self.ctx.ui.messageRight = self.controlsHint
 end
 
 function CardBrowseScene:update(dt)
@@ -49,7 +50,7 @@ end
 
 function CardBrowseScene:handleInput(userInput)
     if userInput == "q" then
-        self.sceneManager:changeScene("menu")
+        self.ctx.sceneManager:changeScene("menu")
     end
 end
 

@@ -4,8 +4,12 @@ local CastResult = require "enums.CastResult"
 BasePlayerController = {}
 BasePlayerController.__index = BasePlayerController
 
-function BasePlayerController:new(player)
+function BasePlayerController:new(ctx, player)
+    if not ctx then
+        error("BasePlayerController:new(ctx, player) requires ctx")
+    end
     local controller = {
+        ctx = ctx,
         player = player,
         isHuman = nil,
         opponent = nil,
@@ -21,9 +25,9 @@ function BasePlayerController:new(player)
         libraryY = (MINI_CARD_HEIGHT + 10) * (MAX_HAND_SIZE + 1) + 160,
         deckX = nil,
 
-        idleAnim = resourceManager:newAnimation(player.character.idleSprite),
-        castAnim = resourceManager:newAnimation(player.character.castSprite),
-        deathAnim = resourceManager:newAnimation(player.character.deathSprite),
+        idleAnim = ctx.resourceManager:newAnimation(player.character.idleSprite),
+        castAnim = ctx.resourceManager:newAnimation(player.character.castSprite),
+        deathAnim = ctx.resourceManager:newAnimation(player.character.deathSprite),
         isCasting = false,
         castAnimFinished = false,
 
@@ -113,12 +117,13 @@ function BasePlayerController:drawDamageDisplay()
     end
 
     local absAmount = math.abs(self.damageDisplay.amount)
+    local fonts = self.ctx.fonts
     if absAmount > 20 then
-        lg.setFont(fontXL)
+        lg.setFont(fonts.fontXL)
     elseif absAmount > 10 then
-        lg.setFont(fontL)
+        lg.setFont(fonts.fontL)
     else
-        lg.setFont(fontM)
+        lg.setFont(fonts.fontM)
     end
 
     local damageY = self.y - 55 + self.damageDisplay.timeLeft * 40
@@ -161,7 +166,7 @@ function BasePlayerController:drawHealthAndManaBars()
     if self.mirror then
         textAlign = "right"
     end
-    lg.setFont(fontL)
+    lg.setFont(self.ctx.fonts.fontL)
     lg.printf(math.ceil(self.player.health), self.textOffsetX, 15, GAME_WIDTH, textAlign)
     lg.setColor(COLORS.WHITE)
     lg.printf(math.floor(self.player.mana), self.textOffsetX, 65, GAME_WIDTH, textAlign)
@@ -280,7 +285,7 @@ function BasePlayerController:castCard(card)
         self.castAnim.accumulator = 0
         self.player:castCard(card)
         local spell = card:cast(self, self:getOpponent())
-        table.insert(sceneManager:getCurrentScene().activeSpells, spell)
+        table.insert(self.ctx.sceneManager:getCurrentScene().activeSpells, spell)
     end
     return castResult
 end

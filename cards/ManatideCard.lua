@@ -7,12 +7,12 @@ setmetatable(ManatideCard, {
 })
 ManatideCard.__index = ManatideCard
 
-function ManatideCard:new(x, y)
-    local card = BaseCard:new(x, y)
+function ManatideCard:new(ctx, x, y)
+    local card = BaseCard:new(ctx, x, y)
     card.name = "manatide"
     card.mana = 5
     card.elem = "water"
-    card.anim = resourceManager:newAnimation("card_" .. card.name)
+    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = ManatideSpell
     card.spellData = { regenBonus = 1, duration = 10 }

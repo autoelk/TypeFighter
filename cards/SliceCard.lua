@@ -7,12 +7,12 @@ setmetatable(SliceCard, {
 })
 SliceCard.__index = SliceCard
 
-function SliceCard:new(x, y)
-    local card = BaseCard:new(x, y)
+function SliceCard:new(ctx, x, y)
+    local card = BaseCard:new(ctx, x, y)
     card.name = "slice"
     card.mana = 15
     card.elem = "fire"
-    card.anim = resourceManager:newAnimation("card_" .. card.name)
+    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = SliceSpell
     card.spellData = { ratio = 1 / 2 }

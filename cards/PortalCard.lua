@@ -7,12 +7,12 @@ setmetatable(PortalCard, {
 })
 PortalCard.__index = PortalCard
 
-function PortalCard:new(x, y)
-    local card = BaseCard:new(x, y)
+function PortalCard:new(ctx, x, y)
+    local card = BaseCard:new(ctx, x, y)
     card.name = "portal"
     card.mana = 20
     card.elem = "water"
-    card.anim = resourceManager:newAnimation("card_" .. card.name)
+    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = PortalSpell
     card.spellData = { damage = 40 }

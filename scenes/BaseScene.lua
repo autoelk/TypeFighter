@@ -2,8 +2,11 @@
 BaseScene = {}
 BaseScene.__index = BaseScene
 
-function BaseScene:new()
-    return setmetatable({}, self)
+function BaseScene:new(ctx)
+    if not ctx then
+        error("BaseScene:new(ctx) requires ctx")
+    end
+    return setmetatable({ ctx = ctx }, self)
 end
 
 function BaseScene:enter() end

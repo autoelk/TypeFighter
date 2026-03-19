@@ -4,8 +4,12 @@ local CastResult = require "enums.CastResult"
 BaseCard = {}
 BaseCard.__index = BaseCard
 
-function BaseCard:new(x, y)
+function BaseCard:new(ctx, x, y)
+    if not ctx then
+        error("BaseCard:new(ctx, x, y) requires ctx")
+    end
     local card = {
+        ctx = ctx,
         x = x,
         y = y,
 
@@ -62,7 +66,8 @@ function BaseCard:draw()
         self.anim.scaleX, self.anim.scaleY)
 
     -- Print text onto card
-    lg.setFont(fontS)
+    local fonts = self.ctx.fonts
+    lg.setFont(fonts.fontS)
     lg.printf(self.name, self.x + 10, self.y, LARGE_CARD_WIDTH, "left")
     lg.printf("mana " .. self.mana, self.x - 10, self.y, LARGE_CARD_WIDTH, "right")
     lg.printf(self:getDescription(), self.x + 10, self.y + 190, SPRITE_SIZE, "left")
@@ -70,16 +75,17 @@ end
 
 -- Draw mini version of card
 function BaseCard:drawMini()
-    fontXS:setLineHeight(0.6)
+    local fonts = self.ctx.fonts
+    fonts.fontXS:setLineHeight(0.6)
     lg.setColor(self:getColor())
     lg.rectangle("fill", self.x, self.y, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
     -- print text
     local margin = 5
     lg.setColor(COLORS.BLACK)
-    lg.setFont(fontS)
+    lg.setFont(fonts.fontS)
     lg.printf(self.name, self.x + margin, self.y, MINI_CARD_WIDTH, "left")
     lg.printf(self.mana, self.x - margin, self.y, MINI_CARD_WIDTH, "right")
-    lg.setFont(fontXS)
+    lg.setFont(fonts.fontXS)
     lg.printf(self:getDescription(), self.x + margin, self.y + 15, MINI_CARD_WIDTH - 4 * margin, "left")
 end
 
@@ -107,7 +113,7 @@ function BaseCard:move(destX, destY)
 end
 
 function BaseCard:cast(caster, target)
-    local spellAnim = resourceManager:newAnimation("card_" .. self.name)
+    local spellAnim = self.ctx.resourceManager:newAnimation("card_" .. self.name)
     spellAnim.playMode = "once"
     local spell = self.SpellClass:new(caster, target, self.spellData, spellAnim)
     spell:onStart()

@@ -7,15 +7,15 @@ setmetatable(CharacterSelectScene, {
 CharacterSelectScene.__index = CharacterSelectScene
 
 -- TODO: Make the selected character automatically cast spells on a target dummy
-function CharacterSelectScene:new()
-    local scene = setmetatable(BaseScene:new(), self)
+function CharacterSelectScene:new(ctx)
+    local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = "characterSelect"
     scene.controlsHint = "[p] to continue [q] to go back"
     scene.controllers = {}
-    for i, charName in ipairs(characterManager:getAllCharNames()) do
-        local char = characterManager:createCharacter(charName)
-        local player = BasePlayer:new(char)
-        local controller = AIPlayerController:new(player)
+    for i, charName in ipairs(ctx.characterManager:getAllCharNames()) do
+        local char = ctx.characterManager:createCharacter(charName)
+        local player = BasePlayer:new(ctx, char)
+        local controller = AIPlayerController:new(ctx, player)
         controller.tint = COLORS.WHITE
         controller.mirror = false
         controller.libraryX = GAME_WIDTH / 2
@@ -26,9 +26,9 @@ function CharacterSelectScene:new()
 end
 
 function CharacterSelectScene:enter()
-    input = ""
-    messageLeft = "choose your character"
-    messageRight = self.controlsHint
+    self.ctx.ui.input = ""
+    self.ctx.ui.messageLeft = "choose your character"
+    self.ctx.ui.messageRight = self.controlsHint
     self.charMargin = 200
     self.startX = (GAME_WIDTH + self.charMargin - #self.controllers * (SPRITE_SIZE + self.charMargin)) / 2
 
@@ -52,13 +52,14 @@ function CharacterSelectScene:update(dt)
 end
 
 function CharacterSelectScene:draw()
+    local fonts = self.ctx.fonts
     if self.charSelected == nil then
-        lg.setFont(fontM)
+        lg.setFont(fonts.fontM)
         lg.printf("type name to", 0, 200, GAME_WIDTH, "center")
-        lg.setFont(fontL)
+        lg.setFont(fonts.fontL)
         lg.printf("choose your character", 0, 225, GAME_WIDTH, "center")
 
-        lg.setFont(fontM)
+        lg.setFont(fonts.fontM)
         for i, controller in ipairs(self.controllers) do
             local char = controller.player.character
             lg.printf(char.name, self.startX + (i - 1) * (SPRITE_SIZE + self.charMargin), 375 - 25, SPRITE_SIZE,
@@ -67,11 +68,11 @@ function CharacterSelectScene:draw()
         end
     else
         local char = self.charSelected.player.character
-        lg.setFont(fontM)
+        lg.setFont(fonts.fontM)
         lg.printf("you have selected the", 200, 250, GAME_WIDTH, "left")
-        lg.setFont(fontXL)
+        lg.setFont(fonts.fontXL)
         lg.printf(char.name, 200, 250, GAME_WIDTH, "left")
-        lg.setFont(fontM)
+        lg.setFont(fonts.fontM)
         lg.printf(char.description, 200, 350, GAME_WIDTH - 200, "left")
 
         self.charSelected.x = 200
@@ -86,31 +87,33 @@ function CharacterSelectScene:handleInput(userInput)
         local char = controller.player.character
         if userInput == char.name then
             self.charSelected = controller
-            messageLeft = "selected " .. char.name
+            self.ctx.ui.messageLeft = "selected " .. char.name
             return
         end
     end
 
     if userInput == "p" or userInput == "play game" then
         if not self.charSelected then
-            messageLeft = "please select a character first"
+            self.ctx.ui.messageLeft = "please select a character first"
             return
         end
+
         local selectedName = self.charSelected.player.character.name
         -- Seed a simple linear run of opponents and start at stage 1
-        runState:startRun(selectedName, { "wizard", "wizard", "wizard", "wizard", "wizard" })
-        local oppName = runState:getCurrentOpponent()
-        self.sceneManager:getScene("game"):setPlayer1(
-            HumanPlayerController:new(BasePlayer:new(characterManager:createCharacter(selectedName))))
-        self.sceneManager:getScene("game"):setPlayer2(
-            AIPlayerController:new(BasePlayer:new(characterManager:createCharacter(oppName)), "normal"))
-        self.sceneManager:changeScene("game")
+        self.ctx.runState:startRun(selectedName, { "wizard", "wizard", "wizard", "wizard", "wizard" })
+        local oppName = self.ctx.runState:getCurrentOpponent()
+        self.ctx.sceneManager:getScene("game"):setPlayer1(
+            HumanPlayerController:new(self.ctx, BasePlayer:new(self.ctx, self.ctx.characterManager:createCharacter(selectedName))))
+        self.ctx.sceneManager:getScene("game"):setPlayer2(
+            AIPlayerController:new(self.ctx, BasePlayer:new(self.ctx, self.ctx.characterManager:createCharacter(oppName)), "normal"))
+        self.ctx.sceneManager:changeScene("game")
     elseif userInput == "q" or userInput == "quit" then
         if self.charSelected then
+            -- Deselect the character
             self.charSelected = nil
-            messageLeft = "choose your character"
+            self.ctx.ui.messageLeft = "choose your character"
             return
         end
-        self.sceneManager:changeScene("menu")
+        self.ctx.sceneManager:changeScene("menu")
     end
 end

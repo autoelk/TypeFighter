@@ -7,12 +7,12 @@ setmetatable(ForceCard, {
 })
 ForceCard.__index = ForceCard
 
-function ForceCard:new(x, y)
-    local card = BaseCard:new(x, y)
+function ForceCard:new(ctx, x, y)
+    local card = BaseCard:new(ctx, x, y)
     card.name = "force"
     card.mana = 15
     card.elem = "fire"
-    card.anim = resourceManager:newAnimation("card_" .. card.name)
+    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = ForceSpell
     card.spellData = { tradeAmount = 1 }

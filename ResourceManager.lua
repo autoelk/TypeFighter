@@ -36,7 +36,10 @@ function ResourceManager:getImage(name)
     return self.images[name]
 end
 
-function ResourceManager:loadAllAssets()
+function ResourceManager:loadAllAssets(cardNames)
+    if not cardNames then
+        error("ResourceManager:loadAllAssets(cardNames) requires cardNames")
+    end
     -- Load fonts
     self:loadFont("fontXL", "assets/munro-small.ttf", 96)
     self:loadFont("fontL", "assets/munro-small.ttf", 36)
@@ -54,7 +57,6 @@ function ResourceManager:loadAllAssets()
     self:loadImage("placeholder", "assets/placeholder.png")
 
     -- Load all card images
-    local cardNames = cardManager:getAllCardNames()
     for i, cardName in ipairs(cardNames) do
         local path = "assets/cards/" .. cardName .. ".png"
         local cardImageFile = io.open(path, "r")

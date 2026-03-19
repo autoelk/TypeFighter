@@ -7,12 +7,12 @@ setmetatable(GemCard, {
 })
 GemCard.__index = GemCard
 
-function GemCard:new(x, y)
-    local card = BaseCard:new(x, y)
+function GemCard:new(ctx, x, y)
+    local card = BaseCard:new(ctx, x, y)
     card.name = "gem"
     card.mana = 10
     card.elem = "water"
-    card.anim = resourceManager:newAnimation("card_" .. card.name)
+    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = GemSpell
     card.spellData = { regenAmount = 0.5 }
