@@ -14,12 +14,10 @@ function CharacterSelectScene:new(ctx)
     scene.controlsHint = "[p] to continue [q] to go back"
     scene.controllers = {}
     for i, charName in ipairs(ctx.characterManager:getAllCharNames()) do
-        local char = ctx.characterManager:createCharacter(charName)
-        local player = BasePlayer:new(ctx, char)
-        local controller = AIPlayerController:new(ctx, player)
-        controller.tint = COLORS.WHITE
-        controller.mirror = false
-        controller.libraryX = GAME_WIDTH / 2
+        local controller = AIPlayerController:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter(charName)))
+        controller.renderer.tint = COLORS.WHITE
+        controller.renderer.mirror = false
+        controller.renderer.libraryX = GAME_WIDTH / 2
         table.insert(scene.controllers, controller)
     end
     scene.charSelected = nil -- Stores the controller of the selected character
@@ -34,7 +32,7 @@ function CharacterSelectScene:enter()
     self.startX = (GAME_WIDTH + self.charMargin - #self.controllers * (SPRITE_SIZE + self.charMargin)) / 2
 
     for i, controller in ipairs(self.controllers) do
-        controller.player:reset()
+        controller:reset()
         controller.player.hand = controller.player.deck
     end
 end
@@ -42,13 +40,13 @@ end
 function CharacterSelectScene:update(dt)
     if self.charSelected == nil then
         for i, controller in ipairs(self.controllers) do
-            controller:updateCharAnimations(dt)
-            controller.x = self.startX + (i - 1) * (SPRITE_SIZE + self.charMargin)
-            controller.y = 375
+            controller.renderer:updateCharAnimations(dt)
+            controller.renderer.x = self.startX + (i - 1) * (SPRITE_SIZE + self.charMargin)
+            controller.renderer.y = 375
         end
     else
-        self.charSelected:updateCharAnimations(dt)
-        self.charSelected:updateHand(dt)
+        self.charSelected.renderer:updateCharAnimations(dt)
+        self.charSelected.renderer:updateHand(dt)
     end
 end
 
@@ -65,7 +63,7 @@ function CharacterSelectScene:draw()
             local char = controller.player.character
             lg.printf(char.name, self.startX + (i - 1) * (SPRITE_SIZE + self.charMargin), 375 - 25, SPRITE_SIZE,
                 "center")
-            controller:drawChar()
+            controller.renderer:drawChar()
         end
     else
         local char = self.charSelected.player.character
@@ -76,10 +74,10 @@ function CharacterSelectScene:draw()
         lg.setFont(fonts.fontM)
         lg.printf(char.description, 200, 350, GAME_WIDTH - 200, "left")
 
-        self.charSelected.x = 200
-        self.charSelected.y = 375
-        self.charSelected:drawChar()
-        self.charSelected:drawHand()
+        self.charSelected.renderer.x = 200
+        self.charSelected.renderer.y = 375
+        self.charSelected.renderer:drawChar()
+        self.charSelected.renderer:drawHand()
     end
 end
 

@@ -7,8 +7,8 @@ ManatideSpell.__index = ManatideSpell
 
 function ManatideSpell:new(caster, target, spellData, anim)
     local spell = BaseSpell:new(caster, target, spellData, anim)
-    spell.x = caster.x
-    spell.y = caster.y
+    spell.x = caster.renderer.x
+    spell.y = caster.renderer.y
     spell:playLoopFor(spellData.duration)
     return setmetatable(spell, self)
 end

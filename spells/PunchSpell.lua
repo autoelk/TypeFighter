@@ -6,8 +6,8 @@ PunchSpell.__index = PunchSpell
 
 function PunchSpell:new(caster, target, spellData, anim)
     local spell = BaseSpell:new(caster, target, spellData, anim)
-    spell.x = target.x
-    spell.y = target.y
+    spell.x = target.renderer.x
+    spell.y = target.renderer.y
     spell.anim.offsetX = -90
     spell.anim.offsetY = 15
     spell:playOnce()

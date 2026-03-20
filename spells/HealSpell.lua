@@ -6,8 +6,8 @@ HealSpell.__index = HealSpell
 
 function HealSpell:new(caster, target, spellData, anim)
     local spell = BaseSpell:new(caster, target, spellData, anim)
-    spell.x = caster.x
-    spell.y = caster.y
+    spell.x = caster.renderer.x
+    spell.y = caster.renderer.y
     spell:playOnce()
     return setmetatable(spell, self)
 end

@@ -47,13 +47,14 @@ end
 
 function GameScene:setPlayer1(controller)
     self.player1Controller = controller
-    self.player1Controller.x = playerPositions[1].x
-    self.player1Controller.y = playerPositions[1].y
-    self.player1Controller.uiX = playerPositions[1].uiX
-    self.player1Controller.textOffsetX = playerPositions[1].textOffsetX
-    self.player1Controller.libraryX = playerPositions[1].libraryX
-    self.player1Controller.deckX = playerPositions[1].deckX
-    self.player1Controller.mirror = playerPositions[1].mirror
+    local renderer = self.player1Controller.renderer
+    renderer.x = playerPositions[1].x
+    renderer.y = playerPositions[1].y
+    renderer.uiX = playerPositions[1].uiX
+    renderer.textOffsetX = playerPositions[1].textOffsetX
+    renderer.libraryX = playerPositions[1].libraryX
+    renderer.deckX = playerPositions[1].deckX
+    renderer.mirror = playerPositions[1].mirror
     if self.player2Controller ~= nil then
         self.player1Controller:setOpponent(self.player2Controller)
         self.player2Controller:setOpponent(self.player1Controller)
@@ -62,13 +63,14 @@ end
 
 function GameScene:setPlayer2(controller)
     self.player2Controller = controller
-    self.player2Controller.x = playerPositions[2].x
-    self.player2Controller.y = playerPositions[2].y
-    self.player2Controller.uiX = playerPositions[2].uiX
-    self.player2Controller.textOffsetX = playerPositions[2].textOffsetX
-    self.player2Controller.libraryX = playerPositions[2].libraryX
-    self.player2Controller.deckX = playerPositions[2].deckX
-    self.player2Controller.mirror = playerPositions[2].mirror
+    local renderer = self.player2Controller.renderer
+    renderer.x = playerPositions[2].x
+    renderer.y = playerPositions[2].y
+    renderer.uiX = playerPositions[2].uiX
+    renderer.textOffsetX = playerPositions[2].textOffsetX
+    renderer.libraryX = playerPositions[2].libraryX
+    renderer.deckX = playerPositions[2].deckX
+    renderer.mirror = playerPositions[2].mirror
     if self.player1Controller ~= nil then
         self.player1Controller:setOpponent(self.player2Controller)
         self.player2Controller:setOpponent(self.player1Controller)

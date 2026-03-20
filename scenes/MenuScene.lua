@@ -14,27 +14,29 @@ function MenuScene:new(ctx)
     scene.controlsHint = "[p]lay game [b]rowse cards [q]uit"
 
     -- Load characters for display
-    scene.leftController = BasePlayerController:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter("wizard")))
-    scene.rightController = BasePlayerController:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter("wizard")))
-    scene.leftController.x = 250
-    scene.leftController.y = 375
-    scene.leftController.mirror = false
-    scene.rightController.x = GAME_WIDTH - 250 - SPRITE_SIZE
-    scene.rightController.y = 375
-    scene.rightController.mirror = true
-    scene.rightController.tint = COLORS.RED
+    scene.leftRenderer = PlayerRenderer:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter("wizard")))
+    scene.leftRenderer.x = 250
+    scene.leftRenderer.y = 375
+    scene.leftRenderer.mirror = false
+
+    scene.rightRenderer = PlayerRenderer:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter("wizard")))
+    scene.rightRenderer.x = GAME_WIDTH - 250 - SPRITE_SIZE
+    scene.rightRenderer.y = 375
+    scene.rightRenderer.mirror = true
+    scene.rightRenderer.tint = COLORS.RED
 
     -- Load spells for display
-    scene.torrentAnimation = ctx.resourceManager:newAnimation("card_torrent")
-    scene.fireballAnimation = ctx.resourceManager:newAnimation("card_fireball")
-
     local margin = 280
+    scene.torrentAnimation = ctx.resourceManager:newAnimation("card_torrent")
     scene.torrentAnimation.x = margin
     scene.torrentAnimation.y = 180
     scene.torrentAnimation.rotation = 0
+
+    scene.fireballAnimation = ctx.resourceManager:newAnimation("card_fireball")
     scene.fireballAnimation.x = GAME_WIDTH - margin
     scene.fireballAnimation.y = 345
     scene.fireballAnimation.rotation = 180
+
     return scene
 end
 
@@ -63,8 +65,8 @@ function MenuScene:draw()
         self.fireballAnimation.x, self.fireballAnimation.y, math.rad(self.fireballAnimation.rotation),
         self.fireballAnimation.scaleX, self.fireballAnimation.scaleY)
 
-    self.leftController:drawChar()
-    self.rightController:drawChar()
+    self.leftRenderer:drawChar()
+    self.rightRenderer:drawChar()
 end
 
 function MenuScene:update(dt)
@@ -89,8 +91,8 @@ function MenuScene:update(dt)
         end
     end
 
-    self.leftController:updateCharAnimations(dt)
-    self.rightController:updateCharAnimations(dt)
+    self.leftRenderer:updateCharAnimations(dt)
+    self.rightRenderer:updateCharAnimations(dt)
 end
 
 function MenuScene:handleInput(userInput)

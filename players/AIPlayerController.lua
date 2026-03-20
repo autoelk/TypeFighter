@@ -33,23 +33,6 @@ function AIPlayerController:new(ctx, player, difficulty)
     return setmetatable(controller, self)
 end
 
-function AIPlayerController:drawLibrary()
-    local fonts = self.ctx.fonts
-    if #self.player.hand >= MAX_HAND_SIZE then
-        lg.setColor(COLORS.GREY)
-        lg.rectangle("fill", self.libraryX, self.libraryY, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
-        lg.setColor(COLORS.WHITE)
-        lg.setFont(fonts.fontL)
-        lg.printf("hand full", self.libraryX, self.libraryY + 5, MINI_CARD_WIDTH, "center")
-    else
-        lg.setColor(COLORS.YELLOW)
-        lg.rectangle("fill", self.libraryX, self.libraryY, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
-        lg.setColor(COLORS.BLACK)
-        lg.setFont(fonts.fontL)
-        lg.printf("DECK", self.libraryX, self.libraryY + 5, MINI_CARD_WIDTH, "center")
-    end
-end
-
 function AIPlayerController:update(dt)
     BasePlayerController.update(self, dt)
 

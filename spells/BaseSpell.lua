@@ -46,7 +46,7 @@ function BaseSpell:draw()
     local x = self.x
     local offsetX = self.anim.offsetX
     local scaleX = self.anim.scaleX
-    if self.caster:isMirrored() then
+    if self.caster.renderer:isMirrored() then
         x = self.x + SPRITE_SIZE
         offsetX = -offsetX
         scaleX = -math.abs(scaleX)

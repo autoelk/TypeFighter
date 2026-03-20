@@ -6,10 +6,10 @@ FireballSpell.__index = FireballSpell
 
 function FireballSpell:new(caster, target, spellData, anim)
     local spell = ProjectileSpell:new(caster, target, spellData, anim)
-    spell.startX = caster.x
-    spell.startY = caster.y
-    spell.endX = target.x
-    spell.endY = target.y
+    spell.startX = caster.renderer.x
+    spell.startY = caster.renderer.y
+    spell.endX = target.renderer.x
+    spell.endY = target.renderer.y
 
     spell.x = spell.startX
     spell.y = spell.startY

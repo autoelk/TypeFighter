@@ -6,8 +6,8 @@ BoltSpell.__index = BoltSpell
 
 function BoltSpell:new(caster, target, spellData, anim)
     local spell = BaseSpell:new(caster, target, spellData, anim)
-    spell.x = target.x
-    spell.y = target.y
+    spell.x = target.renderer.x
+    spell.y = target.renderer.y
     spell:playOnce()
     return setmetatable(spell, self)
 end
