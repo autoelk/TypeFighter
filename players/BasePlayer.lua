@@ -108,10 +108,11 @@ function BasePlayer:updateEffects(dt)
         end
     end
 
-    for _, effect in ipairs(self.durationEffects) do
+    for i = #self.durationEffects, 1, -1 do
+        local effect = self.durationEffects[i]
         effect:update(dt)
         if effect.expired then
-            table.remove(self.durationEffects, indexOf(self.durationEffects, effect))
+            table.remove(self.durationEffects, i)
             effect:onExpire()
         end
     end

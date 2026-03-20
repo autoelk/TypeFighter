@@ -218,7 +218,7 @@ end
 
 function PlayerRenderer:drawDurationEffectsHelper()
     local durationEffects = {}
-    for _, effect in pairs(self.player.durationEffects) do
+    for _, effect in ipairs(self.player.durationEffects) do
         local eff = {
             name = effect.name,
             timeLeft = effect.timeLeft,
