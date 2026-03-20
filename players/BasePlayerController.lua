@@ -78,6 +78,7 @@ function BasePlayerController:draw()
     self:drawChar()
     self:drawDamageDisplay()
     self:drawHealthAndManaBars()
+    self:drawEffects()
     self:drawHand()
     self:drawLibrary()
 end
@@ -170,6 +171,62 @@ function BasePlayerController:drawHealthAndManaBars()
     lg.printf(math.ceil(self.player.health), self.textOffsetX, 15, GAME_WIDTH, textAlign)
     lg.setColor(COLORS.WHITE)
     lg.printf(math.floor(self.player.mana), self.textOffsetX, 65, GAME_WIDTH, textAlign)
+end
+
+function BasePlayerController:drawEffects()
+    local effectIds = {}
+    for id, effect in pairs(self.player.effects) do
+        table.insert(effectIds, {
+            id = id,
+            effect = effect
+        })
+    end
+
+    if #effectIds == 0 then
+        return
+    end
+
+    -- Sort effects by time left, then by id
+    -- Permanent effects come first, then effects with time left
+    table.sort(effectIds, function(a, b)
+        local aTime = a.effect.timeLeft
+        local bTime = b.effect.timeLeft
+
+        if aTime == nil and bTime == nil then
+            return a.id < b.id
+        elseif aTime == nil then
+            return true
+        elseif bTime == nil then
+            return false
+        elseif aTime ~= bTime then
+            return aTime > bTime
+        end
+
+        return a.id < b.id
+    end)
+
+    local textAlign = "left"
+    local baseX = self.x
+    local baseY = self.y + SPRITE_SIZE + 8
+
+    lg.setFont(self.ctx.fonts.fontS)
+    for i, item in ipairs(effectIds) do
+        local effect = item.effect
+        local label = item.id
+        if #label > 0 then
+            label = label:sub(1, 1):upper() .. label:sub(2)
+        end
+        if effect.stacks and effect.stacks > 1 then
+            label = label .. " x" .. effect.stacks
+        end
+        if effect.timeLeft ~= nil then
+            label = label .. " (" .. math.max(0, math.ceil(effect.timeLeft)) .. "s)"
+        end
+
+        local y = baseY + (i - 1) * 16
+        lg.setColor(COLORS.WHITE)
+        lg.printf(label, baseX, y, SPRITE_SIZE, textAlign)
+    end
 end
 
 -- Draw cards in hand as mini cards
