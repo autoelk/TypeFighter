@@ -16,6 +16,7 @@ function CharacterManager:new()
     for charName, _ in pairs(manager.charTypes) do
         table.insert(manager.charNames, charName)
     end
+    table.sort(manager.charNames)
     return setmetatable(manager, self)
 end
 
