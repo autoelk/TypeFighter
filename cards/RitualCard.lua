@@ -1,5 +1,6 @@
 require "cards.BaseCard"
 require "spells.RitualSpell"
+local CastResult = require "enums.CastResult"
 
 RitualCard = {}
 setmetatable(RitualCard, {
@@ -22,4 +23,17 @@ end
 
 function RitualCard:getDescription()
     return "lose " .. self.spellData.healthCost .. " health, gain " .. self.spellData.manaGain .. " mana."
+end
+
+function RitualCard:canCast(caster)
+    local result = BaseCard.canCast(self, caster)
+    if result ~= CastResult.Success then
+        return result
+    end
+    
+    -- Check if the player has enough health to cast the card
+    if caster.health < self.spellData.healthCost then
+        return CastResult.InsufficientHealth
+    end
+    return CastResult.Success
 end

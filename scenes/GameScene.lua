@@ -2,6 +2,13 @@ require "scenes.BaseScene"
 local InputResult = require "enums.InputResult"
 local SceneId = require "enums.SceneId"
 
+local castFailureMessages = {
+    [InputResult.CastCard.CardNotInHand] = "card not in hand",
+    [InputResult.CastCard.InsufficientMana] = "insufficient mana",
+    [InputResult.CastCard.InsufficientHealth] = "insufficient health",
+    [InputResult.CastCard.CannotCast] = "cannot cast",
+}
+
 -- Game Scene (main gameplay), represents a single match between two players
 GameScene = {}
 setmetatable(GameScene, {
@@ -149,12 +156,8 @@ function GameScene:handleInput(userInput)
                 self.ctx.ui.messageLeft = "drew a card"
             elseif result == InputResult.CastCard.Success then
                 self.ctx.ui.messageLeft = "cast " .. userInput
-            elseif result == InputResult.CastCard.CardNotInHand then
-                self.ctx.ui.messageLeft = "cannot cast " .. userInput .. ": card not in hand"
-            elseif result == InputResult.CastCard.InsufficientMana then
-                self.ctx.ui.messageLeft = "cannot cast " .. userInput .. ": insufficient mana"
-            elseif result == InputResult.CastCard.CannotCast then
-                self.ctx.ui.messageLeft = "cannot cast " .. userInput
+            elseif castFailureMessages[result] then
+                self.ctx.ui.messageLeft = "cannot cast " .. userInput .. ": " .. castFailureMessages[result]
             elseif result == InputResult.Unknown then
                 self.ctx.ui.messageLeft = "unknown command: " .. userInput
             end
