@@ -63,21 +63,9 @@ function BasePlayer:damage(amt)
 end
 
 function BasePlayer:update(dt)
-    local sm = self.ctx and self.ctx.sceneManager
-    if not (sm and sm.getCurrentScene) then
-        error("BasePlayer requires ctx.sceneManager")
-    end
-    local sceneName = sm:getCurrentScene().name
-
-    if sceneName == "game" then
-        self.mana = self.mana + dt * self.manaRegen
-        if self.mana < 0 then
-            self.mana = 0
-        end
-        self.health = self.health + dt * self.healthRegen
-    end
-
     self:updateEffects(dt)
+
+    self.mana = math.max(0, self.mana)
 end
 
 -- Add a card to the player's deck

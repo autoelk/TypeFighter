@@ -80,6 +80,13 @@ function GameScene:enter()
     self.player1Controller:reset()
     self.player2Controller:reset()
 
+    -- Apply starting effects, healing and mana regen
+    -- TODO: Figure out a better way to hide these effects
+    self.player1Controller.player:applyEffect(HealthRegenEffect:new("", self.player1Controller.player, nil, self.player1Controller.player.healthRegen))
+    self.player1Controller.player:applyEffect(ManaRegenEffect:new("", self.player1Controller.player, nil, self.player1Controller.player.manaRegen))
+    self.player2Controller.player:applyEffect(HealthRegenEffect:new("", self.player2Controller.player, nil, self.player2Controller.player.healthRegen))
+    self.player2Controller.player:applyEffect(ManaRegenEffect:new("", self.player2Controller.player, nil, self.player2Controller.player.manaRegen))
+
     self.player1Controller.player.library = self.player1Controller.player.deck
     self.player2Controller.player.library = self.player2Controller.player.deck
     -- Draw starting hands
