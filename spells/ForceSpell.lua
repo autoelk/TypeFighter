@@ -14,6 +14,7 @@ function ForceSpell:new(caster, target, spellData, anim)
 end
 
 function ForceSpell:onStart()
-    self.caster.player.manaRegen = self.caster.player.manaRegen - self.spellData.tradeAmount
-    self.caster.player.healthRegen = self.caster.player.healthRegen + self.spellData.tradeAmount
+    local player = self.caster.player
+    player:applyEffect(ManaRegenEffect:new(self.spellData.effectName, player, nil, -self.spellData.tradeAmount))
+    player:applyEffect(HealthRegenEffect:new(self.spellData.effectName, player, nil, self.spellData.tradeAmount))
 end

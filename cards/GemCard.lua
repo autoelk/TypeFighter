@@ -15,11 +15,14 @@ function GemCard:new(ctx, x, y)
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = GemSpell
-    card.spellData = { regenAmount = 0.5 }
+    card.spellData = { 
+        effectName = card.name,
+        regenAmount = 0.5 
+    }
     setmetatable(card, self)
     return card
 end
 
 function GemCard:getDescription()
-    return "+" .. self.spellData.regenAmount .. " mana/sec."
+    return "Gain " .. self.spellData.regenAmount .. " mana regen."
 end

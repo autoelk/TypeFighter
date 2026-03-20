@@ -10,16 +10,18 @@ PoisonCard.__index = PoisonCard
 function PoisonCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "poison"
-    card.mana = 5
+    card.mana = 3
     card.elem = "fire"
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = PoisonSpell
-    card.spellData = { damagePerTick = 1, duration = 5, maxStacks = 5 }
+    card.spellData = { 
+        stacksToAdd = 5,
+    }
     setmetatable(card, self)
     return card
 end
 
 function PoisonCard:getDescription()
-    return "apply stacking poison for " .. self.spellData.duration .. "s."
+    return "apply " .. self.spellData.stacksToAdd .. " stacks of poison."
 end

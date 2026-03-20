@@ -1,4 +1,5 @@
 require "spells.BaseSpell"
+require "effects.ManaRegenEffect"
 
 GemSpell = {}
 setmetatable(GemSpell, { __index = BaseSpell })
@@ -14,5 +15,6 @@ function GemSpell:new(caster, target, spellData, anim)
 end
 
 function GemSpell:onStart()
-    self.caster.player.manaRegen = self.caster.player.manaRegen + self.spellData.regenAmount
+    local player = self.caster.player
+    player:applyEffect(ManaRegenEffect:new(self.spellData.effectName, player, nil, self.spellData.regenAmount))
 end

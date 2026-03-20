@@ -174,52 +174,22 @@ function BasePlayerController:drawHealthAndManaBars()
 end
 
 function BasePlayerController:drawEffects()
-    local effectIds = {}
-    for id, effect in pairs(self.player.effects) do
-        table.insert(effectIds, {
-            id = id,
-            effect = effect
-        })
-    end
-
-    if #effectIds == 0 then
-        return
-    end
-
-    -- Sort effects by time left, then by id
-    -- Permanent effects come first, then effects with time left
-    table.sort(effectIds, function(a, b)
-        local aTime = a.effect.timeLeft
-        local bTime = b.effect.timeLeft
-
-        if aTime == nil and bTime == nil then
-            return a.id < b.id
-        elseif aTime == nil then
-            return true
-        elseif bTime == nil then
-            return false
-        elseif aTime ~= bTime then
-            return aTime > bTime
-        end
-
-        return a.id < b.id
-    end)
+    local stackEffects = self:drawStackEffectsHelper()
+    local durationEffects = self:drawDurationEffectsHelper()
+    local effects = {}
+    table.move(stackEffects, 1, #stackEffects, 1, effects)
+    table.move(durationEffects, 1, #durationEffects, 1 + #stackEffects, effects)
 
     local textAlign = "left"
     local baseX = self.x
     local baseY = self.y + SPRITE_SIZE + 8
 
     lg.setFont(self.ctx.fonts.fontS)
-    for i, item in ipairs(effectIds) do
-        local effect = item.effect
-        local label = item.id
-        if #label > 0 then
-            label = label:sub(1, 1):upper() .. label:sub(2)
-        end
-        if effect.stacks and effect.stacks > 1 then
-            label = label .. " x" .. effect.stacks
-        end
-        if effect.timeLeft ~= nil then
+    for i, effect in ipairs(effects) do
+        local label = effect.name
+        if effect.type == "stack" then
+            label = label .. " x" .. math.floor(effect.stacks)
+        elseif effect.type == "duration" and effect.timeLeft ~= nil then
             label = label .. " (" .. math.max(0, math.ceil(effect.timeLeft)) .. "s)"
         end
 
@@ -227,6 +197,52 @@ function BasePlayerController:drawEffects()
         lg.setColor(COLORS.WHITE)
         lg.printf(label, baseX, y, SPRITE_SIZE, textAlign)
     end
+end
+
+function BasePlayerController:drawStackEffectsHelper()
+    local stackEffects = {}
+    for _, effect in pairs(self.player.stackEffects) do
+        eff = {
+            name = effect.name,
+            stacks = effect.stacks,
+            type = effect.type
+        }
+        table.insert(stackEffects, eff)
+    end
+
+    -- Sort effects by stacks left, then by name
+    table.sort(stackEffects, function(a, b)
+        if a.stacks == b.stacks then
+            return a.name < b.name
+        else 
+            return a.stacks > b.stacks
+        end
+    end)
+
+    return stackEffects
+end
+
+function BasePlayerController:drawDurationEffectsHelper()
+    local durationEffects = {}
+    for _, effect in pairs(self.player.durationEffects) do
+        eff = {
+            name = effect.name,
+            timeLeft = effect.timeLeft,
+            type = effect.type
+        }
+        table.insert(durationEffects, eff)
+    end
+
+    -- Sort effects by time left, then by name
+    table.sort(durationEffects, function(a, b)
+        if a.timeLeft == b.timeLeft then
+            return a.name < b.name
+        else 
+            return a.timeLeft > b.timeLeft
+        end
+    end)
+
+    return durationEffects
 end
 
 -- Draw cards in hand as mini cards

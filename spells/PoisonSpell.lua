@@ -1,4 +1,5 @@
 require "spells.BaseSpell"
+require "effects.PoisonEffect"
 
 PoisonSpell = {}
 setmetatable(PoisonSpell, { __index = BaseSpell })
@@ -13,13 +14,6 @@ function PoisonSpell:new(caster, target, spellData, anim)
 end
 
 function PoisonSpell:onStart()
-    self.target.player:applyEffect("poison", {
-        duration = self.spellData.duration,
-        tickInterval = 1,
-        stackMode = "stack",
-        maxStacks = self.spellData.maxStacks or 5,
-        onTick = function(player, eff)
-            player:damage(eff.stacks * self.spellData.damagePerTick)
-        end
-    })
+    local player = self.target.player
+    player:applyEffect(PoisonEffect:new(player, self.spellData.stacksToAdd))
 end

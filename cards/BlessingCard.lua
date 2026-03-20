@@ -16,6 +16,7 @@ function BlessingCard:new(ctx, x, y)
 
     card.SpellClass = BlessingSpell
     card.spellData = {
+        effectName = card.name,
         regenAmount = 1,
         duration = 15
     }

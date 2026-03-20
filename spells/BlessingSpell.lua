@@ -1,4 +1,5 @@
 require "spells.BaseSpell"
+require "effects.HealthRegenEffect"
 
 BlessingSpell = {}
 setmetatable(BlessingSpell, { __index = BaseSpell })
@@ -16,13 +17,6 @@ function BlessingSpell:new(caster, target, spellData, anim)
 end
 
 function BlessingSpell:onStart()
-    self.caster.player:applyEffect("blessing", {
-        duration = self.spellData.duration,
-        onApply = function(p, eff)
-            p.healthRegen = p.healthRegen + self.spellData.regenAmount
-        end,
-        onExpire = function(p, eff)
-            p.healthRegen = p.healthRegen - self.spellData.regenAmount
-        end
-    })
+    local player = self.caster.player
+    player:applyEffect(HealthRegenEffect:new(self.spellData.effectName, player, self.spellData.duration, self.spellData.regenAmount))
 end

@@ -1,4 +1,5 @@
 require "spells.BaseSpell"
+require "effects.ManaRegenEffect"
 
 ManatideSpell = {}
 setmetatable(ManatideSpell, { __index = BaseSpell })
@@ -13,13 +14,6 @@ function ManatideSpell:new(caster, target, spellData, anim)
 end
 
 function ManatideSpell:onStart()
-    self.caster.player:applyEffect("manatide", {
-        duration = self.spellData.duration,
-        onApply = function(p, eff)
-            p.manaRegen = p.manaRegen + self.spellData.regenBonus
-        end,
-        onExpire = function(p, eff)
-            p.manaRegen = p.manaRegen - self.spellData.regenBonus
-        end
-    })
+    local player = self.caster.player
+    player:applyEffect(ManaRegenEffect:new(self.spellData.effectName, player, self.spellData.duration, self.spellData.regenAmount))
 end

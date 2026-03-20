@@ -15,11 +15,15 @@ function ManatideCard:new(ctx, x, y)
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = ManatideSpell
-    card.spellData = { regenBonus = 1, duration = 10 }
+    card.spellData = { 
+        effectName = card.name,
+        regenAmount = 1, 
+        duration = 10 
+    }
     setmetatable(card, self)
     return card
 end
 
 function ManatideCard:getDescription()
-    return "+" .. self.spellData.regenBonus .. " mana/sec for " .. self.spellData.duration .. " seconds."
+    return "+" .. self.spellData.regenAmount .. " mana/sec for " .. self.spellData.duration .. " seconds."
 end

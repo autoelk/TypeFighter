@@ -21,6 +21,5 @@ function ForceCard:new(ctx, x, y)
 end
 
 function ForceCard:getDescription()
-    return "gain " ..
-        self.spellData.tradeAmount .. " health regen, lose " .. self.spellData.tradeAmount .. " mana regen."
+    return "gain " .. self.spellData.tradeAmount .. " health regen, lose " .. self.spellData.tradeAmount .. " mana regen."
 end

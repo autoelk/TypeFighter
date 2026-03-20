@@ -11,7 +11,8 @@ function BasePlayer:new(ctx, character)
         healthRegen = nil,
         mana = nil,
         manaRegen = nil,
-        effects = {},
+        stackEffects = {}, -- Map of name to stack effect
+        durationEffects = {}, -- List of duration effects
 
         -- Cards
         picks = MAX_DECK_SIZE,
@@ -29,7 +30,8 @@ function BasePlayer:reset()
     self.healthRegen = self.character.healthRegen
     self.mana = self.character.mana
     self.manaRegen = self.character.manaRegen
-    self.effects = {}
+    self.stackEffects = {}
+    self.durationEffects = {}
     self.hand = {}
     self.deck = {}
 
@@ -93,74 +95,36 @@ function BasePlayer:removeCard(card)
     end
 end
 
-function BasePlayer:applyEffect(id, cfg)
-    if not cfg then
-        error("applyEffect requires a configuration table")
-    end
-
-    --[[ three modes: stack, refresh, ignore
-    stack - refresh duration and add a stack, up to maxStacks
-    refresh - refresh duration only
-    ignore - do nothing if effect already exists ]]
-    local eff = self.effects[id]
-    if eff then
-        local mode = cfg.stackMode or eff.stackMode or "refresh"
-        if mode == "stack" then
-            local newStacks = eff.stacks + 1
-            if (cfg.maxStacks or eff.maxStacks) then
-                local limit = cfg.maxStacks or eff.maxStacks
-                newStacks = math.min(limit, newStacks)
-                eff.maxStacks = limit
-            end
-            eff.stacks = newStacks
-            eff.timeLeft = cfg.duration or eff.timeLeft
-        elseif mode == "refresh" then
-            eff.timeLeft = cfg.duration or eff.timeLeft
-        elseif mode == "ignore" then
-            return eff
+function BasePlayer:applyEffect(effect)
+    if effect.type == "stack" then
+        if self.stackEffects[effect.name] then
+            self.stackEffects[effect.name]:addStacks(effect.stacks)
+        else
+            self.stackEffects[effect.name] = effect
+            effect:onApply()
         end
-        return eff
+    elseif effect.type == "duration" then
+        table.insert(self.durationEffects, effect)
+        effect:onApply()
+    else
+        error("Invalid effect type: " .. effect.type)
     end
-
-    eff = {
-        id = id,
-        timeLeft = cfg.duration,
-        tickInterval = cfg.tickInterval,
-        tickTimer = 0,
-        stacks = 1,
-        maxStacks = cfg.maxStacks,
-        stackMode = cfg.stackMode or "refresh",
-        onTick = cfg.onTick,
-        onExpire = cfg.onExpire,
-        onApply = cfg.onApply
-    }
-    self.effects[id] = eff
-    if eff.onApply then
-        eff.onApply(self, eff)
-    end
-    return eff
 end
 
 function BasePlayer:updateEffects(dt)
-    for id, eff in pairs(self.effects) do
-        if eff.timeLeft then
-            eff.timeLeft = eff.timeLeft - dt
-            if eff.timeLeft <= 0 then
-                if eff.onExpire then
-                    eff.onExpire(self, eff)
-                end
-                self.effects[id] = nil
-            else
-                if eff.tickInterval then
-                    eff.tickTimer = eff.tickTimer + dt
-                    while eff.tickTimer >= eff.tickInterval do
-                        eff.tickTimer = eff.tickTimer - eff.tickInterval
-                        if eff.onTick then
-                            eff.onTick(self, eff)
-                        end
-                    end
-                end
-            end
+    for name, effect in pairs(self.stackEffects) do
+        effect:update(dt)
+        if effect.expired then
+            self.stackEffects[name] = nil
+            effect:onExpire()
+        end
+    end
+
+    for _, effect in ipairs(self.durationEffects) do
+        effect:update(dt)
+        if effect.expired then
+            table.remove(self.durationEffects, indexOf(self.durationEffects, effect))
+            effect:onExpire()
         end
     end
 end
