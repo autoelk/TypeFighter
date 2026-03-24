@@ -76,7 +76,7 @@ function SceneManager:keypressed(key)
     end
 
     if key == "return" then
-        local userInput = string.gsub(string.lower(uiInput), "%s+", "")
+        local userInput = uiInput:match("^%s*(.-)%s*$")
         self.ctx.ui.input = "" -- clear user input field
         self:getCurrentScene():handleInput(userInput)
         return
