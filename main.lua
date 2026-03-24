@@ -40,7 +40,6 @@ function love.load()
     ctx.fonts.fontL = ctx.resourceManager:getFont("fontL")
     ctx.fonts.fontM = ctx.resourceManager:getFont("fontM")
     ctx.fonts.fontS = ctx.resourceManager:getFont("fontS")
-    ctx.fonts.fontXS = ctx.resourceManager:getFont("fontXS")
     ctx.assets.background = ctx.resourceManager:getImage("background")
 
     -- Initialize scenes

@@ -67,26 +67,26 @@ function BaseCard:draw()
 
     -- Print text onto card
     local fonts = self.ctx.fonts
-    lg.setFont(fonts.fontS)
+    lg.setFont(fonts.fontM)
     lg.printf(self.name, self.x + 10, self.y, LARGE_CARD_WIDTH, "left")
-    lg.printf("mana " .. self.mana, self.x - 10, self.y, LARGE_CARD_WIDTH, "right")
+    lg.printf(self.mana, self.x - 10, self.y, LARGE_CARD_WIDTH, "right")
+    lg.setFont(fonts.fontS)
     lg.printf(self:getDescription(), self.x + 10, self.y + 190, SPRITE_SIZE, "left")
 end
 
 -- Draw mini version of card
 function BaseCard:drawMini()
     local fonts = self.ctx.fonts
-    fonts.fontXS:setLineHeight(0.6)
     lg.setColor(self:getColor())
     lg.rectangle("fill", self.x, self.y, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
     -- print text
     local margin = 5
     lg.setColor(COLORS.BLACK)
-    lg.setFont(fonts.fontS)
+    lg.setFont(fonts.fontM)
     lg.printf(self.name, self.x + margin, self.y, MINI_CARD_WIDTH, "left")
     lg.printf(self.mana, self.x - margin, self.y, MINI_CARD_WIDTH, "right")
-    lg.setFont(fonts.fontXS)
-    lg.printf(self:getDescription(), self.x + margin, self.y + 15, MINI_CARD_WIDTH - 4 * margin, "left")
+    lg.setFont(fonts.fontS)
+    lg.printf(self:getDescription(), self.x + margin, self.y + 24, MINI_CARD_WIDTH - 4 * margin, "left")
 end
 
 function BaseCard:update(dt)

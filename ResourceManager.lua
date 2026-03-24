@@ -17,6 +17,7 @@ end
 function ResourceManager:loadFont(name, path, size)
     if not self.fonts[name] then
         self.fonts[name] = love.graphics.newFont(path, size, "mono")
+        self.fonts[name]:setLineHeight(0.75)
     end
     return self.fonts[name]
 end
@@ -41,11 +42,10 @@ function ResourceManager:loadAllAssets(cardNames)
         error("ResourceManager:loadAllAssets(cardNames) requires cardNames")
     end
     -- Load fonts
-    self:loadFont("fontXL", "assets/munro-small.ttf", 96)
-    self:loadFont("fontL", "assets/munro-small.ttf", 36)
-    self:loadFont("fontM", "assets/munro-small.ttf", 24)
-    self:loadFont("fontS", "assets/munro-small.ttf", 18)
-    self:loadFont("fontXS", "assets/munro-small.ttf", 15)
+    self:loadFont("fontXL", "assets/fonts/Habbo.ttf", 96)
+    self:loadFont("fontL", "assets/fonts/Habbo.ttf", 48)
+    self:loadFont("fontM", "assets/fonts/Habbo.ttf", 32)
+    self:loadFont("fontS", "assets/fonts/Habbo.ttf", 16)
 
     -- Load images
     self:loadImage("background", "assets/background.png")
