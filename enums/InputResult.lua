@@ -1,5 +1,4 @@
 local InputResult = {
-    Quit = {},
     Unknown = {},
     DrawSuccess = {},
     DrawFail = {},

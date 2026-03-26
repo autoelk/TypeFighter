@@ -11,7 +11,8 @@ MenuScene.__index = MenuScene
 function MenuScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = SceneId.Menu
-    scene.controlsHint = "[p]lay game [b]rowse cards [q]uit"
+    scene.controlsHint = "[play] game, [browse] cards, [quit]"
+    scene.availableCommands = { "play", "browse", "quit" }
 
     -- Load characters for display
     scene.leftRenderer = PlayerRenderer:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter("wizard")))
@@ -50,7 +51,7 @@ function MenuScene:draw()
     lg.setFont(fonts.fontXL)
     lg.printf("typefighter", 0, 200, GAME_WIDTH, "center")
     lg.setFont(fonts.fontM)
-    lg.printf("[p]lay game\n[b]rowse cards\n[q]uit", 0, 300, GAME_WIDTH, "center")
+    lg.printf("[play] game\n[browse] cards\n[quit]", 0, 300, GAME_WIDTH, "center")
 
     -- Animation
     local margin = 320
@@ -94,11 +95,11 @@ function MenuScene:update(dt)
 end
 
 function MenuScene:handleInput(userInput)
-    if userInput == "p" or userInput == "play game" then
+    if userInput == "play" then
         self.ctx.sceneManager:changeScene(SceneId.CharacterSelect)
-    elseif userInput == "b" then
+    elseif userInput == "browse" then
         self.ctx.sceneManager:changeScene(SceneId.CardBrowse)
-    elseif userInput == "q" or userInput == "quit" then
+    elseif userInput == "quit" then
         love.event.quit()
     end
 end

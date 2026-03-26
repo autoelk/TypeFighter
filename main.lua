@@ -94,8 +94,7 @@ function love.resize(w, h)
 end
 
 function love.textinput(t)
-    ctx.ui.input = ctx.ui.input .. t
-    ctx.ui.messageLeft = "" -- Clear message when user starts typing
+    ctx.sceneManager:textinput(t)
 end
 
 function love.wheelmoved(dx, dy)

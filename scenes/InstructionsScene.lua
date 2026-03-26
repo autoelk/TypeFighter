@@ -14,7 +14,8 @@ function InstructionsScene:new(ctx)
     scene.instructionsText = "choose " ..
         MAX_DECK_SIZE ..
         " cards by typing their names.\n\nyou can remove cards from your deck by typing their name again."
-    scene.controlsHint = "[p] to continue [q] to go back"
+    scene.controlsHint = "[play] game, [quit]"
+    scene.availableCommands = { "play", "quit" }
     return scene
 end
 
@@ -75,9 +76,9 @@ function InstructionsScene:keypressed(key)
 end
 
 function InstructionsScene:handleInput(userInput)
-    if userInput == "p" or userInput == "play game" then
+    if userInput == "play" then
         self.ctx.sceneManager:popScene()
-    elseif userInput == "q" then
+    elseif userInput == "quit" then
         self.ctx.sceneManager:popScene()
         self.ctx.sceneManager:popScene()
     end

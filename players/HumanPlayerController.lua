@@ -32,10 +32,7 @@ function HumanPlayerController:handleInput(userInput)
             return self:castCard(card)
         end
     end
-
-    if userInput == "q" or userInput == "quit" then
-        return InputResult.Quit
-    end
+    
     return InputResult.Unknown
 end
 

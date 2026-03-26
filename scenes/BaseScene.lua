@@ -39,14 +39,6 @@ function BaseScene:drawInputInterface()
         color = COLORS.GREY
     end
     
-    -- Blinking caret
-    if isTyping then
-        local caretOn = math.floor(love.timer.getTime() * 2) % 2 == 0
-        if caretOn then
-            text = text .. "|"
-        end
-    end
-    
     local font = self.ctx.fonts.fontM
     lg.setFont(font)
     lg.setColor(color)
@@ -65,23 +57,45 @@ function BaseScene:drawInputInterface()
 
     local prevScissorX, prevScissorY, prevScissorW, prevScissorH = lg.getScissor()
     lg.setScissor(drawX, inputY, inputWidth, inputRectHeight)
-    lg.print(text, drawX + textOffsetX, inputY)
+    if isTyping and self.suggestedCommand then
+        local coloredText = {
+            COLORS.WHITE, text,
+            COLORS.GREY, string.sub(self.suggestedCommand, #text + 1, -1),
+        }
+        lg.print(coloredText, drawX + textOffsetX, inputY)
+    else
+        lg.print(text, drawX + textOffsetX, inputY)
+    end
     lg.setScissor(prevScissorX, prevScissorY, prevScissorW, prevScissorH)
 
     lg.setColor(COLORS.GREY)
     lg.printf(rightMessage, -rightPadding, inputY, GAME_WIDTH, "right")
 end
 
--- For single key presses
-function BaseScene:keypressed(key)
-    if #self:getAvailableCommands(key) == 1 then
-        self.suggestedCommand = self:getAvailableCommands(key)[1]
+function BaseScene:updateSuggestedCommand()
+    local matchingCommands = self:getAvailableCommands(self.ctx.ui.input)
+    if #matchingCommands == 1 then
+        self.suggestedCommand = matchingCommands[1]
     else
         self.suggestedCommand = nil
     end
 end
 
--- For handling player text input
+-- For single key presses
+function BaseScene:keypressed(key)
+    if key == "tab" then
+        if self.suggestedCommand then
+            self.ctx.ui.input = self.suggestedCommand
+            self.suggestedCommand = nil
+        end
+    end
+    self:updateSuggestedCommand()
+end
+
+function BaseScene:textinput(t)
+    self:updateSuggestedCommand()
+end
+
 function BaseScene:handleInput(userInput) end
 
 function BaseScene:wheelmoved(x, y) end

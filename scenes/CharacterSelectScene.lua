@@ -11,7 +11,8 @@ CharacterSelectScene.__index = CharacterSelectScene
 function CharacterSelectScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = SceneId.CharacterSelect
-    scene.controlsHint = "[p] to continue [q] to go back"
+    scene.controlsHint = "[play] game, [quit]"
+    scene.availableCommands = { "play", "quit" }
     scene.controllers = {}
     for i, charName in ipairs(ctx.characterManager:getAllCharNames()) do
         local controller = AIPlayerController:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter(charName)))
@@ -19,6 +20,7 @@ function CharacterSelectScene:new(ctx)
         controller.renderer.mirror = false
         controller.renderer.libraryX = GAME_WIDTH / 2
         table.insert(scene.controllers, controller)
+        table.insert(scene.availableCommands, charName)
     end
     scene.charSelected = nil -- Stores the controller of the selected character
     return scene
@@ -91,7 +93,7 @@ function CharacterSelectScene:handleInput(userInput)
         end
     end
 
-    if userInput == "p" or userInput == "play game" then
+    if userInput == "play" then
         if not self.charSelected then
             self.ctx.ui.messageLeft = "please select a character first"
             return
@@ -106,7 +108,7 @@ function CharacterSelectScene:handleInput(userInput)
         self.ctx.sceneManager:getScene(SceneId.Game):setEnemyController(
             AIPlayerController:new(self.ctx, BasePlayer:new(self.ctx, self.ctx.characterManager:createCharacter(oppName)), "normal"))
         self.ctx.sceneManager:changeScene(SceneId.Game)
-    elseif userInput == "q" or userInput == "quit" then
+    elseif userInput == "quit" then
         if self.charSelected then
             -- Deselect the character
             self.charSelected = nil

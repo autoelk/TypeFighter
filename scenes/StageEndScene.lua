@@ -11,7 +11,8 @@ StageEndScene.__index = StageEndScene
 function StageEndScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = SceneId.StageEnd
-    scene.controlsHint = "[p]lay next level [q]uit"
+    scene.controlsHint = "[play] next level, [quit]"
+    scene.availableCommands = { "play", "quit" }
     scene.message = ""
     return scene
 end
@@ -74,12 +75,12 @@ end
 
 function StageEndScene:handleInput(userInput)
     local rs = self.ctx.runState
-    if userInput == "q" or userInput == "quit" then
+    if userInput == "quit" then
         love.event.quit()
         return
     end
 
-    if userInput == "p" or userInput == "play" then
+    if userInput == "play" then
         -- Only called on victory; advance or end run
         if rs:hasNextStage() then
             rs:advanceStage()

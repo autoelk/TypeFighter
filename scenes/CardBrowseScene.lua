@@ -14,7 +14,8 @@ function CardBrowseScene:new(ctx)
     scene.posy = 16 -- Scroll position
     scene.cardsPerRow = 4
     scene.cards = {}
-    scene.controlsHint = "[q] to go back"
+    scene.controlsHint = "[quit]"
+    scene.availableCommands = { "quit" }
     for _, cardName in ipairs(ctx.cardManager:getAllCardNames()) do
         table.insert(scene.cards, ctx.cardManager:createCard(cardName))
     end
@@ -50,7 +51,7 @@ function CardBrowseScene:draw()
 end
 
 function CardBrowseScene:handleInput(userInput)
-    if userInput == "q" then
+    if userInput == "quit" then
         self.ctx.sceneManager:changeScene(SceneId.Menu)
     end
 end

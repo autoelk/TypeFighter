@@ -71,20 +71,33 @@ function SceneManager:draw()
 end
 
 function SceneManager:keypressed(key)
+    local currentScene = self:getCurrentScene()
     local uiInput = self.ctx.ui.input
     if key == "backspace" and utf8.offset(uiInput, -1) then
         uiInput = string.sub(uiInput, 1, utf8.offset(uiInput, -1) - 1)
         self.ctx.ui.input = uiInput
+        currentScene:updateSuggestedCommand()
         return
     end
 
     if key == "return" then
-        local userInput = uiInput:match("^%s*(.-)%s*$")
+        local userInput = uiInput
+        if currentScene.suggestedCommand then
+            userInput = currentScene.suggestedCommand
+        end
+        userInput = userInput:match("^%s*(.-)%s*$")
         self.ctx.ui.input = "" -- clear user input field
-        self:getCurrentScene():handleInput(userInput)
+        currentScene:updateSuggestedCommand()
+        currentScene:handleInput(userInput)
         return
     end
-    self:getCurrentScene():keypressed(key)
+    currentScene:keypressed(key)
+end
+
+function SceneManager:textinput(t)
+    self.ctx.ui.input = self.ctx.ui.input .. t
+    self.ctx.ui.messageLeft = "" -- Clear message when user starts typing
+    self:getCurrentScene():textinput(t)
 end
 
 function SceneManager:wheelmoved(x, y)

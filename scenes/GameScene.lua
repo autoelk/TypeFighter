@@ -19,7 +19,8 @@ GameScene.__index = GameScene
 function GameScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = SceneId.Game
-    scene.controlsHint = "[q]uit to menu [esc] pause"
+    scene.controlsHint = "[quit] to menu, [pause]"
+    scene.availableCommands = { "quit", "pause" }
     scene.humanController = nil
     scene.enemyController = nil
     scene.activeSpells = {}
@@ -172,10 +173,16 @@ function GameScene:keypressed(key)
 end
 
 function GameScene:handleInput(userInput)
-    local result = self.humanController:handleInput(userInput)
-    if result == InputResult.Quit then
+    if userInput == "quit" then
         self.ctx.sceneManager:changeScene(SceneId.Menu)
-    elseif result == InputResult.DrawFail then
+        return
+    elseif userInput == "pause" then
+        self.ctx.sceneManager:pushScene(SceneId.Pause)
+        return
+    end
+
+    local result = self.humanController:handleInput(userInput)
+    if result == InputResult.DrawFail then
         self.ctx.ui.messageLeft = "hand full, can't draw"
     elseif result == InputResult.DrawSuccess then
         self.ctx.ui.messageLeft = "drew a card"
