@@ -86,17 +86,6 @@ function love.draw()
     -- Draw current scene
     ctx.sceneManager:draw()
 
-    -- Draw input interface
-    local inputRectHeight = 32
-    lg.setColor(COLORS.BLACK)
-    lg.rectangle("fill", 0, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, inputRectHeight)
-    lg.setFont(ctx.fonts.fontM)
-    lg.setColor(COLORS.WHITE)
-    local ui = ctx.ui
-    lg.printf(ui.messageLeft, 8, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "left")
-    lg.printf(ui.messageRight, -8, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "right")
-    lg.printf(ui.input, 8, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "left")
-
     push:apply("end")
 end
 

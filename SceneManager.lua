@@ -65,6 +65,9 @@ function SceneManager:draw()
     for _, scene in ipairs(self.sceneStack) do
         scene:draw()
     end
+    
+    local currentScene = self:getCurrentScene()
+    currentScene:drawInputInterface()
 end
 
 function SceneManager:keypressed(key)
