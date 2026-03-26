@@ -361,8 +361,17 @@ end
 -- Update positions of cards in hand
 function PlayerRenderer:updateHand(dt)
     local margin = 8
+    local selectedSpell = self.player.selectedSpell
     for i, card in ipairs(self.player.hand) do
-        card:move(self.libraryX, (MINI_CARD_HEIGHT + margin) * i + 100)
+        local destX = self.libraryX
+        if selectedSpell and card == selectedSpell then
+            if self.mirror then
+                destX = self.libraryX - 40
+            else
+                destX = self.libraryX + 40
+            end
+        end
+        card:move(destX, (MINI_CARD_HEIGHT + margin) * i + 100)
     end
 end
 

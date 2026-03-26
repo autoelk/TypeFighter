@@ -28,7 +28,6 @@ function AIPlayerController:new(ctx, player, difficulty)
     controller.castCooldown = 0 -- Current cooldown from casting
     controller.warningCooldown = 0 -- Current cooldown for showing warning
     controller.drawCooldown = 0 -- Current cooldown from drawing
-    controller.nextSpell = nil -- The next spell the AI plans to cast
 
     return setmetatable(controller, self)
 end
@@ -41,34 +40,22 @@ function AIPlayerController:update(dt)
     end
 end
 
-function AIPlayerController:updateHand(dt)
-    local margin = 8
-    for i, card in ipairs(self.player.hand) do
-        card:update(dt)
-        if card == self.nextSpell then
-            card:move(self.libraryX - 40, (MINI_CARD_HEIGHT + margin) * i + 100)
-        else
-            card:move(self.libraryX, (MINI_CARD_HEIGHT + margin) * i + 100)
-        end
-    end
-end
-
 function AIPlayerController:updateActions(dt)
     self.castCooldown = self.castCooldown - dt
     self.warningCooldown = self.warningCooldown - dt
     self.drawCooldown = self.drawCooldown - dt
 
     if self.castCooldown <= 0 then
-        self.nextSpell = self:chooseNextCard()
-        if self.nextSpell then
-            self.warningCooldown = self.castSpeed - self.warningTime
+        self.player.selectedSpell = self:chooseNextCard()
+        if self.player.selectedSpell then
+            self.warningCooldown = self.warningTime
             self.castCooldown = self.castSpeed
         end
     end
 
-    if self.nextSpell and self.warningCooldown <= 0 then
-        self:castCard(self.nextSpell)
-        self.nextSpell = nil
+    if self.player.selectedSpell and self.warningCooldown <= 0 then
+        self:castCard(self.player.selectedSpell)
+        self.player.selectedSpell = nil
     end
 
     if self.drawCooldown <= 0 and #self.player.hand < MAX_HAND_SIZE then

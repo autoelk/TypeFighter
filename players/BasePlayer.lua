@@ -13,7 +13,8 @@ function BasePlayer:new(ctx, character)
         manaRegen = nil,
         stackEffects = {}, -- Map of name to stack effect
         durationEffects = {}, -- List of duration effects
-
+        selectedSpell = nil,
+        
         -- Cards
         picks = MAX_DECK_SIZE,
         hand = {}, -- Current cards in hand
