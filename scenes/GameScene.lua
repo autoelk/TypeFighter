@@ -78,6 +78,7 @@ function GameScene:enter()
     end
 
     -- Set game interface messages
+    self.ctx.ui.input = ""
     self.ctx.ui.messageLeft = "type card names to cast them"
     self.ctx.ui.messageRight = self.controlsHint
 
@@ -121,6 +122,47 @@ function GameScene:draw()
             s:draw()
         end
     end
+end
+
+-- Spotlight/search-style input bar for the main gameplay scene.
+function GameScene:drawInputInterface()
+    local ui = self.ctx.ui
+
+    local text = ui.input
+    local color = COLORS.WHITE
+    if text == "" then
+        text = ui.messageLeft or ""
+        color = COLORS.GREY
+    end
+
+    -- Blinking caret
+    if ui.input ~= "" then
+        local caretOn = math.floor(love.timer.getTime() * 2) % 2 == 0
+        if caretOn then
+            text = text .. "|"
+        end
+    end
+
+    local font = self.ctx.fonts.fontM
+    local barWidth = 512
+    local _, wrappedText = font:getWrap(text, barWidth - 16)
+    local barHeight = #wrappedText * (font:getHeight() * font:getLineHeight()) + 8
+    local x = math.floor((GAME_WIDTH - barWidth) / 2)
+    local y = 200
+
+    -- Bar background + outline.
+    lg.setColor(COLORS.BLACK)
+    lg.rectangle("fill", x, y, barWidth, barHeight)
+
+    -- Text
+    lg.setFont(font)
+    lg.setColor(color)
+    lg.printf(text, x + 8, y, barWidth - 16, "left")
+
+    -- Control hint
+    lg.setFont(self.ctx.fonts.fontS)
+    lg.setColor(COLORS.WHITE)
+    lg.printf(ui.messageRight, x + 8, y + barHeight + 4, barWidth - 16, "left")
 end
 
 function GameScene:keypressed(key)
