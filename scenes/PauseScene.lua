@@ -38,6 +38,8 @@ function PauseScene:draw()
 end
 
 function PauseScene:keypressed(key)
+    BaseScene.keypressed(self, key)
+    
     if key == "escape" then
         self.ctx.sceneManager:popScene()
     end

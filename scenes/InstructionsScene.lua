@@ -67,6 +67,8 @@ function InstructionsScene:exit()
 end
 
 function InstructionsScene:keypressed(key)
+    BaseScene.keypressed(self, key)
+    
     if key == "escape" then
         self.ctx.sceneManager:popScene()
     end

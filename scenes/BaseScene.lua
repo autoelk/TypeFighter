@@ -6,7 +6,12 @@ function BaseScene:new(ctx)
     if not ctx then
         error("BaseScene:new(ctx) requires ctx")
     end
-    return setmetatable({ ctx = ctx }, self)
+    scene = {
+        ctx = ctx,
+        availableCommands = {}, -- List of commands available to the player right now
+        suggestedCommand = nil,
+    }
+    return setmetatable(scene, self)
 end
 
 function BaseScene:enter() end
@@ -68,9 +73,37 @@ function BaseScene:drawInputInterface()
 end
 
 -- For single key presses
-function BaseScene:keypressed(key) end
+function BaseScene:keypressed(key)
+    if #self:getAvailableCommands(key) == 1 then
+        self.suggestedCommand = self:getAvailableCommands(key)[1]
+    else
+        self.suggestedCommand = nil
+    end
+end
 
 -- For handling player text input
 function BaseScene:handleInput(userInput) end
 
 function BaseScene:wheelmoved(x, y) end
+
+function BaseScene:addAvailableCommand(command)
+    table.insert(self.availableCommands, command)
+    table.sort(self.availableCommands)
+end
+
+function BaseScene:removeAvailableCommand(command)
+    table.remove(self.availableCommands, indexOf(self.availableCommands, command))
+end
+
+function BaseScene:getAvailableCommands(prefix)
+    prefix = prefix or ""
+
+    local commands = {}
+    for i = 1, #self.availableCommands do
+        if string.sub(self.availableCommands[i], 1, #prefix) == prefix then
+            table.insert(commands, self.availableCommands[i])
+        end
+    end
+
+    return commands
+end
