@@ -100,9 +100,9 @@ function CharacterSelectScene:handleInput(userInput)
         -- Seed a simple linear run of opponents and start at stage 1
         self.ctx.runState:startRun(selectedName, { "wizard", "wizard", "wizard", "wizard", "wizard" })
         local oppName = self.ctx.runState:getCurrentOpponent()
-        self.ctx.sceneManager:getScene(SceneId.Game):setPlayer1(
+        self.ctx.sceneManager:getScene(SceneId.Game):setHumanController(
             HumanPlayerController:new(self.ctx, BasePlayer:new(self.ctx, self.ctx.characterManager:createCharacter(selectedName))))
-        self.ctx.sceneManager:getScene(SceneId.Game):setPlayer2(
+        self.ctx.sceneManager:getScene(SceneId.Game):setEnemyController(
             AIPlayerController:new(self.ctx, BasePlayer:new(self.ctx, self.ctx.characterManager:createCharacter(oppName)), "normal"))
         self.ctx.sceneManager:changeScene(SceneId.Game)
     elseif userInput == "q" or userInput == "quit" then
