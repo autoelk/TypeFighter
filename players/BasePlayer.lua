@@ -60,6 +60,9 @@ function BasePlayer:damage(amt)
     if self.health <= 0 then
         self.isAlive = false
     end
+    if self.onDamage then
+        self.onDamage(amt)
+    end
 end
 
 function BasePlayer:update(dt)

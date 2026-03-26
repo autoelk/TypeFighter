@@ -48,11 +48,31 @@ function PlayerRenderer:isMirrored()
 end
 
 function PlayerRenderer:showDamage(amount)
+    if amount == 0 then
+        return
+    end
+
+    -- Red if damage, green if healing
+    local color = COLORS.RED
+    if amount < 0 then
+        color = COLORS.GREEN
+    end
+
+    local absAmount = math.abs(amount)
+    local font = self.ctx.fonts.fontM
+    if absAmount > 20 then
+        font = self.ctx.fonts.fontXL
+    elseif absAmount > 10 then
+        font = self.ctx.fonts.fontL
+    end
+    
     local duration = 1.0
     local maxInstances = 10
 
     table.insert(self.damageDisplays, 1, {
-        amount = amount,
+        amount = math.abs(amount),
+        color = color,
+        font = font,
         timeLeft = duration,
         duration = duration,
         xOffset = (love.math.random() - 0.5) * SPRITE_SIZE,
@@ -109,22 +129,8 @@ function PlayerRenderer:drawDamageDisplay()
 
     local fonts = self.ctx.fonts
     for i, display in ipairs(self.damageDisplays) do
-        -- Red if damage, green if healing
-        if display.amount > 0 then
-            lg.setColor(COLORS.RED)
-        else
-            lg.setColor(COLORS.GREEN)
-        end
-
-        local absAmount = math.abs(display.amount)
-        if absAmount > 20 then
-            lg.setFont(fonts.fontXL)
-        elseif absAmount > 10 then
-            lg.setFont(fonts.fontL)
-        else
-            lg.setFont(fonts.fontM)
-        end
-
+        lg.setColor(display.color)
+        lg.setFont(display.font)
         local progress = 0
         if display.duration > 0 then
             progress = 1 - (display.timeLeft / display.duration)
@@ -133,7 +139,7 @@ function PlayerRenderer:drawDamageDisplay()
         local baseY = self.y - 48
         local floatY = (1 - progress) * 40
 
-        lg.printf(absAmount, self.x + display.xOffset, baseY + floatY + display.yOffset, SPRITE_SIZE, "center")
+        lg.printf(display.amount, self.x + display.xOffset, baseY + floatY + display.yOffset, SPRITE_SIZE, "center")
     end
 end
 

@@ -16,6 +16,9 @@ function BasePlayerController:new(ctx, player)
         isHuman = nil,
         opponent = nil,
     }
+    player.onDamage = function(amt)
+        controller.renderer:showDamage(amt)
+    end
     return setmetatable(controller, self)
 end
 
@@ -45,7 +48,6 @@ function BasePlayerController:update(dt)
 end
 
 function BasePlayerController:damage(amount)
-    self.renderer:showDamage(amount)
     self.player:damage(amount)
 end
 
