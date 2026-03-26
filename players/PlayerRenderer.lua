@@ -25,11 +25,7 @@ function PlayerRenderer:new(ctx, player)
         libraryY = (MINI_CARD_HEIGHT + 8) * (MAX_HAND_SIZE + 1) + 160,
         deckX = nil,
 
-        damageDisplay = {
-            amount = 0,
-            timeLeft = 0,
-            isActive = false
-        }
+        damageDisplays = {}
     }
     return setmetatable(renderer, self)
 end
@@ -44,11 +40,7 @@ function PlayerRenderer:reset()
     self.idleAnim.currentFrame = 1
     self.idleAnim.accumulator = 0
 
-    self.damageDisplay = {
-        amount = 0,
-        timeLeft = 0,
-        isActive = false
-    }
+    self.damageDisplays = {}
 end
 
 function PlayerRenderer:isMirrored()
@@ -56,9 +48,20 @@ function PlayerRenderer:isMirrored()
 end
 
 function PlayerRenderer:showDamage(amount)
-    self.damageDisplay.amount = amount
-    self.damageDisplay.timeLeft = 1.0
-    self.damageDisplay.isActive = true
+    local duration = 1.0
+    local maxInstances = 10
+
+    table.insert(self.damageDisplays, 1, {
+        amount = amount,
+        timeLeft = duration,
+        duration = duration,
+        xOffset = (love.math.random() - 0.5) * SPRITE_SIZE,
+        yOffset = (love.math.random() - 0.5) * 8
+    })
+
+    while #self.damageDisplays > maxInstances do
+        table.remove(self.damageDisplays)
+    end
 end
 
 function PlayerRenderer:startCastAnimation()
@@ -100,29 +103,38 @@ end
 
 -- Display damage or healing above the character
 function PlayerRenderer:drawDamageDisplay()
-    -- TODO: Make multiple damage numbers visible at the same time
-    if not self.damageDisplay.isActive then
+    if #self.damageDisplays == 0 then
         return
     end
 
-    if self.damageDisplay.amount > 0 then
-        lg.setColor(COLORS.RED)
-    else
-        lg.setColor(COLORS.GREEN)
-    end
-
-    local absAmount = math.abs(self.damageDisplay.amount)
     local fonts = self.ctx.fonts
-    if absAmount > 20 then
-        lg.setFont(fonts.fontXL)
-    elseif absAmount > 10 then
-        lg.setFont(fonts.fontL)
-    else
-        lg.setFont(fonts.fontM)
-    end
+    for i, display in ipairs(self.damageDisplays) do
+        -- Red if damage, green if healing
+        if display.amount > 0 then
+            lg.setColor(COLORS.RED)
+        else
+            lg.setColor(COLORS.GREEN)
+        end
 
-    local damageY = self.y - 56 + self.damageDisplay.timeLeft * 40
-    lg.printf(absAmount, self.x, damageY, SPRITE_SIZE, "center")
+        local absAmount = math.abs(display.amount)
+        if absAmount > 20 then
+            lg.setFont(fonts.fontXL)
+        elseif absAmount > 10 then
+            lg.setFont(fonts.fontL)
+        else
+            lg.setFont(fonts.fontM)
+        end
+
+        local progress = 0
+        if display.duration > 0 then
+            progress = 1 - (display.timeLeft / display.duration)
+        end
+
+        local baseY = self.y - 48
+        local floatY = (1 - progress) * 40
+
+        lg.printf(absAmount, self.x + display.xOffset, baseY + floatY + display.yOffset, SPRITE_SIZE, "center")
+    end
 end
 
 function PlayerRenderer:drawHealthAndManaBars()
@@ -291,14 +303,16 @@ function PlayerRenderer:update(dt)
 end
 
 function PlayerRenderer:updateDamageDisplay(dt)
-    if not self.damageDisplay.isActive then
+    if #self.damageDisplays == 0 then
         return
     end
 
-    self.damageDisplay.timeLeft = self.damageDisplay.timeLeft - dt
-    if self.damageDisplay.timeLeft <= 0 then
-        self.damageDisplay.isActive = false
-        self.damageDisplay.amount = 0
+    for i = #self.damageDisplays, 1, -1 do
+        local display = self.damageDisplays[i]
+        display.timeLeft = display.timeLeft - dt
+        if display.timeLeft <= 0 then
+            table.remove(self.damageDisplays, i)
+        end
     end
 end
 
