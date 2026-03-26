@@ -15,7 +15,8 @@ function InstructionsScene:new(ctx)
         MAX_DECK_SIZE ..
         " cards by typing their names.\n\nyou can remove cards from your deck by typing their name again."
     scene.controlsHint = "[play] game, [quit]"
-    scene.availableCommands = { "play", "quit" }
+    scene:addAvailableCommand("play", true)
+    scene:addAvailableCommand("quit", true)
     return scene
 end
 

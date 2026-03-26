@@ -12,7 +12,9 @@ function MenuScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = SceneId.Menu
     scene.controlsHint = "[play] game, [browse] cards, [quit]"
-    scene.availableCommands = { "play", "browse", "quit" }
+    scene:addAvailableCommand("play", true)
+    scene:addAvailableCommand("browse", true)
+    scene:addAvailableCommand("quit", true)
 
     -- Load characters for display
     scene.leftRenderer = PlayerRenderer:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter("wizard")))

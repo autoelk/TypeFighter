@@ -20,7 +20,8 @@ function GameScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = SceneId.Game
     scene.controlsHint = "[quit] to menu, [pause]"
-    scene.availableCommands = { "quit", "pause" }
+    scene:addAvailableCommand("quit", true)
+    scene:addAvailableCommand("pause", true)
     scene.humanController = nil
     scene.enemyController = nil
     scene.activeSpells = {}
@@ -86,6 +87,7 @@ function GameScene:enter()
     -- Initialize active spells list for this game
     self.activeSpells = {}
     self.gameOverTriggered = false
+    self:refreshAvailableCommands()
 end
 
 function GameScene:update(dt)
@@ -112,6 +114,17 @@ function GameScene:update(dt)
     end
 end
 
+function GameScene:refreshAvailableCommands()
+    self.availableCommands = {}
+    self:addAvailableCommand("pause", true)
+    self:addAvailableCommand("quit", true)
+
+    for i = 1, #self.humanController.player.hand do
+        self:addAvailableCommand(self.humanController.player.hand[i].name, false)
+    end
+    self:addAvailableCommand(self.humanController.drawWord, false)
+end
+
 function GameScene:draw()
     self.humanController:draw()
     self.enemyController:draw()
@@ -131,22 +144,24 @@ function GameScene:drawInputInterface()
 
     local text = ui.input
     local color = COLORS.WHITE
+    local isTyping = ui.input ~= ""
     if text == "" then
         text = ui.messageLeft or ""
         color = COLORS.GREY
     end
 
-    -- Blinking caret
-    if ui.input ~= "" then
-        local caretOn = math.floor(love.timer.getTime() * 2) % 2 == 0
-        if caretOn then
-            text = text .. "|"
-        end
-    end
-
     local font = self.ctx.fonts.fontM
     local barWidth = 512
-    local _, wrappedText = font:getWrap(text, barWidth - 16)
+    local wrappedText = nil
+    if isTyping and self.suggestedCommand then
+        text = {
+            COLORS.WHITE, text,
+            COLORS.GREY, string.sub(self.suggestedCommand, #text + 1, -1),
+        }
+        _, wrappedText = font:getWrap(self.suggestedCommand, barWidth - 16)
+    else
+        _, wrappedText = font:getWrap(text, barWidth - 16)
+    end
     local barHeight = #wrappedText * (font:getHeight() * font:getLineHeight()) + 8
     local x = math.floor((GAME_WIDTH - barWidth) / 2)
     local y = 200
@@ -167,6 +182,8 @@ function GameScene:drawInputInterface()
 end
 
 function GameScene:keypressed(key)
+    BaseScene.keypressed(self, key)
+
     if key == "escape" then
         self.ctx.sceneManager:pushScene(SceneId.Pause)
     end
@@ -193,4 +210,8 @@ function GameScene:handleInput(userInput)
     elseif result == InputResult.Unknown then
         self.ctx.ui.messageLeft = "unknown command: " .. userInput
     end
+
+    -- Available commands should only change when the user types a new command
+    self:refreshAvailableCommands()
+    self:updateSuggestedCommand()
 end

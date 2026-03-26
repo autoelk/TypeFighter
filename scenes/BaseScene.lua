@@ -8,8 +8,11 @@ function BaseScene:new(ctx)
     end
     scene = {
         ctx = ctx,
-        availableCommands = {}, -- List of commands available to the player right now
+        -- Map of commands available to the player currently
+        -- { command = autocomplete }
+        availableCommands = {}, 
         suggestedCommand = nil,
+        suggestedCommandAutocomplete = false,
     }
     return setmetatable(scene, self)
 end
@@ -58,14 +61,12 @@ function BaseScene:drawInputInterface()
     local prevScissorX, prevScissorY, prevScissorW, prevScissorH = lg.getScissor()
     lg.setScissor(drawX, inputY, inputWidth, inputRectHeight)
     if isTyping and self.suggestedCommand then
-        local coloredText = {
+        text = {
             COLORS.WHITE, text,
             COLORS.GREY, string.sub(self.suggestedCommand, #text + 1, -1),
         }
-        lg.print(coloredText, drawX + textOffsetX, inputY)
-    else
-        lg.print(text, drawX + textOffsetX, inputY)
     end
+    lg.print(text, drawX + textOffsetX, inputY)
     lg.setScissor(prevScissorX, prevScissorY, prevScissorW, prevScissorH)
 
     lg.setColor(COLORS.GREY)
@@ -76,20 +77,20 @@ function BaseScene:updateSuggestedCommand()
     local matchingCommands = self:getAvailableCommands(self.ctx.ui.input)
     if #matchingCommands == 1 then
         self.suggestedCommand = matchingCommands[1]
+        self.suggestedCommandAutocomplete = self.availableCommands[self.suggestedCommand]
     else
         self.suggestedCommand = nil
+        self.suggestedCommandAutocomplete = false
     end
 end
 
 -- For single key presses
 function BaseScene:keypressed(key)
-    if key == "tab" then
-        if self.suggestedCommand then
-            self.ctx.ui.input = self.suggestedCommand
-            self.suggestedCommand = nil
-        end
+    if key == "tab" and self.suggestedCommand and self.suggestedCommandAutocomplete then
+        self.ctx.ui.input = self.suggestedCommand
+        self.suggestedCommand = nil
+        self.suggestedCommandAutocomplete = false
     end
-    self:updateSuggestedCommand()
 end
 
 function BaseScene:textinput(t)
@@ -100,22 +101,27 @@ function BaseScene:handleInput(userInput) end
 
 function BaseScene:wheelmoved(x, y) end
 
-function BaseScene:addAvailableCommand(command)
-    table.insert(self.availableCommands, command)
-    table.sort(self.availableCommands)
+function BaseScene:addAvailableCommand(command, autocomplete)
+    if command == nil or command == "" then
+        return
+    end
+    if autocomplete == nil then
+        autocomplete = true
+    end
+    self.availableCommands[command] = autocomplete
 end
 
 function BaseScene:removeAvailableCommand(command)
-    table.remove(self.availableCommands, indexOf(self.availableCommands, command))
+    self.availableCommands[command] = nil
 end
 
 function BaseScene:getAvailableCommands(prefix)
     prefix = prefix or ""
 
     local commands = {}
-    for i = 1, #self.availableCommands do
-        if string.sub(self.availableCommands[i], 1, #prefix) == prefix then
-            table.insert(commands, self.availableCommands[i])
+    for command, autocomplete in pairs(self.availableCommands) do
+        if string.sub(command, 1, #prefix) == prefix then
+            table.insert(commands, command)
         end
     end
 

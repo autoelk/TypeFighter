@@ -82,7 +82,7 @@ function SceneManager:keypressed(key)
 
     if key == "return" then
         local userInput = uiInput
-        if currentScene.suggestedCommand then
+        if currentScene.suggestedCommand and currentScene.suggestedCommandAutocomplete then
             userInput = currentScene.suggestedCommand
         end
         userInput = userInput:match("^%s*(.-)%s*$")

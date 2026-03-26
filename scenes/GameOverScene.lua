@@ -14,7 +14,8 @@ function GameOverScene:new(ctx)
     scene.name = SceneId.GameOver
     scene.gameOverMessage = ""
     scene.controlsHint = "[restart], [quit]"
-    scene.availableCommands = { "restart", "quit" }
+    scene:addAvailableCommand("restart", true)
+    scene:addAvailableCommand("quit", true)
     return scene
 end
 

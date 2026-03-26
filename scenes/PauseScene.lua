@@ -10,7 +10,8 @@ function PauseScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = SceneId.Pause
     scene.controlsHint = "[resume] game, [quit] to menu"
-    scene.availableCommands = { "resume", "quit" }
+    scene:addAvailableCommand("resume", true)
+    scene:addAvailableCommand("quit", true)
 
     scene.prevUI = {
         messageLeft = "",

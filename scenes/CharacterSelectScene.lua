@@ -12,7 +12,8 @@ function CharacterSelectScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = SceneId.CharacterSelect
     scene.controlsHint = "[play] game, [quit]"
-    scene.availableCommands = { "play", "quit" }
+    scene:addAvailableCommand("play", true)
+    scene:addAvailableCommand("quit", true)
     scene.controllers = {}
     for i, charName in ipairs(ctx.characterManager:getAllCharNames()) do
         local controller = AIPlayerController:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter(charName)))
@@ -20,7 +21,7 @@ function CharacterSelectScene:new(ctx)
         controller.renderer.mirror = false
         controller.renderer.libraryX = GAME_WIDTH / 2
         table.insert(scene.controllers, controller)
-        table.insert(scene.availableCommands, charName)
+        scene:addAvailableCommand(charName, true)
     end
     scene.charSelected = nil -- Stores the controller of the selected character
     return scene

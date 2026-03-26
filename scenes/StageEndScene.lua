@@ -12,7 +12,8 @@ function StageEndScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = SceneId.StageEnd
     scene.controlsHint = "[play] next level, [quit]"
-    scene.availableCommands = { "play", "quit" }
+    scene:addAvailableCommand("play", true)
+    scene:addAvailableCommand("quit", true)
     scene.message = ""
     return scene
 end
