@@ -42,7 +42,7 @@ function AIPlayerController:update(dt)
 end
 
 function AIPlayerController:updateHand(dt)
-    local margin = 10
+    local margin = 8
     for i, card in ipairs(self.player.hand) do
         card:update(dt)
         if card == self.nextSpell then

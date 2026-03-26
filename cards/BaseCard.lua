@@ -54,24 +54,25 @@ end
 
 -- Draw large version of card
 function BaseCard:draw()
+    local margin = 8
     -- Draw background
     lg.setColor(self:getColor())
     lg.rectangle("fill", self.x, self.y, LARGE_CARD_WIDTH, LARGE_CARD_HEIGHT)
     lg.setColor(COLORS.WHITE)
-    lg.rectangle("fill", self.x + 10, self.y + 25, SPRITE_SIZE, SPRITE_SIZE)
+    lg.rectangle("fill", self.x + margin, self.y + 32, SPRITE_SIZE, SPRITE_SIZE)
 
     -- Animate spell preview
     local spriteNum = math.min(math.max(1, self.anim.currentFrame), #self.anim.quads)
-    lg.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], self.x + 10, self.y + 25, math.rad(self.anim.rotation),
+    lg.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], self.x + margin, self.y + 32, math.rad(self.anim.rotation),
         self.anim.scaleX, self.anim.scaleY)
 
     -- Print text onto card
     local fonts = self.ctx.fonts
     lg.setFont(fonts.fontM)
-    lg.printf(self.name, self.x + 10, self.y, LARGE_CARD_WIDTH, "left")
-    lg.printf(self.mana, self.x - 10, self.y, LARGE_CARD_WIDTH, "right")
+    lg.printf(self.name, self.x + margin, self.y, LARGE_CARD_WIDTH, "left")
+    lg.printf(self.mana, self.x - margin, self.y, LARGE_CARD_WIDTH, "right")
     lg.setFont(fonts.fontS)
-    lg.printf(self:getDescription(), self.x + 10, self.y + 190, SPRITE_SIZE, "left")
+    lg.printf(self:getDescription(), self.x + margin, self.y + SPRITE_SIZE + margin * 2 + 16, SPRITE_SIZE, "left")
 end
 
 -- Draw mini version of card
@@ -80,13 +81,13 @@ function BaseCard:drawMini()
     lg.setColor(self:getColor())
     lg.rectangle("fill", self.x, self.y, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
     -- print text
-    local margin = 5
+    local margin = 4
     lg.setColor(COLORS.BLACK)
     lg.setFont(fonts.fontM)
-    lg.printf(self.name, self.x + margin, self.y, MINI_CARD_WIDTH, "left")
-    lg.printf(self.mana, self.x - margin, self.y, MINI_CARD_WIDTH, "right")
+    lg.printf(self.name, self.x + margin, self.y - 4, MINI_CARD_WIDTH, "left")
+    lg.printf(self.mana, self.x - margin, self.y - 4, MINI_CARD_WIDTH, "right")
     lg.setFont(fonts.fontS)
-    lg.printf(self:getDescription(), self.x + margin, self.y + 24, MINI_CARD_WIDTH - 4 * margin, "left")
+    lg.printf(self:getDescription(), self.x + margin, self.y + 20, MINI_CARD_WIDTH - margin * 2, "left")
 end
 
 function BaseCard:update(dt)

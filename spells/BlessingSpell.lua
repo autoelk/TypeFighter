@@ -9,7 +9,7 @@ function BlessingSpell:new(caster, target, spellData, anim)
     local spell = BaseSpell:new(caster, target, spellData, anim)
     spell.x = caster.renderer.x
     spell.y = caster.renderer.y
-    spell.anim.offsetX = 10
+    spell.anim.offsetX = 8
     spell.anim.offsetY = 20
     spell:playLoopFor(spellData.duration)
     setmetatable(spell, self)

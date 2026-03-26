@@ -17,20 +17,18 @@ setmetatable(GameScene, {
 GameScene.__index = GameScene
 
 local playerPositions = { {
-    x = 250,
-    y = 375,
-    uiX = 25,
-    textOffsetX = 30,
-    libraryX = 10,
-    deckX = 25,
+    x = 256,
+    uiX = 16,
+    textOffsetX = 20,
+    libraryX = 16,
+    deckX = 16,
     mirror = false
 }, {
-    x = GAME_WIDTH - 250 - SPRITE_SIZE,
-    y = 375,
-    uiX = GAME_WIDTH - 25,
-    textOffsetX = -25,
-    libraryX = GAME_WIDTH - MINI_CARD_WIDTH - 10,
-    deckX = GAME_WIDTH - MINI_CARD_WIDTH - 25,
+    x = GAME_WIDTH - 256 - SPRITE_SIZE,
+    uiX = GAME_WIDTH - 16,
+    textOffsetX = -16,
+    libraryX = GAME_WIDTH - MINI_CARD_WIDTH - 16,
+    deckX = GAME_WIDTH - MINI_CARD_WIDTH - 16,
     mirror = true
 } }
 
@@ -49,7 +47,6 @@ function GameScene:setPlayer1(controller)
     self.player1Controller = controller
     local renderer = self.player1Controller.renderer
     renderer.x = playerPositions[1].x
-    renderer.y = playerPositions[1].y
     renderer.uiX = playerPositions[1].uiX
     renderer.textOffsetX = playerPositions[1].textOffsetX
     renderer.libraryX = playerPositions[1].libraryX
@@ -65,7 +62,6 @@ function GameScene:setPlayer2(controller)
     self.player2Controller = controller
     local renderer = self.player2Controller.renderer
     renderer.x = playerPositions[2].x
-    renderer.y = playerPositions[2].y
     renderer.uiX = playerPositions[2].uiX
     renderer.textOffsetX = playerPositions[2].textOffsetX
     renderer.libraryX = playerPositions[2].libraryX

@@ -28,7 +28,7 @@ function CharacterSelectScene:enter()
     self.ctx.ui.input = ""
     self.ctx.ui.messageLeft = "choose your character"
     self.ctx.ui.messageRight = self.controlsHint
-    self.charMargin = 200
+    self.charMargin = 200 -- Distance between characters
     self.startX = (GAME_WIDTH + self.charMargin - #self.controllers * (SPRITE_SIZE + self.charMargin)) / 2
 
     for i, controller in ipairs(self.controllers) do
@@ -42,7 +42,6 @@ function CharacterSelectScene:update(dt)
         for i, controller in ipairs(self.controllers) do
             controller.renderer:updateCharAnimations(dt)
             controller.renderer.x = self.startX + (i - 1) * (SPRITE_SIZE + self.charMargin)
-            controller.renderer.y = 375
         end
     else
         self.charSelected.renderer:updateCharAnimations(dt)
@@ -56,26 +55,26 @@ function CharacterSelectScene:draw()
         lg.setFont(fonts.fontM)
         lg.printf("type name to", 0, 200, GAME_WIDTH, "center")
         lg.setFont(fonts.fontL)
-        lg.printf("choose your character", 0, 225, GAME_WIDTH, "center")
+        lg.printf("choose your character", 0, 224, GAME_WIDTH, "center")
 
         lg.setFont(fonts.fontM)
         for i, controller in ipairs(self.controllers) do
             local char = controller.player.character
-            lg.printf(char.name, self.startX + (i - 1) * (SPRITE_SIZE + self.charMargin), 375 - 25, SPRITE_SIZE,
+            local y = controller.renderer.y
+            lg.printf(char.name, self.startX + (i - 1) * (SPRITE_SIZE + self.charMargin), y - 24, SPRITE_SIZE,
                 "center")
             controller.renderer:drawChar()
         end
     else
         local char = self.charSelected.player.character
         lg.setFont(fonts.fontM)
-        lg.printf("you have selected the", 200, 250, GAME_WIDTH, "left")
+        lg.printf("you have selected the", 200, 200, GAME_WIDTH, "left")
         lg.setFont(fonts.fontXL)
-        lg.printf(char.name, 200, 250, GAME_WIDTH, "left")
+        lg.printf(char.name, 200, 208, GAME_WIDTH, "left")
         lg.setFont(fonts.fontM)
-        lg.printf(char.description, 200, 350, GAME_WIDTH - 200, "left")
+        lg.printf(char.description, 200, 284, GAME_WIDTH - 200, "left")
 
-        self.charSelected.renderer.x = 200
-        self.charSelected.renderer.y = 375
+        self.charSelected.renderer.x = 256
         self.charSelected.renderer:drawChar()
         self.charSelected.renderer:drawHand()
     end

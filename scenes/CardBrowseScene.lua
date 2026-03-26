@@ -11,7 +11,7 @@ CardBrowseScene.__index = CardBrowseScene
 function CardBrowseScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = SceneId.CardBrowse
-    scene.posy = 10 -- Scroll position
+    scene.posy = 16 -- Scroll position
     scene.cardsPerRow = 4
     scene.cards = {}
     scene.controlsHint = "[q] to go back"
@@ -28,7 +28,7 @@ end
 
 function CardBrowseScene:update(dt)
     -- Update card positions for browsing layout
-    local margin = 15
+    local margin = 16
     local colSpacing = LARGE_CARD_WIDTH + margin
     local rowSpacing = LARGE_CARD_HEIGHT + margin
     local displayWidth = self.cardsPerRow * colSpacing + margin
@@ -59,10 +59,9 @@ function CardBrowseScene:wheelmoved(x, y)
     self.posy = self.posy + y * SCROLL_SPEED
 
     -- Scrolling boundaries
-    local margin = 15
-    if self.posy > margin then
-        self.posy = margin
-    elseif self.posy <= (math.ceil(#self.cards / self.cardsPerRow) - 1) * -(LARGE_CARD_HEIGHT + margin) then
-        self.posy = (math.ceil(#self.cards / self.cardsPerRow) - 1) * -(LARGE_CARD_HEIGHT + margin)
-    end
+    local margin = 16
+    local numRows = math.ceil(#self.cards / self.cardsPerRow)
+    local numRowsOnScreen = math.floor(GAME_HEIGHT / (LARGE_CARD_HEIGHT + margin))
+    local minScroll = (numRows - numRowsOnScreen) * -(LARGE_CARD_HEIGHT + margin) - 32
+    self.posy = math.max(minScroll, math.min(margin, self.posy))
 end

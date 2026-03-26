@@ -42,7 +42,7 @@ function InstructionsScene:draw()
     lg.rectangle("fill", 0, 0, GAME_WIDTH, GAME_HEIGHT)
     lg.setColor(COLORS.WHITE)
 
-    local margin = 10
+    local margin = 8
     local width = 400
     local height = 320
     local startX = (GAME_WIDTH - width) / 2

@@ -8,7 +8,7 @@ function PlayerRenderer:new(ctx, player)
         player = player,
 
         x = nil,
-        y = nil,
+        y = 320,
 
         mirror = nil,
         tint = player.character.tint,
@@ -22,7 +22,7 @@ function PlayerRenderer:new(ctx, player)
         uiX = nil,
         textOffsetX = nil,
         libraryX = nil,
-        libraryY = (MINI_CARD_HEIGHT + 10) * (MAX_HAND_SIZE + 1) + 160,
+        libraryY = (MINI_CARD_HEIGHT + 8) * (MAX_HAND_SIZE + 1) + 160,
         deckX = nil,
 
         damageDisplay = {
@@ -121,7 +121,7 @@ function PlayerRenderer:drawDamageDisplay()
         lg.setFont(fonts.fontM)
     end
 
-    local damageY = self.y - 55 + self.damageDisplay.timeLeft * 40
+    local damageY = self.y - 56 + self.damageDisplay.timeLeft * 40
     lg.printf(absAmount, self.x, damageY, SPRITE_SIZE, "center")
 end
 
@@ -139,20 +139,20 @@ function PlayerRenderer:drawHealthAndManaBars()
 
     -- Draw mana bar
     lg.setColor(COLORS.BLUE)
-    lg.rectangle("fill", manaX, 75, manaSize, 30)
+    lg.rectangle("fill", manaX, 64, manaSize, 32)
 
     -- Draw health bar with color based on health level
     if self.player.health <= 10 then
         lg.setColor(COLORS.RED)
-        lg.rectangle("fill", healthX, 25, healthSize, 30)
+        lg.rectangle("fill", healthX, 16, healthSize, 32)
         lg.setColor(COLORS.WHITE)
     elseif self.player.health <= 20 then
         lg.setColor(COLORS.YELLOW)
-        lg.rectangle("fill", healthX, 25, healthSize, 30)
+        lg.rectangle("fill", healthX, 16, healthSize, 32)
         lg.setColor(COLORS.BLACK)
     else
         lg.setColor(COLORS.GREEN)
-        lg.rectangle("fill", healthX, 25, healthSize, 30)
+        lg.rectangle("fill", healthX, 16, healthSize, 32)
         lg.setColor(COLORS.WHITE)
     end
 
@@ -162,9 +162,9 @@ function PlayerRenderer:drawHealthAndManaBars()
         textAlign = "right"
     end
     lg.setFont(self.ctx.fonts.fontL)
-    lg.printf(math.ceil(self.player.health), self.textOffsetX, 15, GAME_WIDTH, textAlign)
+    lg.printf(math.ceil(self.player.health), self.textOffsetX, 8, GAME_WIDTH, textAlign)
     lg.setColor(COLORS.WHITE)
-    lg.printf(math.floor(self.player.mana), self.textOffsetX, 65, GAME_WIDTH, textAlign)
+    lg.printf(math.floor(self.player.mana), self.textOffsetX, 56, GAME_WIDTH, textAlign)
 end
 
 function PlayerRenderer:drawEffectsList()
@@ -255,7 +255,7 @@ function PlayerRenderer:drawLibrary(drawWord)
         lg.rectangle("fill", self.libraryX, self.libraryY, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
         lg.setColor(COLORS.WHITE)
         lg.setFont(fonts.fontL)
-        lg.printf("hand full", self.libraryX, self.libraryY + 5, MINI_CARD_WIDTH, "center")
+        lg.printf("hand full", self.libraryX, self.libraryY + 8, MINI_CARD_WIDTH, "center")
     else
         lg.setColor(COLORS.YELLOW)
         lg.rectangle("fill", self.libraryX, self.libraryY, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
@@ -263,15 +263,15 @@ function PlayerRenderer:drawLibrary(drawWord)
         if drawWord ~= nil then
             -- For human, show the draw word
             lg.setFont(fonts.fontS)
-            lg.printf("type", self.libraryX, self.libraryY, MINI_CARD_WIDTH, "center")
+            lg.printf("type", self.libraryX, self.libraryY + 4, MINI_CARD_WIDTH, "center")
             lg.setFont(fonts.fontL)
-            lg.printf(drawWord, self.libraryX, self.libraryY + 5, MINI_CARD_WIDTH, "center")
+            lg.printf(drawWord, self.libraryX, self.libraryY + 8, MINI_CARD_WIDTH, "center")
             lg.setFont(fonts.fontS)
-            lg.printf("to draw", self.libraryX, self.libraryY + 35, MINI_CARD_WIDTH, "center")
+            lg.printf("to draw", self.libraryX, self.libraryY + 44, MINI_CARD_WIDTH, "center")
         else
             -- For AI, just label as deck
             lg.setFont(fonts.fontL)
-            lg.printf("DECK", self.libraryX, self.libraryY + 5, MINI_CARD_WIDTH, "center")
+            lg.printf("DECK", self.libraryX, self.libraryY + 4, MINI_CARD_WIDTH, "center")
         end
     end
 end
@@ -340,7 +340,7 @@ end
 
 -- Update positions of cards in hand
 function PlayerRenderer:updateHand(dt)
-    local margin = 10
+    local margin = 8
     for i, card in ipairs(self.player.hand) do
         card:move(self.libraryX, (MINI_CARD_HEIGHT + margin) * i + 100)
     end
@@ -354,7 +354,7 @@ end
 
 -- Update positions of cards in deck, only used in CardSelectScene
 function PlayerRenderer:updateDeck(dt)
-    local margin = 10
+    local margin = 8
     for i, card in ipairs(self.player.deck) do
         card:move(self.deckX, (MINI_CARD_HEIGHT + margin) * i + 100)
     end

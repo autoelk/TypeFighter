@@ -1,6 +1,9 @@
 require "constants"
 require "app.Context"
+
 local SceneId = require "enums.SceneId"
+local push = require "libraries.push"
+
 require "players.BasePlayer"
 require "players.BasePlayerController"
 require "players.HumanPlayerController"
@@ -25,6 +28,15 @@ require "scenes.StageEndScene"
 function love.load()
     lg = love.graphics
     lg.setDefaultFilter("nearest", "nearest")
+
+    push:setupScreen(GAME_WIDTH, GAME_HEIGHT, GAME_WIDTH, GAME_HEIGHT, {
+        fullscreen = true,
+        resizable = false,
+        pixelperfect = true,
+        highdpi = true,
+        canvas = true,
+    })
+    push:setBorderColor(COLORS.BLACK)
 
     math.randomseed(os.time())
     love.keyboard.setKeyRepeat(true)
@@ -64,13 +76,8 @@ function love.update(dt)
 end
 
 function love.draw()
+    push:apply("start")
     lg.clear(COLORS.BLACK)
-    -- Setup
-    local scale = math.min(lg.getWidth() / GAME_WIDTH, lg.getHeight() / GAME_HEIGHT)
-    local offsetX = (lg.getWidth() - GAME_WIDTH * scale) / 2
-    local offsetY = (lg.getHeight() - GAME_HEIGHT * scale) / 2
-    lg.translate(offsetX, offsetY)
-    lg.scale(scale, scale)
 
     -- Background
     lg.draw(ctx.assets.background, 0, 0, 0, PIXEL_TO_GAME_SCALE, PIXEL_TO_GAME_SCALE)
@@ -80,16 +87,21 @@ function love.draw()
     ctx.sceneManager:draw()
 
     -- Draw input interface
-    local inputRectHeight = 30
+    local inputRectHeight = 32
     lg.setColor(COLORS.BLACK)
-    lg.rectangle("fill", 0, -offsetY, GAME_WIDTH, offsetY)
-    lg.rectangle("fill", 0, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, inputRectHeight + offsetY)
+    lg.rectangle("fill", 0, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, inputRectHeight)
     lg.setFont(ctx.fonts.fontM)
     lg.setColor(COLORS.WHITE)
     local ui = ctx.ui
-    lg.printf(ui.messageLeft, 5, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "left")
-    lg.printf(ui.messageRight, -5, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "right")
-    lg.printf(ui.input, 5, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "left")
+    lg.printf(ui.messageLeft, 8, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "left")
+    lg.printf(ui.messageRight, -8, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "right")
+    lg.printf(ui.input, 8, GAME_HEIGHT - inputRectHeight, GAME_WIDTH, "left")
+
+    push:apply("end")
+end
+
+function love.resize(w, h)
+    push:resize(w, h)
 end
 
 function love.textinput(t)
