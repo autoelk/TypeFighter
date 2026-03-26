@@ -24,5 +24,5 @@ function GemCard:new(ctx, x, y)
 end
 
 function GemCard:getDescription()
-    return "Gain " .. self.spellData.regenAmount .. " mana regen."
+    return "gain " .. self.spellData.regenAmount .. " mana regen."
 end

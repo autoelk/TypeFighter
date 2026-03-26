@@ -289,7 +289,7 @@ function PlayerRenderer:drawLibrary(drawWord)
         else
             -- For AI, just label as deck
             lg.setFont(fonts.fontL)
-            lg.printf("DECK", self.libraryX, self.libraryY + 4, MINI_CARD_WIDTH, "center")
+            lg.printf("DECK", self.libraryX, self.libraryY + 8, MINI_CARD_WIDTH, "center")
         end
     end
 end
