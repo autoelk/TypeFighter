@@ -23,7 +23,6 @@ function HumanPlayerController:reset()
     self.awaitingIncantation = false
     self.incantation = nil
     self.lastAttemptedCardName = nil
-    self.player.selectedCard = nil
 end
 
 function HumanPlayerController:draw()

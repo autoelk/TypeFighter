@@ -22,7 +22,7 @@ function AIPlayerController:new(ctx, player, difficulty)
     end
     controller.secondsPerChar = 60 / (wpm * 5)
     controller.intendedAction = nil -- Action to perform next
-    controller.actionTime = 0 -- Wait time before intended action can be performed
+    controller.actionTime = 5 -- Wait time before intended action can be performed
     controller.actionBuffer = 0.5 -- Buffer time between actions
     
     return setmetatable(controller, self)

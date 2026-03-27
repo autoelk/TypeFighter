@@ -32,10 +32,8 @@ function GameScene:setHumanController(controller)
     self.humanController = controller
     local renderer = self.humanController.renderer
     renderer.x = 256
-    renderer.uiX = 16
-    renderer.textOffsetX = 20
     renderer.libraryX = 16
-    renderer.deckX = 16
+    renderer.handX = 16
     renderer.mirror = false
     if self.enemyController ~= nil then
         self.humanController:setOpponent(self.enemyController)
@@ -47,10 +45,8 @@ function GameScene:setEnemyController(controller)
     self.enemyController = controller
     local renderer = self.enemyController.renderer
     renderer.x = GAME_WIDTH - 256 - SPRITE_SIZE
-    renderer.uiX = GAME_WIDTH - 16
-    renderer.textOffsetX = -16
     renderer.libraryX = GAME_WIDTH - MINI_CARD_WIDTH - 16
-    renderer.deckX = GAME_WIDTH - MINI_CARD_WIDTH - 16
+    renderer.handX = GAME_WIDTH - MINI_CARD_WIDTH - 16
     renderer.mirror = true
     if self.humanController ~= nil then
         self.humanController:setOpponent(self.enemyController)
@@ -63,12 +59,19 @@ function GameScene:enter()
     self.humanController:reset()
     self.enemyController:reset()
 
-    -- Apply starting effects
-    self.humanController.player:applyEffect(HealthRegenEffect:new("health regen", self.humanController.player, nil, self.humanController.player.healthRegen))
-    self.enemyController.player:applyEffect(HealthRegenEffect:new("health regen", self.enemyController.player, nil, self.enemyController.player.healthRegen))
-
     self.humanController.player.library = self.humanController.player.deck
     self.enemyController.player.library = self.enemyController.player.deck
+
+    -- TODO: Shuffle decks
+
+    -- Set all card positions to library
+    for _, card in ipairs(self.humanController.player.library) do
+        card:setPosition(self.humanController.renderer.libraryX, self.humanController.renderer.libraryY)
+    end
+    for _, card in ipairs(self.enemyController.player.library) do
+        card:setPosition(self.enemyController.renderer.libraryX, self.enemyController.renderer.libraryY)
+    end
+
     -- Draw starting hands
     for i = 1, STARTING_HAND_SIZE do
         self.humanController.player:drawCard()

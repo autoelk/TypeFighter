@@ -5,7 +5,7 @@ setmetatable(WizardCharacter, {
 WizardCharacter.__index = WizardCharacter
 
 function WizardCharacter:new()
-    local character = BaseCharacter:new("wizard", 50, 0)
+    local character = BaseCharacter:new("wizard", 50)
     character.description = "hates doing anything other than damage."
 
     character.idleSprite = "wizardIdle"

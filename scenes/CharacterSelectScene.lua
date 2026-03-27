@@ -19,7 +19,7 @@ function CharacterSelectScene:new(ctx)
         local controller = AIPlayerController:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter(charName)))
         controller.renderer.tint = COLORS.WHITE
         controller.renderer.mirror = false
-        controller.renderer.libraryX = GAME_WIDTH / 2
+        controller.renderer.handX = GAME_WIDTH / 2
         table.insert(scene.controllers, controller)
         scene:addAvailableCommand(charName, true)
     end

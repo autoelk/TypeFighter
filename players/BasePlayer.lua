@@ -7,13 +7,13 @@ function BasePlayer:new(ctx, character)
         ctx = ctx,
         character = character,
         isAlive = true,
-        health = nil,
-        healthRegen = nil,
+        health = character.health,
+        maxHealth = character.maxHealth,
         stackEffects = {}, -- Map of name to stack effect
         durationEffects = {}, -- List of duration effects
-        selectedCard = nil,
         
         -- Cards
+        selectedCard = nil, -- Card being cast by the player
         hand = {}, -- Current cards in hand
         library = {}, -- All cards available to draw from
         deck = {} -- All cards owned by the player
@@ -24,8 +24,6 @@ end
 
 function BasePlayer:reset()
     self.isAlive = true
-    self.health = self.character.health
-    self.healthRegen = self.character.healthRegen
     self.stackEffects = {}
     self.durationEffects = {}
     self.selectedCard = nil
@@ -63,6 +61,8 @@ end
 
 function BasePlayer:update(dt)
     self:updateEffects(dt)
+
+    self.health = math.min(self.health, self.maxHealth)
 end
 
 -- Add a card to the player's deck

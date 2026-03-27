@@ -5,7 +5,7 @@ setmetatable(VampireCharacter, {
 VampireCharacter.__index = VampireCharacter
 
 function VampireCharacter:new()
-    local character = BaseCharacter:new("vampire", 30, 1)
+    local character = BaseCharacter:new("vampire", 30)
     character.description = "sacrifices blood for power."
 
     -- TODO: Create vampire-specific sprites

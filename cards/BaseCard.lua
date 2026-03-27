@@ -106,7 +106,7 @@ function BaseCard:setPosition(x, y)
     self.y = y
 end
 
--- Smoothly move card to new position
+-- Smoothly move card to new position, if destination is too close, set to destination
 function BaseCard:move(destX, destY)
     self:setPosition(math.abs(self.x - destX) < 1 and destX or self.x + ((destX - self.x) / 20),
         math.abs(self.y - destY) < 1 and destY or self.y + ((destY - self.y) / 20))
