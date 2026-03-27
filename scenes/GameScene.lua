@@ -205,21 +205,21 @@ function GameScene:handleInput(userInput)
 
     local result = self.humanController:handleInput(userInput)
     if result == InputResult.DrawFail then
-        self.ctx.ui.messageLeft = "hand full, can't draw"
+        self.ctx.ui.messageLeft = "CANNOT DRAW"
     elseif result == InputResult.DrawSuccess then
-        self.ctx.ui.messageLeft = "drew a card"
+        -- self.ctx.ui.messageLeft = "drew a card"
     elseif result == InputResult.CardSelected then
         self.ctx.ui.messageLeft = tostring(self.humanController.incantation)
-    elseif result == InputResult.IncantationCancelled then
-        self.ctx.ui.messageLeft = "casting cancelled"
     elseif result == InputResult.IncantationMismatch then
         self.ctx.ui.messageLeft = tostring(self.humanController.incantation)
+    elseif result == InputResult.IncantationCancelled then
+        self.ctx.ui.messageLeft = "CANCELLED CASTING " .. tostring(self.humanController.lastAttemptedCardName)
     elseif result == InputResult.CastCard.Success then
-        self.ctx.ui.messageLeft = "cast " .. tostring(self.humanController.lastAttemptedCardName)
+        -- self.ctx.ui.messageLeft = "cast " .. tostring(self.humanController.lastAttemptedCardName)
     elseif castFailureMessages[result] then
-        self.ctx.ui.messageLeft = "cannot cast " .. tostring(self.humanController.lastAttemptedCardName) .. ": " .. castFailureMessages[result]
+        self.ctx.ui.messageLeft = "CANNOT CAST " .. tostring(self.humanController.lastAttemptedCardName) .. ": " .. castFailureMessages[result]
     elseif result == InputResult.Unknown then
-        self.ctx.ui.messageLeft = "unknown command: " .. userInput
+        self.ctx.ui.messageLeft = "UNKNOWN COMMAND \"" .. userInput .. "\""
     end
 
     -- Available commands should only change when the user types a new command

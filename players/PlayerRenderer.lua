@@ -145,7 +145,7 @@ function PlayerRenderer:drawHealthBar()
     --[[
     -- Draw vertical health bar
     local healthBarWidth = SPRITE_SIZE
-    local healthBarHeight = SPRITE_SIZE * self.player.health / self.player.maxHealth
+    local healthBarHeight = math.ceil(SPRITE_SIZE * self.player.health / self.player.maxHealth)
     local healthBarX = self.x
     local healthBarY = self.y + (SPRITE_SIZE - healthBarHeight)
 
@@ -153,6 +153,7 @@ function PlayerRenderer:drawHealthBar()
     lg.rectangle("fill", healthBarX, healthBarY, healthBarWidth, healthBarHeight)
     --]]
     
+    ---[[
     -- Draw horizontal health bar
     local healthBarWidth = math.ceil(SPRITE_SIZE * self.player.health / self.player.maxHealth)
     local healthBarHeight = 24
@@ -163,6 +164,7 @@ function PlayerRenderer:drawHealthBar()
     lg.rectangle("fill", healthBarX, healthBarY, SPRITE_SIZE, healthBarHeight)
     lg.setColor(COLORS.GREEN)
     lg.rectangle("fill", healthBarX, healthBarY, healthBarWidth, healthBarHeight)
+    --]]
 
     -- Draw health text
     lg.setColor(COLORS.WHITE)
@@ -252,6 +254,20 @@ end
 -- Draw library with draw word or card back
 function PlayerRenderer:drawLibrary(drawWord)
     local fonts = self.ctx.fonts
+    local x, y = self.libraryX, self.libraryY
+    local w = MINI_CARD_WIDTH
+
+    local function drawLibrarySlot(lineSmallTop, lineLarge, lineSmallBottom, bgColor, fgColor)
+        lg.setColor(bgColor)
+        lg.rectangle("fill", x, y, w, MINI_CARD_HEIGHT)
+        lg.setColor(fgColor)
+        lg.setFont(fonts.fontS)
+        lg.printf(lineSmallTop, x, y + 4, w, "center")
+        lg.setFont(fonts.fontL)
+        lg.printf(lineLarge, x, y + 8, w, "center")
+        lg.setFont(fonts.fontS)
+        lg.printf(lineSmallBottom, x, y + 44, w, "center")
+    end
 
     for i, card in ipairs(self.player.library) do
         if card.x ~= self.libraryX or card.y ~= self.libraryY then
@@ -259,33 +275,15 @@ function PlayerRenderer:drawLibrary(drawWord)
         end
     end
 
-    if #self.player.hand >= MAX_HAND_SIZE then
-        lg.setColor(COLORS.GREY)
-        lg.rectangle("fill", self.libraryX, self.libraryY, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
-        lg.setColor(COLORS.WHITE)
-        lg.setFont(fonts.fontL)
-        lg.printf("hand full", self.libraryX, self.libraryY + 8, MINI_CARD_WIDTH, "center")
+    local cantDraw = "so you can't draw"
+    if self.player.isAlive and #self.player.library == 0 then
+        drawLibrarySlot("your library is", "empty", cantDraw, COLORS.GREY, COLORS.WHITE)
+    elseif #self.player.hand >= MAX_HAND_SIZE then
+        drawLibrarySlot("your hand is", "full", cantDraw, COLORS.GREY, COLORS.WHITE)
+    elseif drawWord ~= nil then
+        drawLibrarySlot("type", drawWord, "to draw", COLORS.YELLOW, COLORS.BLACK)
     else
-        lg.setColor(COLORS.YELLOW)
-        lg.rectangle("fill", self.libraryX, self.libraryY, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
-        lg.setColor(COLORS.BLACK)
-        if drawWord ~= nil then
-            -- For human, show the draw word
-            lg.setFont(fonts.fontS)
-            lg.printf("type", self.libraryX, self.libraryY + 4, MINI_CARD_WIDTH, "center")
-            lg.setFont(fonts.fontL)
-            lg.printf(drawWord, self.libraryX, self.libraryY + 8, MINI_CARD_WIDTH, "center")
-            lg.setFont(fonts.fontS)
-            lg.printf("to draw", self.libraryX, self.libraryY + 44, MINI_CARD_WIDTH, "center")
-        else
-            -- For AI, just label as deck
-            lg.setFont(fonts.fontS)
-            lg.printf("this is the", self.libraryX, self.libraryY + 4, MINI_CARD_WIDTH, "center")
-            lg.setFont(fonts.fontL)
-            lg.printf("library", self.libraryX, self.libraryY + 8, MINI_CARD_WIDTH, "center")
-            lg.setFont(fonts.fontS)
-            lg.printf("of the enemy", self.libraryX, self.libraryY + 44, MINI_CARD_WIDTH, "center")
-        end
+        drawLibrarySlot("this is the", "library", "of the enemy", COLORS.YELLOW, COLORS.BLACK)
     end
 end
 
