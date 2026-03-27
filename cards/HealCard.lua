@@ -11,7 +11,7 @@ function HealCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "heal"
     card.incantationLength = 5
-    card.elem = "earth"
+    card:setCharacter("wizard")
     card.anim = ctx.resourceManager:newAnimation("card_heal")
 
     card.SpellClass = HealSpell

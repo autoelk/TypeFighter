@@ -11,7 +11,7 @@ function TyphoonCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "typhoon"
     card.incantationLength = 50
-    card.elem = "water"
+    card:setCharacter("wizard")
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = TyphoonSpell

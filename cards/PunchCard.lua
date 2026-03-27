@@ -11,7 +11,7 @@ function PunchCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "punch"
     card.incantationLength = 1
-    card.elem = "earth"
+    card:setCharacter("vampire")
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = PunchSpell

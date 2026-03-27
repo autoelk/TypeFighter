@@ -11,7 +11,7 @@ function BlessingCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "blessing"
     card.incantationLength = 8
-    card.elem = "earth"
+    card:setCharacter("wizard")
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = BlessingSpell

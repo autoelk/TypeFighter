@@ -3,6 +3,10 @@ local CastResult = require "enums.CastResult"
 -- Base Card class that all cards inherit from
 BaseCard = {}
 BaseCard.__index = BaseCard
+BaseCard.characterColors = {
+    wizard = COLORS.BLUE,
+    vampire = COLORS.RED
+}
 
 function BaseCard:new(ctx, x, y)
     if not ctx then
@@ -16,7 +20,8 @@ function BaseCard:new(ctx, x, y)
         -- Attributes to be set by subclasses
         name = nil,
         incantationLength = nil,
-        elem = nil,
+        character = nil, -- String name of character this card belongs to
+        color = nil,
         SpellClass = nil,
         spellData = nil,
         anim = nil
@@ -26,15 +31,12 @@ function BaseCard:new(ctx, x, y)
 end
 
 function BaseCard:getColor()
-    if self.elem == "fire" then
-        return COLORS.RED
-    elseif self.elem == "earth" then
-        return COLORS.GREEN
-    elseif self.elem == "water" then
-        return COLORS.BLUE
-    else
-        return COLORS.GREY
-    end
+    return self.color or COLORS.GREY
+end
+
+function BaseCard:setCharacter(characterName)
+    self.character = characterName
+    self.color = BaseCard.characterColors[characterName] or COLORS.WHITE
 end
 
 function BaseCard:getDescription()
@@ -67,7 +69,7 @@ function BaseCard:draw()
     local fonts = self.ctx.fonts
     lg.setFont(fonts.fontM)
     lg.printf(self.name, self.x + margin, self.y, LARGE_CARD_WIDTH, "left")
-    lg.printf("cast " .. self.incantationLength, self.x - margin, self.y, LARGE_CARD_WIDTH, "right")
+    lg.printf(self.incantationLength, self.x - margin, self.y, LARGE_CARD_WIDTH, "right")
     lg.setFont(fonts.fontS)
     lg.printf(self:getDescription(), self.x + margin, self.y + SPRITE_SIZE + margin * 2 + 16, SPRITE_SIZE, "left")
 end
