@@ -8,7 +8,7 @@ function PlayerRenderer:new(ctx, player)
         player = player,
 
         x = nil,
-        y = 320,
+        y = 408,
 
         mirror = nil,
         tint = player.character.tint,
