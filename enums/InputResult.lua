@@ -2,6 +2,8 @@ local InputResult = {
     Unknown = {},
     DrawSuccess = {},
     DrawFail = {},
+    CardSelected = {},
+    IncantationMismatch = {},
     CastCard = require "enums.CastResult",
 }
 

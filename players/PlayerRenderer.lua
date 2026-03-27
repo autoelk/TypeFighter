@@ -361,10 +361,10 @@ end
 -- Update positions of cards in hand
 function PlayerRenderer:updateHand(dt)
     local margin = 8
-    local selectedSpell = self.player.selectedSpell
+    local selectedCard = self.player.selectedCard
     for i, card in ipairs(self.player.hand) do
         local destX = self.libraryX
-        if selectedSpell and card == selectedSpell then
+        if selectedCard and card == selectedCard then
             if self.mirror then
                 destX = self.libraryX - 40
             else

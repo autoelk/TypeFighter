@@ -43,24 +43,32 @@ function AIPlayerController:updateActions(dt)
     end
 
     if self.intendedAction then
-        if self.intendedAction == "cast" and self.player.selectedSpell then
-            self:castCard(self.player.selectedSpell)
-            self.player.selectedSpell = nil
-            self.actionTime = self.actionBuffer
-        elseif self.intendedAction == "draw" then
+        -- perform the intended action
+        if self.intendedAction == "draw" then
             self:drawCard()
+            self.actionTime = self.actionBuffer
+        elseif self.intendedAction == "incant" then
+            self.actionTime = self.actionBuffer
+        elseif self.intendedAction == "cast" and self.player.selectedCard then
+            self:castCard(self.player.selectedCard)
+            self.player.selectedCard = nil
             self.actionTime = self.actionBuffer
         end
         self.intendedAction = nil
     else
         self.intendedAction = self:chooseNextAction()
 
+        -- simulate "typing" the intended action
         if self.intendedAction == "draw" then
             self.actionTime = math.max(0.25, 5 * self.secondsPerChar)
-        elseif self.intendedAction == "cast" and self.player.selectedSpell then
-            self.actionTime = math.max(0.25, #self.player.selectedSpell.name * self.secondsPerChar)
+        elseif self.intendedAction == "incant" then
+            -- this represents choosing the card
+            self.actionTime = math.max(0.25, #self.player.selectedCard.name * self.secondsPerChar)
+        elseif self.intendedAction == "cast" and self.player.selectedCard then
+            -- this represents typing the incantation in order to cast the card
+            self.actionTime = math.max(0.25, #self.incantation * self.secondsPerChar)
         else
-            -- If we can't do anything, wait a bit
+            -- if we can't do anything, wait a bit
             self.actionTime = self.actionBuffer
         end
     end
@@ -70,16 +78,15 @@ function AIPlayerController:chooseNextAction()
     local action = nil
     if #self.player.hand < STARTING_HAND_SIZE then
         action = "draw"
-    else
+    elseif self.player.selectedCard then
         action = "cast"
-        self.player.selectedSpell = self:chooseNextCard()
-        if not self.player.selectedSpell then
-            -- If we can't cast a card, try to draw if we can
-            if #self.player.hand < MAX_HAND_SIZE then
-                action = "draw"
-            else
-                action = nil
-            end
+    else
+        action = "incant"
+        self.player.selectedCard = self:chooseNextCard()
+        if not self.player.selectedCard then
+            action = "draw"
+        else
+            self.incantation = string.rep(" ", self.player.selectedCard.mana)
         end
     end
 

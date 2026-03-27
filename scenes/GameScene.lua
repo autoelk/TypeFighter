@@ -81,7 +81,7 @@ function GameScene:enter()
 
     -- Set game interface messages
     self.ctx.ui.input = ""
-    self.ctx.ui.messageLeft = "type card names to cast them"
+    self.ctx.ui.messageLeft = "type card name, then type the incantation to cast"
     self.ctx.ui.messageRight = self.controlsHint
 
     -- Initialize active spells list for this game
@@ -116,13 +116,16 @@ end
 
 function GameScene:refreshAvailableCommands()
     self.availableCommands = {}
+    if self.humanController.awaitingIncantation and self.humanController.incantation then
+        self:addAvailableCommand(self.humanController.incantation, false)
+    else
+        for i = 1, #self.humanController.player.hand do
+            self:addAvailableCommand(self.humanController.player.hand[i].name, false)
+        end
+        self:addAvailableCommand(self.humanController.drawWord, false)
+    end
     self:addAvailableCommand("pause", true)
     self:addAvailableCommand("quit", true)
-
-    for i = 1, #self.humanController.player.hand do
-        self:addAvailableCommand(self.humanController.player.hand[i].name, false)
-    end
-    self:addAvailableCommand(self.humanController.drawWord, false)
 end
 
 function GameScene:draw()
@@ -203,10 +206,14 @@ function GameScene:handleInput(userInput)
         self.ctx.ui.messageLeft = "hand full, can't draw"
     elseif result == InputResult.DrawSuccess then
         self.ctx.ui.messageLeft = "drew a card"
+    elseif result == InputResult.CardSelected then
+        self.ctx.ui.messageLeft = tostring(self.humanController.incantation)
+    elseif result == InputResult.IncantationMismatch then
+        self.ctx.ui.messageLeft = tostring(self.humanController.incantation)
     elseif result == InputResult.CastCard.Success then
-        self.ctx.ui.messageLeft = "cast " .. userInput
+        self.ctx.ui.messageLeft = "cast " .. tostring(self.humanController.lastAttemptedCardName)
     elseif castFailureMessages[result] then
-        self.ctx.ui.messageLeft = "cannot cast " .. userInput .. ": " .. castFailureMessages[result]
+        self.ctx.ui.messageLeft = "cannot cast " .. tostring(self.humanController.lastAttemptedCardName) .. ": " .. castFailureMessages[result]
     elseif result == InputResult.Unknown then
         self.ctx.ui.messageLeft = "unknown command: " .. userInput
     end
