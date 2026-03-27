@@ -118,14 +118,17 @@ function GameScene:refreshAvailableCommands()
     self.availableCommands = {}
     if self.humanController.awaitingIncantation and self.humanController.incantation then
         self:addAvailableCommand(self.humanController.incantation, false)
+        self:addAvailableCommand("cancel", true)
+        self.ctx.ui.messageRight = "type incantation above to cast, or type [cancel] to quit casting"
     else
         for i = 1, #self.humanController.player.hand do
             self:addAvailableCommand(self.humanController.player.hand[i].name, false)
         end
         self:addAvailableCommand(self.humanController.drawWord, false)
+        self:addAvailableCommand("pause", true)
+        self:addAvailableCommand("quit", true)
+        self.ctx.ui.messageRight = self.controlsHint
     end
-    self:addAvailableCommand("pause", true)
-    self:addAvailableCommand("quit", true)
 end
 
 function GameScene:draw()
@@ -208,6 +211,8 @@ function GameScene:handleInput(userInput)
         self.ctx.ui.messageLeft = "drew a card"
     elseif result == InputResult.CardSelected then
         self.ctx.ui.messageLeft = tostring(self.humanController.incantation)
+    elseif result == InputResult.IncantationCancelled then
+        self.ctx.ui.messageLeft = "casting cancelled"
     elseif result == InputResult.IncantationMismatch then
         self.ctx.ui.messageLeft = tostring(self.humanController.incantation)
     elseif result == InputResult.CastCard.Success then

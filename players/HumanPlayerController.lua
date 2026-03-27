@@ -50,6 +50,11 @@ function HumanPlayerController:handleInput(userInput)
             self.player.selectedCard = nil
 
             return castResult
+        elseif userInput == "cancel" then
+            self.awaitingIncantation = false
+            self.incantation = nil
+            self.player.selectedCard = nil
+            return InputResult.IncantationCancelled
         else
             return InputResult.IncantationMismatch
         end
