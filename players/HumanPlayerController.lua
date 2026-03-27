@@ -71,7 +71,7 @@ function HumanPlayerController:handleInput(userInput)
         if userInput == card.name then
             self.player.selectedCard = card
             self.awaitingIncantation = true
-            self.incantation = self:generateIncantation(card.mana)
+            self.incantation = self:generateIncantation(card.incantationLength)
             return InputResult.CardSelected
         end
     end

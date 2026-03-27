@@ -15,7 +15,7 @@ function BaseCard:new(ctx, x, y)
 
         -- Attributes to be set by subclasses
         name = nil,
-        mana = nil,
+        incantationLength = nil,
         elem = nil,
         SpellClass = nil,
         spellData = nil,
@@ -46,9 +46,6 @@ function BaseCard:canCast(caster)
     if not caster:cardInHand(self) then
         return CastResult.CardNotInHand
     end
-    if not caster:canAfford(self.mana) then
-        return CastResult.InsufficientMana
-    end
     return CastResult.Success
 end
 
@@ -70,7 +67,7 @@ function BaseCard:draw()
     local fonts = self.ctx.fonts
     lg.setFont(fonts.fontM)
     lg.printf(self.name, self.x + margin, self.y, LARGE_CARD_WIDTH, "left")
-    lg.printf(self.mana, self.x - margin, self.y, LARGE_CARD_WIDTH, "right")
+    lg.printf("cast " .. self.incantationLength, self.x - margin, self.y, LARGE_CARD_WIDTH, "right")
     lg.setFont(fonts.fontS)
     lg.printf(self:getDescription(), self.x + margin, self.y + SPRITE_SIZE + margin * 2 + 16, SPRITE_SIZE, "left")
 end
@@ -85,7 +82,7 @@ function BaseCard:drawMini()
     lg.setColor(COLORS.BLACK)
     lg.setFont(fonts.fontM)
     lg.printf(self.name, self.x + margin, self.y - 4, MINI_CARD_WIDTH, "left")
-    lg.printf(self.mana, self.x - margin, self.y - 4, MINI_CARD_WIDTH, "right")
+    lg.printf(self.incantationLength, self.x - margin, self.y - 4, MINI_CARD_WIDTH, "right")
     lg.setFont(fonts.fontS)
     lg.printf(self:getDescription(), self.x + margin, self.y + 20, MINI_CARD_WIDTH - margin * 2, "left")
 end

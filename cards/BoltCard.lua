@@ -10,7 +10,7 @@ BoltCard.__index = BoltCard
 function BoltCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "bolt"
-    card.mana = 1
+    card.incantationLength = 1
     card.elem = "fire"
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 

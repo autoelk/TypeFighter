@@ -10,7 +10,7 @@ RageCard.__index = RageCard
 function RageCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "rage"
-    card.mana = 10
+    card.incantationLength = 10
     card.elem = "fire"
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 

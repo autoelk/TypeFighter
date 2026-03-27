@@ -9,14 +9,11 @@ function BasePlayer:new(ctx, character)
         isAlive = true,
         health = nil,
         healthRegen = nil,
-        mana = nil,
-        manaRegen = nil,
         stackEffects = {}, -- Map of name to stack effect
         durationEffects = {}, -- List of duration effects
         selectedCard = nil,
         
         -- Cards
-        picks = MAX_DECK_SIZE,
         hand = {}, -- Current cards in hand
         library = {}, -- All cards available to draw from
         deck = {} -- All cards owned by the player
@@ -29,8 +26,6 @@ function BasePlayer:reset()
     self.isAlive = true
     self.health = self.character.health
     self.healthRegen = self.character.healthRegen
-    self.mana = self.character.mana
-    self.manaRegen = self.character.manaRegen
     self.stackEffects = {}
     self.durationEffects = {}
     self.selectedCard = nil
@@ -46,9 +41,8 @@ function BasePlayer:reset()
     end
 end
 
--- Doesn't actually cast the card, just removes it from hand and deducts mana
+-- Doesn't actually cast the card, just removes it from hand
 function BasePlayer:castCard(card)
-    self.mana = self.mana - card.mana
     table.remove(self.hand, indexOf(self.hand, card))
     table.insert(self.library, card)
 end
@@ -69,14 +63,11 @@ end
 
 function BasePlayer:update(dt)
     self:updateEffects(dt)
-
-    self.mana = math.max(0, self.mana)
 end
 
 -- Add a card to the player's deck
 function BasePlayer:addCard(card)
     table.insert(self.deck, card)
-    self.picks = self.picks - 1
 end
 
 -- Remove a card from the player's deck
@@ -84,7 +75,6 @@ function BasePlayer:removeCard(card)
     local idx = indexOf(self.deck, card)
     if idx then
         table.remove(self.deck, idx)
-        self.picks = self.picks + 1
     end
 end
 
@@ -131,10 +121,6 @@ function BasePlayer:drawCard()
     table.insert(self.hand, self.library[1])
     table.remove(self.library, 1)
     return true
-end
-
-function BasePlayer:canAfford(manaCost)
-    return self.mana >= manaCost
 end
 
 function indexOf(array, value)

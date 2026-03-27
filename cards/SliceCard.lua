@@ -10,7 +10,7 @@ SliceCard.__index = SliceCard
 function SliceCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "slice"
-    card.mana = 15
+    card.incantationLength = 15
     card.elem = "fire"
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 

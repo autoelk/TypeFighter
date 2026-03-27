@@ -10,7 +10,7 @@ TyphoonCard.__index = TyphoonCard
 function TyphoonCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "typhoon"
-    card.mana = 50
+    card.incantationLength = 50
     card.elem = "water"
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 

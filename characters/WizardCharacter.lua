@@ -5,14 +5,14 @@ setmetatable(WizardCharacter, {
 WizardCharacter.__index = WizardCharacter
 
 function WizardCharacter:new()
-    local character = BaseCharacter:new("wizard", 50, 0, 0, 1)
+    local character = BaseCharacter:new("wizard", 50, 0)
     character.description = "hates doing anything other than damage."
 
     character.idleSprite = "wizardIdle"
     character.castSprite = "wizardCast"
     character.deathSprite = "wizardDeath"
 
-    character.startingDeck = {"bolt", "bolt", "torrent", "torrent", "gem"}
+    character.startingDeck = {"bolt", "bolt", "bolt", "bolt", "torrent", "fireball"}
 
     setmetatable(character, self)
     return character

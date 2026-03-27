@@ -94,7 +94,7 @@ function PlayerRenderer:draw(viewProps)
     viewProps = viewProps or {}
     self:drawChar()
     self:drawDamageDisplay()
-    self:drawHealthAndManaBars()
+    self:drawHealthBar()
     self:drawEffectsList()
     self:drawHand()
     self:drawLibrary(viewProps.drawWord)
@@ -143,21 +143,14 @@ function PlayerRenderer:drawDamageDisplay()
     end
 end
 
-function PlayerRenderer:drawHealthAndManaBars()
+function PlayerRenderer:drawHealthBar()
     local barScale = 2
     local healthSize = self.player.health * barScale
-    local manaSize = self.player.mana * barScale
 
     local healthX = self.uiX
-    local manaX = self.uiX
     if self.mirror then
         healthX = healthX - healthSize
-        manaX = manaX - manaSize
     end
-
-    -- Draw mana bar
-    lg.setColor(COLORS.BLUE)
-    lg.rectangle("fill", manaX, 64, manaSize, 32)
 
     -- Draw health bar with color based on health level
     if self.player.health <= 10 then
@@ -174,15 +167,13 @@ function PlayerRenderer:drawHealthAndManaBars()
         lg.setColor(COLORS.WHITE)
     end
 
-    -- Draw health and mana text
+    -- Draw health text
     local textAlign = "left"
     if self.mirror then
         textAlign = "right"
     end
     lg.setFont(self.ctx.fonts.fontL)
     lg.printf(math.ceil(self.player.health), self.textOffsetX, 8, GAME_WIDTH, textAlign)
-    lg.setColor(COLORS.WHITE)
-    lg.printf(math.floor(self.player.mana), self.textOffsetX, 56, GAME_WIDTH, textAlign)
 end
 
 function PlayerRenderer:drawEffectsList()

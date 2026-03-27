@@ -4,7 +4,6 @@ local SceneId = require "enums.SceneId"
 
 local castFailureMessages = {
     [InputResult.CastCard.CardNotInHand] = "card not in hand",
-    [InputResult.CastCard.InsufficientMana] = "insufficient mana",
     [InputResult.CastCard.InsufficientHealth] = "insufficient health",
     [InputResult.CastCard.CannotCast] = "cannot cast",
 }
@@ -64,12 +63,9 @@ function GameScene:enter()
     self.humanController:reset()
     self.enemyController:reset()
 
-    -- Apply starting effects, healing and mana regen
-    -- TODO: Figure out a better way to hide these effects
-    self.humanController.player:applyEffect(HealthRegenEffect:new("", self.humanController.player, nil, self.humanController.player.healthRegen))
-    self.humanController.player:applyEffect(ManaRegenEffect:new("", self.humanController.player, nil, self.humanController.player.manaRegen))
-    self.enemyController.player:applyEffect(HealthRegenEffect:new("", self.enemyController.player, nil, self.enemyController.player.healthRegen))
-    self.enemyController.player:applyEffect(ManaRegenEffect:new("", self.enemyController.player, nil, self.enemyController.player.manaRegen))
+    -- Apply starting effects
+    self.humanController.player:applyEffect(HealthRegenEffect:new("health regen", self.humanController.player, nil, self.humanController.player.healthRegen))
+    self.enemyController.player:applyEffect(HealthRegenEffect:new("health regen", self.enemyController.player, nil, self.enemyController.player.healthRegen))
 
     self.humanController.player.library = self.humanController.player.deck
     self.enemyController.player.library = self.enemyController.player.deck

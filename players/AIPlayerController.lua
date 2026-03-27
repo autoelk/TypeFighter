@@ -86,7 +86,7 @@ function AIPlayerController:chooseNextAction()
         if not self.player.selectedCard then
             action = "draw"
         else
-            self.incantation = string.rep(" ", self.player.selectedCard.mana)
+            self.incantation = string.rep(" ", self.player.selectedCard.incantationLength)
         end
     end
 

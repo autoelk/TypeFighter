@@ -1,17 +1,13 @@
 require "cards.BaseCard"
 require "cards.FireballCard"
 require "cards.HealCard"
-require "cards.GemCard"
 require "cards.BoltCard"
 require "cards.TorrentCard"
-require "cards.RitualCard"
 require "cards.PoisonCard"
 require "cards.RageCard"
 require "cards.BlessingCard"
 require "cards.TyphoonCard"
 require "cards.PunchCard"
-require "cards.ManatideCard"
-require "cards.ForceCard"
 require "cards.SliceCard"
 require "cards.PortalCard"
 
@@ -28,17 +24,13 @@ function CardManager:new(ctx)
         cardTypes = {
             ["fireball"] = FireballCard,
             ["heal"] = HealCard,
-            ["gem"] = GemCard,
             ["bolt"] = BoltCard,
             ["torrent"] = TorrentCard,
-            ["ritual"] = RitualCard,
             ["poison"] = PoisonCard,
             ["rage"] = RageCard,
             ["blessing"] = BlessingCard,
             ["typhoon"] = TyphoonCard,
             ["punch"] = PunchCard,
-            ["manatide"] = ManatideCard,
-            ["force"] = ForceCard,
             ["slice"] = SliceCard,
             ["portal"] = PortalCard
         },

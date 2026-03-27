@@ -10,7 +10,7 @@ HealCard.__index = HealCard
 function HealCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "heal"
-    card.mana = 5
+    card.incantationLength = 5
     card.elem = "earth"
     card.anim = ctx.resourceManager:newAnimation("card_heal")
 
