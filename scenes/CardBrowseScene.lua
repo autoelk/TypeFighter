@@ -23,8 +23,8 @@ function CardBrowseScene:new(ctx)
 end
 
 function CardBrowseScene:enter()
-    self.ctx.ui.messageLeft = ""
-    self.ctx.ui.messageRight = self.controlsHint
+    self.ctx.ui.messageLeft = self.controlsHint
+    self.ctx.ui.messageRight = ""
 end
 
 function CardBrowseScene:update(dt)

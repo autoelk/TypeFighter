@@ -27,8 +27,8 @@ function PauseScene:enter()
     self.prevUI.messageLeft = self.ctx.ui.messageLeft
     self.prevUI.messageRight = self.ctx.ui.messageRight
     self.prevUI.input = self.ctx.ui.input
-    self.ctx.ui.messageLeft = ""
-    self.ctx.ui.messageRight = self.controlsHint
+    self.ctx.ui.messageLeft = self.controlsHint
+    self.ctx.ui.messageRight = ""
     self.ctx.ui.input = ""
 end
 

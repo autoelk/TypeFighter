@@ -40,8 +40,8 @@ function StageEndScene:enter()
         self.message = "stage end"
     end
 
-    self.ctx.ui.messageLeft = ""
-    self.ctx.ui.messageRight = self.controlsHint
+    self.ctx.ui.messageLeft = self.controlsHint
+    self.ctx.ui.messageRight = ""
 end
 
 function StageEndScene:exit()

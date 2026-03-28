@@ -29,8 +29,8 @@ end
 
 function CharacterSelectScene:enter()
     self.ctx.ui.input = ""
-    self.ctx.ui.messageLeft = "choose your character"
-    self.ctx.ui.messageRight = self.controlsHint
+    self.ctx.ui.messageLeft = self.controlsHint
+    self.ctx.ui.messageRight = "choose your character"
     self.charSelected = nil
     self.charMargin = 200 -- Distance between characters
     self.startX = (GAME_WIDTH + self.charMargin - #self.controllers * (SPRITE_SIZE + self.charMargin)) / 2
@@ -89,14 +89,14 @@ function CharacterSelectScene:handleInput(userInput)
         local char = controller.player.character
         if userInput == char.name then
             self.charSelected = controller
-            self.ctx.ui.messageLeft = "selected " .. char.name
+            self.ctx.ui.messageRight = "selected " .. char.name
             return
         end
     end
 
     if userInput == "play" then
         if not self.charSelected then
-            self.ctx.ui.messageLeft = "please select a character first"
+            self.ctx.ui.messageRight = "please select a character first"
             return
         end
 
@@ -113,7 +113,7 @@ function CharacterSelectScene:handleInput(userInput)
         if self.charSelected then
             -- Deselect the character
             self.charSelected = nil
-            self.ctx.ui.messageLeft = "choose your character"
+            self.ctx.ui.messageRight = "choose your character"
         else
             self.ctx.sceneManager:changeScene(SceneId.Menu)
         end

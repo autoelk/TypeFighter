@@ -113,8 +113,12 @@ function BasePlayer:updateEffects(dt)
     end
 end
 
+function BasePlayer:canDrawCard()
+    return #self.hand < MAX_HAND_SIZE and #self.library > 0
+end
+
 function BasePlayer:drawCard()
-    if #self.hand >= MAX_HAND_SIZE then
+    if not self:canDrawCard() then
         return false
     end
 

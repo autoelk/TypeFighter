@@ -18,7 +18,7 @@ GameScene.__index = GameScene
 function GameScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = SceneId.Game
-    scene.controlsHint = "[quit] to menu, [pause]"
+    scene.controlsHint = "[quit] to menu, [pause]" -- Unused for now
     scene:addAvailableCommand("quit", true)
     scene:addAvailableCommand("pause", true)
     scene.humanController = nil
@@ -80,8 +80,8 @@ function GameScene:enter()
 
     -- Set game interface messages
     self.ctx.ui.input = ""
-    self.ctx.ui.messageLeft = "type card name, then type the incantation to cast"
-    self.ctx.ui.messageRight = self.controlsHint
+    self.ctx.ui.messageLeft = self.controlsHint
+    self.ctx.ui.messageRight = "type card name, then type the incantation to cast"
 
     -- Initialize active spells list for this game
     self.activeSpells = {}
@@ -117,8 +117,9 @@ function GameScene:refreshAvailableCommands()
     self.availableCommands = {}
     if self.humanController.awaitingIncantation and self.humanController.incantation then
         self:addAvailableCommand(self.humanController.incantation, false)
-        self:addAvailableCommand("cancel", true)
-        self.ctx.ui.messageRight = "type incantation above to cast, or type [cancel] to quit casting"
+        self:addAvailableCommand("quit", true)
+        self.ctx.ui.messageLeft = tostring(self.humanController.incantation)
+        self.ctx.ui.messageRight = "type incantation above to cast"
     else
         for i = 1, #self.humanController.player.hand do
             self:addAvailableCommand(self.humanController.player.hand[i].name, false)
@@ -126,7 +127,12 @@ function GameScene:refreshAvailableCommands()
         self:addAvailableCommand(self.humanController.drawWord, false)
         self:addAvailableCommand("pause", true)
         self:addAvailableCommand("quit", true)
-        self.ctx.ui.messageRight = self.controlsHint
+        -- self.ctx.ui.messageLeft = self.humanController.drawWord
+        if self.humanController.player:canDrawCard() then
+            self.ctx.ui.messageRight = "type \"" .. self.humanController.drawWord .. "\" to draw, or type card name to cast"
+        else
+            self.ctx.ui.messageRight = "type card name to cast"
+        end
     end
 end
 
@@ -152,6 +158,9 @@ function GameScene:drawInputInterface()
     local isTyping = ui.input ~= ""
     if text == "" then
         text = ui.messageLeft or ""
+        if text == "" and self.humanController.awaitingIncantation and self.humanController.incantation then
+            text = tostring(self.humanController.incantation)
+        end
         color = COLORS.GREY
     end
 
@@ -180,7 +189,7 @@ function GameScene:drawInputInterface()
     lg.setColor(color)
     lg.printf(text, x + 8, y, barWidth - 16, "left")
 
-    -- Control hint
+    -- Feedback (instructions / errors) below the bar
     lg.setFont(self.ctx.fonts.fontS)
     lg.setColor(COLORS.WHITE)
     lg.printf(ui.messageRight, x + 8, y + barHeight + 4, barWidth - 16, "left")
@@ -195,7 +204,7 @@ function GameScene:keypressed(key)
 end
 
 function GameScene:handleInput(userInput)
-    if userInput == "quit" then
+    if not self.humanController.awaitingIncantation and userInput == "quit" then
         self.ctx.sceneManager:changeScene(SceneId.Menu)
         return
     elseif userInput == "pause" then
@@ -205,21 +214,17 @@ function GameScene:handleInput(userInput)
 
     local result = self.humanController:handleInput(userInput)
     if result == InputResult.DrawFail then
-        self.ctx.ui.messageLeft = "CANNOT DRAW"
+        self.ctx.ui.messageRight = "you failed to draw a card"
     elseif result == InputResult.DrawSuccess then
-        -- self.ctx.ui.messageLeft = "drew a card"
-    elseif result == InputResult.CardSelected then
-        self.ctx.ui.messageLeft = tostring(self.humanController.incantation)
-    elseif result == InputResult.IncantationMismatch then
-        self.ctx.ui.messageLeft = tostring(self.humanController.incantation)
+        -- self.ctx.ui.messageRight = "drew a card"
     elseif result == InputResult.IncantationCancelled then
-        self.ctx.ui.messageLeft = "CANCELLED CASTING " .. tostring(self.humanController.lastAttemptedCardName)
+        self.ctx.ui.messageRight = "you cancelled casting " .. tostring(self.humanController.lastAttemptedCardName)
     elseif result == InputResult.CastCard.Success then
-        -- self.ctx.ui.messageLeft = "cast " .. tostring(self.humanController.lastAttemptedCardName)
+        -- self.ctx.ui.messageRight = "you cast " .. tostring(self.humanController.lastAttemptedCardName)
     elseif castFailureMessages[result] then
-        self.ctx.ui.messageLeft = "CANNOT CAST " .. tostring(self.humanController.lastAttemptedCardName) .. ": " .. castFailureMessages[result]
+        self.ctx.ui.messageRight = "you cannot cast " .. tostring(self.humanController.lastAttemptedCardName) .. ": " .. castFailureMessages[result]
     elseif result == InputResult.Unknown then
-        self.ctx.ui.messageLeft = "UNKNOWN COMMAND \"" .. userInput .. "\""
+        self.ctx.ui.messageRight = "unknown command \"" .. userInput .. "\""
     end
 
     -- Available commands should only change when the user types a new command

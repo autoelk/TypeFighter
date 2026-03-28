@@ -25,8 +25,8 @@ function InstructionsScene:enter()
         self.ctx.sceneManager:popScene()
         return
     end
-    self.ctx.ui.messageLeft = ""
-    self.ctx.ui.messageRight = self.controlsHint
+    self.ctx.ui.messageLeft = self.controlsHint
+    self.ctx.ui.messageRight = ""
     self.timeLeft = 20
 end
 
@@ -57,14 +57,14 @@ end
 
 function InstructionsScene:exit()
     self.seen = true
-    self.ctx.ui.messageLeft = ""
+    self.ctx.ui.messageRight = ""
 
-    -- Revert to message hint of scene from below
+    -- Revert to control hint of scene from below
     local currentScene = self.ctx.sceneManager:getCurrentScene()
     if currentScene then
-        self.ctx.ui.messageRight = currentScene.controlsHint
+        self.ctx.ui.messageLeft = currentScene.controlsHint
     else
-        self.ctx.ui.messageRight = self.controlsHint
+        self.ctx.ui.messageLeft = self.controlsHint
     end
 end
 

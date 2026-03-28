@@ -96,7 +96,7 @@ end
 
 function SceneManager:textinput(t)
     self.ctx.ui.input = self.ctx.ui.input .. t
-    self.ctx.ui.messageLeft = "" -- Clear message when user starts typing
+    self.ctx.ui.messageLeft = "" -- Clears placeholder that shares the input area
     self:getCurrentScene():textinput(t)
 end
 

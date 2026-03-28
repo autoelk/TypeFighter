@@ -20,8 +20,8 @@ function GameOverScene:new(ctx)
 end
 
 function GameOverScene:enter()
-    self.ctx.ui.messageLeft = ""
-    self.ctx.ui.messageRight = self.controlsHint
+    self.ctx.ui.messageLeft = self.controlsHint
+    self.ctx.ui.messageRight = ""
     self.gameOverMessage = "game over"
 end
 
