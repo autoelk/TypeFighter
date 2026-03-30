@@ -45,9 +45,6 @@ end
 
 -- Check if we are able to cast the card, returns failure reason if not
 function BaseCard:canCast(caster)
-    if not caster:cardInHand(self) then
-        return CastResult.CardNotInHand
-    end
     return CastResult.Success
 end
 

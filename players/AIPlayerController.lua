@@ -1,4 +1,5 @@
 local CastResult = require "enums.CastResult"
+require "players.AIPlayerRenderer"
 
 AIPlayerController = {}
 setmetatable(AIPlayerController, {
@@ -7,7 +8,7 @@ setmetatable(AIPlayerController, {
 AIPlayerController.__index = AIPlayerController
 
 function AIPlayerController:new(ctx, player, difficulty)
-    local controller = BasePlayerController:new(ctx, player)
+    local controller = BasePlayerController:new(ctx, player, AIPlayerRenderer:new(ctx, player))
     controller.isHuman = false
     controller.tint = COLORS.RED
 
@@ -50,8 +51,7 @@ function AIPlayerController:updateActions(dt)
         elseif self.intendedAction == "incant" then
             self.actionTime = self.actionBuffer
         elseif self.intendedAction == "cast" and self.player.selectedCard then
-            self:castCard(self.player.selectedCard)
-            self.player.selectedCard = nil
+            self:castSelectedCard()
             self.actionTime = self.actionBuffer
         end
         self.intendedAction = nil
@@ -82,17 +82,19 @@ function AIPlayerController:chooseNextAction()
         action = "cast"
     else
         action = "incant"
-        self.player.selectedCard = self:chooseNextCard()
-        if not self.player.selectedCard then
-            action = "draw"
-        else
+        
+        if self:chooseNextCard() then
             self.incantation = string.rep(" ", self.player.selectedCard.incantationLength)
+        else
+            action = "draw"
         end
     end
 
     return action
 end
 
+-- Choose a card to cast from the player's hand
+-- Returns true if a card was chosen, false if not
 function AIPlayerController:chooseNextCard()
     local availableCards = {}
     for _, card in ipairs(self.player.hand) do
@@ -102,7 +104,10 @@ function AIPlayerController:chooseNextCard()
     end
 
     if #availableCards > 0 then
-        return availableCards[math.random(1, #availableCards)]
+        local card = availableCards[math.random(1, #availableCards)]
+        self.player.selectedCard = card
+        table.remove(self.player.hand, indexOf(self.player.hand, card))
+        return true
     end
-    return nil
+    return false
 end

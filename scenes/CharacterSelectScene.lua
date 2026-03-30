@@ -37,7 +37,6 @@ function CharacterSelectScene:enter()
 
     for i, controller in ipairs(self.controllers) do
         controller:reset()
-        controller.player.hand = controller.player.deck
     end
 end
 
@@ -49,7 +48,16 @@ function CharacterSelectScene:update(dt)
         end
     else
         self.charSelected.renderer:updateCharAnimations(dt)
-        self.charSelected.renderer:updateHand(dt)
+        
+        local deckX = 600
+        local deckY = 200
+        local margin = 8
+        local cardsPerCol = 3   
+        for i, card in ipairs(self.charSelected.player.deck) do
+            local col = math.floor((i - 1) / cardsPerCol)
+            local row = (i - 1) % cardsPerCol
+            card:move(deckX + col * (MINI_CARD_WIDTH + margin), deckY + row * (MINI_CARD_HEIGHT + margin))
+        end
     end
 end
 
@@ -80,7 +88,10 @@ function CharacterSelectScene:draw()
 
         self.charSelected.renderer.x = 256
         self.charSelected.renderer:drawChar()
-        self.charSelected.renderer:drawHand()
+        
+        for i, card in ipairs(self.charSelected.player.deck) do
+            card:drawMini()
+        end
     end
 end
 

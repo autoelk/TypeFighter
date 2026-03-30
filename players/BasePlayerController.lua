@@ -1,18 +1,18 @@
-require "players.PlayerRenderer"
+require "players.BasePlayerRenderer"
 local CastResult = require "enums.CastResult"
 
 -- Abstract controller class for players
 BasePlayerController = {}
 BasePlayerController.__index = BasePlayerController
 
-function BasePlayerController:new(ctx, player)
+function BasePlayerController:new(ctx, player, renderer)
     if not ctx then
         error("BasePlayerController:new(ctx, player) requires ctx")
     end
     local controller = {
         ctx = ctx,
         player = player,
-        renderer = PlayerRenderer:new(ctx, player),
+        renderer = renderer,
         isHuman = nil,
         opponent = nil,
     }
@@ -51,11 +51,16 @@ function BasePlayerController:damage(amount)
     self.player:damage(amount)
 end
 
-function BasePlayerController:castCard(card)
-    local castResult = card:canCast(self.player)
+function BasePlayerController:castSelectedCard()
+    if not self.player.selectedCard then
+        return
+    end
+
+    local card = self.player.selectedCard
+    local castResult = card:canCast(self.player)    
     if castResult == CastResult.Success then
         self.renderer:startCastAnimation()
-        self.player:castCard(card)
+        self.player:castSelectedCard()
         local spell = card:cast(self, self:getOpponent())
         table.insert(self.ctx.sceneManager:getCurrentScene().activeSpells, spell)
     end

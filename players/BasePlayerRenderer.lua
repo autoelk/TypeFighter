@@ -1,8 +1,8 @@
--- View class for a player
-PlayerRenderer = {}
-PlayerRenderer.__index = PlayerRenderer
+-- Abstract view class for a player
+BasePlayerRenderer = {}
+BasePlayerRenderer.__index = BasePlayerRenderer
 
-function PlayerRenderer:new(ctx, player)
+function BasePlayerRenderer:new(ctx, player)
     local renderer = {
         ctx = ctx,
         player = player,
@@ -19,16 +19,12 @@ function PlayerRenderer:new(ctx, player)
         isCasting = false,
         castAnimFinished = false,
 
-        libraryX = nil,
-        libraryY = 80,
-        handX = nil,
-
         damageDisplays = {}
     }
     return setmetatable(renderer, self)
 end
 
-function PlayerRenderer:reset()
+function BasePlayerRenderer:reset()
     self.isCasting = false
 
     self.deathAnim.currentFrame = 1
@@ -41,11 +37,11 @@ function PlayerRenderer:reset()
     self.damageDisplays = {}
 end
 
-function PlayerRenderer:isMirrored()
+function BasePlayerRenderer:isMirrored()
     return self.mirror
 end
 
-function PlayerRenderer:showDamage(amount)
+function BasePlayerRenderer:showDamage(amount)
     if amount == 0 then
         return
     end
@@ -82,23 +78,21 @@ function PlayerRenderer:showDamage(amount)
     end
 end
 
-function PlayerRenderer:startCastAnimation()
+function BasePlayerRenderer:startCastAnimation()
     self.isCasting = true
     self.castAnim.currentFrame = 1
     self.castAnim.accumulator = 0
 end
 
-function PlayerRenderer:draw(viewProps)
-    viewProps = viewProps or {}
-    self:drawHealthBar()
+function BasePlayerRenderer:draw()
     self:drawChar()
-    self:drawDamageDisplay()
+    self:drawHealthBar()
     self:drawEffectsList()
-    self:drawHand()
-    self:drawLibrary(viewProps.drawWord)
+    self:drawSelectedCard()
+    self:drawDamageDisplay()
 end
 
-function PlayerRenderer:drawChar()
+function BasePlayerRenderer:drawChar()
     lg.setColor(self.tint)
     local scaleX = PIXEL_TO_GAME_SCALE
     local x = self.x
@@ -120,7 +114,7 @@ function PlayerRenderer:drawChar()
 end
 
 -- Display damage or healing above the character
-function PlayerRenderer:drawDamageDisplay()
+function BasePlayerRenderer:drawDamageDisplay()
     if #self.damageDisplays == 0 then
         return
     end
@@ -141,7 +135,7 @@ function PlayerRenderer:drawDamageDisplay()
     end
 end
 
-function PlayerRenderer:drawHealthBar()
+function BasePlayerRenderer:drawHealthBar()
     --[[
     -- Draw vertical health bar
     local healthBarWidth = SPRITE_SIZE
@@ -172,7 +166,7 @@ function PlayerRenderer:drawHealthBar()
     lg.printf(math.ceil(self.player.health), self.x, self.y - 20, SPRITE_SIZE, "center")
 end
 
-function PlayerRenderer:drawEffectsList()
+function BasePlayerRenderer:drawEffectsList()
     local stackEffects = self:drawStackEffectsHelper()
     local durationEffects = self:drawDurationEffectsHelper()
     local effects = {}
@@ -198,7 +192,7 @@ function PlayerRenderer:drawEffectsList()
     end
 end
 
-function PlayerRenderer:drawStackEffectsHelper()
+function BasePlayerRenderer:drawStackEffectsHelper()
     local stackEffects = {}
     for _, effect in pairs(self.player.stackEffects) do
         local eff = {
@@ -221,7 +215,7 @@ function PlayerRenderer:drawStackEffectsHelper()
     return stackEffects
 end
 
-function PlayerRenderer:drawDurationEffectsHelper()
+function BasePlayerRenderer:drawDurationEffectsHelper()
     local durationEffects = {}
     for _, effect in ipairs(self.player.durationEffects) do
         local eff = {
@@ -244,68 +238,21 @@ function PlayerRenderer:drawDurationEffectsHelper()
     return durationEffects
 end
 
--- Draw cards in hand as mini cards
-function PlayerRenderer:drawHand()
-    for i, card in ipairs(self.player.hand) do
-        card:drawMini()
-    end
+function BasePlayerRenderer:drawSelectedCard()
+    error("BasePlayerRenderer:drawSelectedCard() must be implemented by subclass")
 end
 
--- Draw library with draw word or card back
-function PlayerRenderer:drawLibrary(drawWord)
-    local fonts = self.ctx.fonts
-    local x, y = self.libraryX, self.libraryY
-    local w = MINI_CARD_WIDTH
-
-    local function drawLibrarySlot(lineSmallTop, lineLarge, lineSmallBottom, bgColor, fgColor)
-        lg.setColor(bgColor)
-        lg.rectangle("fill", x, y, w, MINI_CARD_HEIGHT)
-        lg.setColor(fgColor)
-        lg.setFont(fonts.fontS)
-        lg.printf(lineSmallTop, x, y + 4, w, "center")
-        lg.setFont(fonts.fontL)
-        lg.printf(lineLarge, x, y + 8, w, "center")
-        lg.setFont(fonts.fontS)
-        lg.printf(lineSmallBottom, x, y + 44, w, "center")
-    end
-
-    for i, card in ipairs(self.player.library) do
-        if card.x ~= self.libraryX or card.y ~= self.libraryY then
-            card:drawMini()
-        end
-    end
-
-    local cantDraw = "so you can't draw"
-    if self.player.isAlive and #self.player.library == 0 then
-        drawLibrarySlot("your library is", "empty", cantDraw, COLORS.GREY, COLORS.WHITE)
-    elseif #self.player.hand >= MAX_HAND_SIZE then
-        drawLibrarySlot("your hand is", "full", cantDraw, COLORS.GREY, COLORS.WHITE)
-    elseif drawWord ~= nil then
-        drawLibrarySlot("type", drawWord, "to draw", COLORS.YELLOW, COLORS.BLACK)
-    else
-        drawLibrarySlot("this is the", "library", "of the enemy", COLORS.YELLOW, COLORS.BLACK)
-    end
-end
-
--- Draw all cards in deck, only used in CardSelectScene
-function PlayerRenderer:drawDeck()
-    for i, card in ipairs(self.player.deck) do
-        card:drawMini()
-    end
-end
-
-function PlayerRenderer:update(dt)
+function BasePlayerRenderer:update(dt)
     self:updateDamageDisplay(dt)
     self:updateCharAnimations(dt)
-    self:updateHand(dt)
-    self:updateLibrary(dt)
+    self:updateSelectedCard(dt)
 end
 
-function PlayerRenderer:updateDamageDisplay(dt)
+function BasePlayerRenderer:updateDamageDisplay(dt)
     if #self.damageDisplays == 0 then
         return
     end
-
+    
     for i = #self.damageDisplays, 1, -1 do
         local display = self.damageDisplays[i]
         display.timeLeft = display.timeLeft - dt
@@ -315,7 +262,7 @@ function PlayerRenderer:updateDamageDisplay(dt)
     end
 end
 
-function PlayerRenderer:updateCharAnimations(dt)
+function BasePlayerRenderer:updateCharAnimations(dt)
     if not self.player.isAlive then
         self.deathAnim.accumulator = self.deathAnim.accumulator + dt
         while self.deathAnim.accumulator >= self.deathAnim.frameDuration do
@@ -351,33 +298,6 @@ function PlayerRenderer:updateCharAnimations(dt)
     end
 end
 
--- Update positions of cards in hand
-function PlayerRenderer:updateHand(dt)
-    local margin = 8
-    local afterSelectedCard = 0
-    for i, card in ipairs(self.player.hand) do
-        local destX = self.handX
-        local destY = (MINI_CARD_HEIGHT + margin) * (i - afterSelectedCard) + 100
-        if card == self.player.selectedCard then
-            destX = self.x
-            destY = self.y - SPRITE_SIZE - 8
-            afterSelectedCard = 1
-        end
-        card:move(destX, destY)
-    end
-end
-
-function PlayerRenderer:updateLibrary(dt)
-    for i, card in ipairs(self.player.library) do
-        card:move(self.libraryX, self.libraryY)
-    end
-end
-
--- Update positions of cards in deck, only used in CardSelectScene
-function PlayerRenderer:updateDeck(dt)
-    local margin = 8
-    local deckX = self.handX
-    for i, card in ipairs(self.player.deck) do
-        card:move(deckX, (MINI_CARD_HEIGHT + margin) * i + 100)
-    end
+function BasePlayerRenderer:updateSelectedCard(dt)
+    error("BasePlayerRenderer:updateSelectedCard(dt) must be implemented by subclass")
 end

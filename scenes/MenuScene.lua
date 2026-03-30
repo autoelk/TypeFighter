@@ -17,11 +17,11 @@ function MenuScene:new(ctx)
     scene:addAvailableCommand("quit", true)
 
     -- Load characters for display
-    scene.leftRenderer = PlayerRenderer:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter("wizard")))
+    scene.leftRenderer = BasePlayerRenderer:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter("wizard")))
     scene.leftRenderer.x = 320
     scene.leftRenderer.mirror = false
 
-    scene.rightRenderer = PlayerRenderer:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter("wizard")))
+    scene.rightRenderer = BasePlayerRenderer:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter("wizard")))
     scene.rightRenderer.x = GAME_WIDTH - 320 - SPRITE_SIZE
     scene.rightRenderer.mirror = true
     scene.rightRenderer.tint = COLORS.RED

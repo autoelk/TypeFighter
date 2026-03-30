@@ -1,4 +1,5 @@
 local InputResult = require "enums.InputResult"
+require "players.HumanPlayerRenderer"
 
 HumanPlayerController = {}
 setmetatable(HumanPlayerController, {
@@ -7,10 +8,9 @@ setmetatable(HumanPlayerController, {
 HumanPlayerController.__index = HumanPlayerController
 
 function HumanPlayerController:new(ctx, player)
-    local controller = BasePlayerController:new(ctx, player)
+    local controller = BasePlayerController:new(ctx, player, HumanPlayerRenderer:new(ctx, player))
     controller.isHuman = true
     controller.drawWord = ctx.resourceManager:getRandomWord()
-    controller.awaitingIncantation = false
     controller.incantation = nil
     controller.lastAttemptedCardName = nil
 
@@ -20,13 +20,12 @@ end
 function HumanPlayerController:reset()
     BasePlayerController.reset(self)
     self.drawWord = self.ctx.resourceManager:getRandomWord()
-    self.awaitingIncantation = false
     self.incantation = nil
     self.lastAttemptedCardName = nil
 end
 
 function HumanPlayerController:draw()
-    self.renderer:draw({ drawWord = self.drawWord })
+    self.renderer:draw(self.drawWord)
 end
 
 function HumanPlayerController:generateIncantation(length)
@@ -39,26 +38,6 @@ function HumanPlayerController:generateIncantation(length)
 end
 
 function HumanPlayerController:handleInput(userInput)
-    if self.awaitingIncantation then
-        if userInput == self.incantation and self.player.selectedCard then
-            self.lastAttemptedCardName = self.player.selectedCard.name
-            local castResult = self:castCard(self.player.selectedCard)
-
-            self.awaitingIncantation = false
-            self.incantation = nil
-            self.player.selectedCard = nil
-
-            return castResult
-        elseif userInput == "quit" then
-            self.awaitingIncantation = false
-            self.incantation = nil
-            self.player.selectedCard = nil
-            return InputResult.IncantationCancelled
-        else
-            return InputResult.IncantationMismatch
-        end
-    end
-
     if self.drawWord ~= "" and userInput == self.drawWord then
         if not self:drawCard() then
             return InputResult.DrawFail
@@ -69,13 +48,29 @@ function HumanPlayerController:handleInput(userInput)
     for _, card in ipairs(self.player.hand) do
         if userInput == card.name then
             self.player.selectedCard = card
-            self.awaitingIncantation = true
+            table.remove(self.player.hand, indexOf(self.player.hand, card))
             self.incantation = self:generateIncantation(card.incantationLength)
             return InputResult.CardSelected
         end
     end
     
     return InputResult.Unknown
+end
+
+function HumanPlayerController:handleIncantationInput(userInput)
+    if userInput == self.incantation and self.player.selectedCard then
+        self.lastAttemptedCardName = self.player.selectedCard.name
+        local castResult = self:castSelectedCard()
+        self.incantation = nil
+
+        return castResult
+    elseif userInput == "quit" then
+        self.incantation = nil
+        self.player.selectedCard = nil
+        return InputResult.IncantationCancelled
+    else
+        return InputResult.IncantationMismatch
+    end
 end
 
 function HumanPlayerController:drawCard()

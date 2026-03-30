@@ -39,10 +39,12 @@ function BasePlayer:reset()
     end
 end
 
--- Doesn't actually cast the card, just removes it from hand
-function BasePlayer:castCard(card)
-    table.remove(self.hand, indexOf(self.hand, card))
-    table.insert(self.library, card)
+function BasePlayer:castSelectedCard()
+    if not self.selectedCard then
+        return
+    end
+    table.insert(self.library, self.selectedCard)
+    self.selectedCard = nil
 end
 
 function BasePlayer:cardInHand(card)

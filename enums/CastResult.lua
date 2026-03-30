@@ -1,6 +1,5 @@
 local CastResult = {
     Success = {},
-    CardNotInHand = {},
     InsufficientHealth = {},
     CannotCast = {}
 }
