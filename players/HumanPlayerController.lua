@@ -30,10 +30,9 @@ end
 
 function HumanPlayerController:generateIncantation(length)
     local result = ""
-    while #result < length do
+    for i = 1, length do
         result = result .. " " .. self.ctx.resourceManager:getRandomWord()
     end
-
     return string.sub(result, 2)
 end
 

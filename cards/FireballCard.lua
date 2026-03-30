@@ -10,7 +10,7 @@ FireballCard.__index = FireballCard
 function FireballCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "fireball"
-    card.incantationLength = 3
+    card.incantationLength = 1
     card:setCharacter("wizard")
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 

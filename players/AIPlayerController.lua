@@ -84,7 +84,8 @@ function AIPlayerController:chooseNextAction()
         action = "incant"
         
         if self:chooseNextCard() then
-            self.incantation = string.rep(" ", self.player.selectedCard.incantationLength)
+            -- Assume average word length is 5 characters
+            self.incantation = string.rep(" ", self.player.selectedCard.incantationLength * 5)
         else
             action = "draw"
         end
