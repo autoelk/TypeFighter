@@ -2,11 +2,11 @@ local SceneId = {
     Menu = "menu",
     CardBrowse = "cardBrowse",
     CharacterSelect = "characterSelect",
-    Game = "game",
+    Battle = "battle",
     Pause = "pause",
     GameOver = "gameOver",
     Instructions = "instructions",
-    StageEnd = "stageEnd",
+    BattleEnd = "battleEnd",
 }
 
 return setmetatable(SceneId, {

@@ -7,16 +7,16 @@ local castFailureMessages = {
     [InputResult.CastCard.CannotCast] = "cannot cast",
 }
 
--- Game Scene (main gameplay), represents a single match between two players
-GameScene = {}
-setmetatable(GameScene, {
+-- Battle Scene, represents a single match between two players
+BattleScene = {}
+setmetatable(BattleScene, {
     __index = BaseScene
 })
-GameScene.__index = GameScene
+BattleScene.__index = BattleScene
 
-function GameScene:new(ctx)
+function BattleScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
-    scene.name = SceneId.Game
+    scene.name = SceneId.Battle
     scene.controlsHint = "[quit] to menu, [pause]" -- Unused for now
     scene:addAvailableCommand("quit", true)
     scene:addAvailableCommand("pause", true)
@@ -28,7 +28,7 @@ function GameScene:new(ctx)
     return scene
 end
 
-function GameScene:setHumanController(controller)
+function BattleScene:setHumanController(controller)
     self.humanController = controller
     if self.enemyController ~= nil then
         self.humanController:setOpponent(self.enemyController)
@@ -36,7 +36,7 @@ function GameScene:setHumanController(controller)
     end
 end
 
-function GameScene:setEnemyController(controller)
+function BattleScene:setEnemyController(controller)
     self.enemyController = controller
     if self.humanController ~= nil then
         self.humanController:setOpponent(self.enemyController)
@@ -44,7 +44,7 @@ function GameScene:setEnemyController(controller)
     end
 end
 
-function GameScene:enter()
+function BattleScene:enter()
     -- Initialize players for gameplay
     self.humanController:reset()
     self.enemyController:reset()
@@ -90,7 +90,7 @@ function GameScene:enter()
     self:refreshAvailableCommands()
 end
 
-function GameScene:update(dt)
+function BattleScene:update(dt)
     self.humanController:update(dt)
     self.enemyController:update(dt)
 
@@ -109,12 +109,12 @@ function GameScene:update(dt)
             self.ctx.sceneManager:changeScene(SceneId.GameOver)
         elseif not self.enemyController.player.isAlive then
             self.gameOverTriggered = true
-            self.ctx.sceneManager:pushScene(SceneId.StageEnd)
+            self.ctx.sceneManager:pushScene(SceneId.BattleEnd)
         end
     end
 end
 
-function GameScene:refreshAvailableCommands()
+function BattleScene:refreshAvailableCommands()
     self.availableCommands = {}
     if self.inputBarState == "incantation" then
         self:addAvailableCommand(self.humanController.incantation, false)
@@ -137,7 +137,7 @@ function GameScene:refreshAvailableCommands()
     end
 end
 
-function GameScene:draw()
+function BattleScene:draw()
     self.humanController:draw()
     self.enemyController:draw()
 
@@ -151,7 +151,7 @@ function GameScene:draw()
 end
 
 -- Spotlight/search-style input bar for the main gameplay scene.
-function GameScene:drawInputInterface()
+function BattleScene:drawInputInterface()
     local ui = self.ctx.ui
 
     local text = ui.input
@@ -196,7 +196,7 @@ function GameScene:drawInputInterface()
     lg.printf(ui.messageRight, x + 8, y + barHeight + 4, barWidth - 16, "left")
 end
 
-function GameScene:keypressed(key)
+function BattleScene:keypressed(key)
     BaseScene.keypressed(self, key)
 
     if key == "escape" then
@@ -204,7 +204,7 @@ function GameScene:keypressed(key)
     end
 end
 
-function GameScene:handleInput(userInput)
+function BattleScene:handleInput(userInput)
     if self.inputBarState == "normal" and userInput == "quit" then
         self.ctx.sceneManager:changeScene(SceneId.Menu)
         return

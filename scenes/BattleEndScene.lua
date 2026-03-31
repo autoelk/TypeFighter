@@ -1,16 +1,16 @@
 require "scenes.BaseScene"
 local SceneId = require "enums.SceneId"
 
--- Stage End Scene: handles post-battle routing in a linear run
-StageEndScene = {}
-setmetatable(StageEndScene, {
+-- Battle End Scene
+BattleEndScene = {}
+setmetatable(BattleEndScene, {
     __index = BaseScene
 })
-StageEndScene.__index = StageEndScene
+BattleEndScene.__index = BattleEndScene
 
-function StageEndScene:new(ctx)
+function BattleEndScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
-    scene.name = SceneId.StageEnd
+    scene.name = SceneId.BattleEnd
     scene.controlsHint = "[play] next level, [quit]"
     scene:addAvailableCommand("play", true)
     scene:addAvailableCommand("quit", true)
@@ -18,10 +18,10 @@ function StageEndScene:new(ctx)
     return scene
 end
 
-function StageEndScene:enter()
+function BattleEndScene:enter()
     -- Pause underlying game updates while on overlay
     self.ctx.sceneManager:pause(true)
-    local game = self.ctx.sceneManager:getScene(SceneId.Game)
+    local game = self.ctx.sceneManager:getScene(SceneId.Battle)
     local p1Alive = game.humanController.player.isAlive
     local p2Alive = game.enemyController.player.isAlive
 
@@ -45,11 +45,11 @@ function StageEndScene:enter()
     self.ctx.ui.messageRight = ""
 end
 
-function StageEndScene:exit()
+function BattleEndScene:exit()
     self.ctx.sceneManager:pause(false)
 end
 
-function StageEndScene:draw()
+function BattleEndScene:draw()
     local fonts = self.ctx.fonts
     -- Dim the background
     lg.setColor(0, 0, 0, 0.5)
@@ -64,21 +64,21 @@ function StageEndScene:draw()
 end
 
 local function restartStage(scene)
-    -- Reconfigure GameScene for the current stage and restart
-    local game = scene.ctx.sceneManager:getScene(SceneId.Game)
+    -- Reconfigure BattleScene for the current stage and restart
+    local game = scene.ctx.sceneManager:getScene(SceneId.Battle)
     local rs = scene.ctx.runState
     local playerCharName = rs.playerCharacterName
     local oppName = rs:getCurrentOpponent()
     
     game:setHumanController(HumanPlayerController:new(scene.ctx, BasePlayer:new(scene.ctx, scene.ctx.characterManager:createCharacter(playerCharName))))
     game:setEnemyController(AIPlayerController:new(scene.ctx, BasePlayer:new(scene.ctx, scene.ctx.characterManager:createCharacter(oppName)), "normal"))
-    scene.ctx.sceneManager:changeScene(SceneId.Game)
+    scene.ctx.sceneManager:changeScene(SceneId.Battle)
 end
 
-function StageEndScene:handleInput(userInput)
+function BattleEndScene:handleInput(userInput)
     local rs = self.ctx.runState
     if userInput == "quit" then
-        love.event.quit()
+        self.ctx.sceneManager:changeScene(SceneId.Menu)
         return
     end
 
@@ -93,5 +93,3 @@ function StageEndScene:handleInput(userInput)
         end
     end
 end
-
-return StageEndScene

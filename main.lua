@@ -19,11 +19,11 @@ require "scenes.BaseScene"
 require "scenes.MenuScene"
 require "scenes.CardBrowseScene"
 require "scenes.CharacterSelectScene"
-require "scenes.GameScene"
+require "scenes.BattleScene"
 require "scenes.PauseScene"
 require "scenes.GameOverScene"
 require "scenes.InstructionsScene"
-require "scenes.StageEndScene"
+require "scenes.BattleEndScene"
 
 function love.load()
     lg = love.graphics
@@ -58,11 +58,11 @@ function love.load()
     ctx.sceneManager:addScene(MenuScene:new(ctx))
     ctx.sceneManager:addScene(CardBrowseScene:new(ctx))
     ctx.sceneManager:addScene(CharacterSelectScene:new(ctx))
-    ctx.sceneManager:addScene(GameScene:new(ctx))
+    ctx.sceneManager:addScene(BattleScene:new(ctx))
     ctx.sceneManager:addScene(PauseScene:new(ctx))
     ctx.sceneManager:addScene(GameOverScene:new(ctx))
     ctx.sceneManager:addScene(InstructionsScene:new(ctx))
-    ctx.sceneManager:addScene(StageEndScene:new(ctx))
+    ctx.sceneManager:addScene(BattleEndScene:new(ctx))
 
     ctx.sceneManager:changeScene(SceneId.Menu)
 end
