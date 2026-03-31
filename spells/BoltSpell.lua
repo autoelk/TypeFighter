@@ -13,5 +13,5 @@ function BoltSpell:new(caster, target, spellData, anim)
 end
 
 function BoltSpell:onStart()
-    self.target:damage(self.spellData.damage)
+    self.target.player:damage(self.spellData.damage)
 end

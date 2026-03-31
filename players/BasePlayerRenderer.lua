@@ -163,7 +163,16 @@ function BasePlayerRenderer:drawHealthBar()
     -- Draw health text
     lg.setColor(COLORS.WHITE)
     lg.setFont(self.ctx.fonts.fontM)
-    lg.printf(math.ceil(self.player.health), self.x, self.y - 20, SPRITE_SIZE, "center")
+    lg.printf(math.ceil(self.player.health), self.x, healthBarY - 4, SPRITE_SIZE, "center")
+
+    -- Draw shield bar
+    if self.player.shield > 0 then
+        local shieldBarY = healthBarY - healthBarHeight
+        lg.setColor(COLORS.BLUE)
+        lg.rectangle("fill", healthBarX, shieldBarY, SPRITE_SIZE, healthBarHeight)
+        lg.setColor(COLORS.WHITE)
+        lg.printf(self.player.shield, healthBarX, shieldBarY - 4, SPRITE_SIZE, "center")
+    end
 end
 
 function BasePlayerRenderer:drawEffectsList()

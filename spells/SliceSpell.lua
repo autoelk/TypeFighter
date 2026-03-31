@@ -14,5 +14,5 @@ end
 
 function SliceSpell:onFinish()
     local dmg = math.floor(self.target.player.health * self.spellData.ratio)
-    self.target:damage(dmg)
+    self.target.player:damage(dmg)
 end

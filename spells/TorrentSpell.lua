@@ -20,6 +20,6 @@ function TorrentSpell:new(caster, target, spellData, anim)
 end
 
 function TorrentSpell:onFinish()
-    self.target:damage(self.spellData.damage)
+    self.target.player:damage(self.spellData.damage)
     self.caster.player:drawCard()
 end

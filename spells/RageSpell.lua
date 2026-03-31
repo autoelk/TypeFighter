@@ -20,9 +20,9 @@ function RageSpell:new(caster, target, spellData, anim)
 end
 
 function RageSpell:onStart()
-    self.caster:damage(self.spellData.healthCost)
+    self.caster.player:damage(self.spellData.healthCost)
 end
 
 function RageSpell:onFinish()
-    self.target:damage(self.spellData.damage)
+    self.target.player:damage(self.spellData.damage)
 end

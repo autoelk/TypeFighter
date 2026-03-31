@@ -13,5 +13,5 @@ function HealSpell:new(caster, target, spellData, anim)
 end
 
 function HealSpell:onStart()
-    self.caster:damage(-self.spellData.healAmount)
+    self.caster.player:heal(self.spellData.healAmount)
 end

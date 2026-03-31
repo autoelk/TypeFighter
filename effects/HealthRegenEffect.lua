@@ -12,5 +12,5 @@ function HealthRegenEffect:new(name, player, duration, regenAmount)
 end
 
 function HealthRegenEffect:onTick()
-    self.player:damage(-self.regenAmount)
+    self.player:heal(self.regenAmount)
 end

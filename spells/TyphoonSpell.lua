@@ -13,5 +13,5 @@ function TyphoonSpell:new(caster, target, spellData, anim)
 end
 
 function TyphoonSpell:onFinish()
-    self.target:damage(self.spellData.damage)
+    self.target.player:damage(self.spellData.damage)
 end

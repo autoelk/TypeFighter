@@ -9,6 +9,7 @@ function BasePlayer:new(ctx, character)
         isAlive = true,
         health = character.health,
         maxHealth = character.maxHealth,
+        shield = 0,
         stackEffects = {}, -- Map of name to stack effect
         durationEffects = {}, -- List of duration effects
         
@@ -51,14 +52,25 @@ function BasePlayer:cardInHand(card)
     return indexOf(self.hand, card) ~= nil
 end
 
-function BasePlayer:damage(amt)
-    self.health = math.max(0, self.health - amt)
+function BasePlayer:damage(amount)
+    local remDmg = amount
+    self.shield = math.max(0, self.shield - remDmg)
+    remDmg = math.max(0, remDmg - self.shield)
+    self.health = math.max(0, self.health - remDmg)
     if self.health <= 0 then
         self.isAlive = false
     end
-    if self.onDamage then
-        self.onDamage(amt)
-    end
+    self.onDamage(amount)
+end
+
+function BasePlayer:heal(amount)
+    self.health = math.min(self.health + amount, self.maxHealth)
+    self.onDamage(-amount)
+end
+
+function BasePlayer:addShield(amount)
+    self.shield = math.max(0, self.shield + amount)
+    -- self.onDamage(-amount)
 end
 
 function BasePlayer:update(dt)

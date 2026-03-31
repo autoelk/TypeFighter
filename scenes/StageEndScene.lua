@@ -40,6 +40,7 @@ function StageEndScene:enter()
         self.message = "stage end"
     end
 
+    self.ctx.ui.input = ""
     self.ctx.ui.messageLeft = self.controlsHint
     self.ctx.ui.messageRight = ""
 end

@@ -47,10 +47,6 @@ function BasePlayerController:update(dt)
     self.renderer:update(dt)
 end
 
-function BasePlayerController:damage(amount)
-    self.player:damage(amount)
-end
-
 function BasePlayerController:castSelectedCard()
     if not self.player.selectedCard then
         return

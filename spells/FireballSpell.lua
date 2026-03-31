@@ -21,5 +21,5 @@ function FireballSpell:new(caster, target, spellData, anim)
 end
 
 function FireballSpell:onFinish()
-    self.target:damage(self.spellData.damage)
+    self.target.player:damage(self.spellData.damage)
 end
