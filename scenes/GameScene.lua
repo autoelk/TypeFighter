@@ -52,7 +52,16 @@ function GameScene:enter()
     self.humanController.player.library = self.humanController.player.deck
     self.enemyController.player.library = self.enemyController.player.deck
 
-    -- TODO: Shuffle decks
+    -- Fisher-Yates shuffle
+    local function shuffle(t)
+        local n = #t
+        for i = n, 2, -1 do
+            local j = love.math.random(i)
+            t[i], t[j] = t[j], t[i]
+        end
+    end
+    shuffle(self.humanController.player.deck)
+    shuffle(self.enemyController.player.deck)
 
     -- Set all card positions to library
     for _, card in ipairs(self.humanController.player.library) do
