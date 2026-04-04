@@ -112,6 +112,21 @@ function BattleScene:update(dt)
     end
 end
 
+function BattleScene:updateSuggestedCommand()
+    local matchingCommands = self:getAvailableCommands(self.ctx.ui.input)
+    if self.inputBarState == "incantation" then
+        if #matchingCommands == 1 then
+            self.suggestedCommand = matchingCommands[1]
+            self.suggestedCommandAutocomplete = self.availableCommands[self.suggestedCommand]
+        else
+            self.suggestedCommand = self.humanController.incantation
+            self.suggestedCommandAutocomplete = false
+        end
+    else
+        BaseScene.updateSuggestedCommand(self)
+    end
+end
+
 function BattleScene:refreshAvailableCommands()
     self.availableCommands = {}
     self:addAvailableCommand("quit", true)
@@ -150,33 +165,75 @@ function BattleScene:draw()
     end
 end
 
--- Spotlight/search-style input bar for the main gameplay scene.
+local function colorizeIncantation(incantation, input)
+    local text = {}
+    local incantationIdx = 1
+    local prevInterval = 1
+    local curStreak = "correct"
+    for inputIdx = 1, #input do
+        local inputChar = string.sub(input, inputIdx, inputIdx)
+        local incantationChar = string.sub(incantation, incantationIdx, incantationIdx)
+        if inputChar == incantationChar then
+            -- if the user has correctly typed this character, insert everything before it as incorrect
+            if curStreak == "incorrect" then
+                table.insert(text, COLORS.RED)
+                table.insert(text, string.sub(input, prevInterval, inputIdx - 1))
+                prevInterval = inputIdx
+            end
+            curStreak = "correct"
+            incantationIdx = incantationIdx + 1
+        else
+            -- if the user has made a typo, insert everything before it as correct
+            if curStreak == "correct" then
+                table.insert(text, COLORS.WHITE)
+                table.insert(text, string.sub(input, prevInterval, inputIdx - 1))
+                prevInterval = inputIdx
+            end
+            curStreak = "incorrect"
+        end
+    end
+    -- insert the remaining text after the last character
+    if curStreak == "correct" then
+        table.insert(text, COLORS.WHITE)
+    else
+        table.insert(text, COLORS.RED)
+    end
+    table.insert(text, string.sub(input, prevInterval, -1))
+    table.insert(text, COLORS.GREY)
+    table.insert(text, string.sub(incantation, incantationIdx, -1))
+
+    return text
+end
+
+-- input bar for the main gameplay scene.
 function BattleScene:drawInputInterface()
     local ui = self.ctx.ui
-
     local text = ui.input
     local color = COLORS.WHITE
-    local isTyping = ui.input ~= ""
-    if text == "" then
-        text = ui.messageLeft or ""
-        if text == "" and self.inputBarState == "incantation" then
+    local font = self.ctx.fonts.fontM
+    local barWidth = 512
+    
+    if ui.input == "" then
+        -- if the user hasn't typed anything, show the reminder text.
+        if self.inputBarState == "normal" then
+            text = ui.messageLeft or ""
+        elseif self.inputBarState == "incantation" then
             text = tostring(self.humanController.incantation)
         end
         color = COLORS.GREY
+    elseif ui.input ~= "" and self.suggestedCommand then
+        -- user is typing and we have a suggested command
+        if self.inputBarState == "incantation" and self.suggestedCommand == self.humanController.incantation then
+            text = colorizeIncantation(self.humanController.incantation, ui.input)
+        else
+            text = {
+                COLORS.WHITE, text,
+                COLORS.GREY, string.sub(self.suggestedCommand, #text + 1, -1),
+            }
+        end
     end
-
-    local font = self.ctx.fonts.fontM
-    local barWidth = 512
-    local wrappedText = nil
-    if isTyping and self.suggestedCommand then
-        text = {
-            COLORS.WHITE, text,
-            COLORS.GREY, string.sub(self.suggestedCommand, #text + 1, -1),
-        }
-        _, wrappedText = font:getWrap(self.suggestedCommand, barWidth - 16)
-    else
-        _, wrappedText = font:getWrap(text, barWidth - 16)
-    end
+    
+    local _, wrappedText = font:getWrap(text, barWidth - 16)
     local barHeight = #wrappedText * (font:getHeight() * font:getLineHeight()) + 8
     local x = math.floor((GAME_WIDTH - barWidth) / 2)
     local y = 200
