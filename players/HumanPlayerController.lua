@@ -1,4 +1,5 @@
 local InputResult = require "enums.InputResult"
+local Table = require "util.Table"
 require "players.HumanPlayerRenderer"
 
 HumanPlayerController = {}
@@ -25,7 +26,7 @@ function HumanPlayerController:reset()
 end
 
 function HumanPlayerController:draw()
-    self.renderer:draw(self.drawWord)
+    self.renderer:draw(self.drawWord, self.incantation ~= nil)
 end
 
 function HumanPlayerController:generateIncantation(length)
@@ -47,7 +48,7 @@ function HumanPlayerController:handleInput(userInput)
     for _, card in ipairs(self.player.hand) do
         if userInput == card.name then
             self.player.selectedCard = card
-            table.remove(self.player.hand, indexOf(self.player.hand, card))
+            table.remove(self.player.hand, Table.indexOf(self.player.hand, card))
             self.incantation = self:generateIncantation(card.incantationLength)
             return InputResult.CardSelected
         end

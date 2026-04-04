@@ -1,5 +1,6 @@
 require "scenes.BaseScene"
 local SceneId = require "enums.SceneId"
+local Text = require "util.Text"
 
 -- Battle End Scene
 -- shows rewards for winning the battle 
@@ -93,7 +94,8 @@ function BattleEndScene:draw()
     elseif self.mode == "word" then
         lg.setFont(fonts.fontL)
         for i, word in ipairs(self.words) do
-            lg.printf(word, 0, 256 + (i - 1) * 32, GAME_WIDTH, "center")
+            local coloredWord = Text.colorizeText(word, self.ctx.ui.input, COLORS.WHITE, COLORS.GREEN, COLORS.WHITE)
+            lg.printf(coloredWord, 0, 256 + (i - 1) * 64, GAME_WIDTH, "center")
         end
     end
     self.ctx.ui.messageLeft = self.controlsHint

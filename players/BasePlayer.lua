@@ -1,3 +1,5 @@
+local Table = require "util.Table"
+
 -- Model class for a player
 BasePlayer = {}
 BasePlayer.__index = BasePlayer
@@ -60,7 +62,7 @@ function BasePlayer:castSelectedCard()
 end
 
 function BasePlayer:cardInHand(card)
-    return indexOf(self.hand, card) ~= nil
+    return Table.indexOf(self.hand, card) ~= nil
 end
 
 function BasePlayer:damage(amount)
@@ -97,7 +99,7 @@ end
 
 -- Remove a card from the player's deck
 function BasePlayer:removeCard(card)
-    local idx = indexOf(self.deck, card)
+    local idx = Table.indexOf(self.deck, card)
     if idx then
         table.remove(self.deck, idx)
     end
@@ -150,13 +152,4 @@ function BasePlayer:drawCard()
     table.insert(self.hand, self.library[1])
     table.remove(self.library, 1)
     return true
-end
-
-function indexOf(array, value)
-    for i, v in ipairs(array) do
-        if v == value then
-            return i
-        end
-    end
-    return nil
 end

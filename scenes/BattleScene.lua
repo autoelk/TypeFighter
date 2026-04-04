@@ -1,5 +1,7 @@
 require "scenes.BaseScene"
 local InputResult = require "enums.InputResult"
+local Text = require "util.Text"
+local Table = require "util.Table"
 local SceneId = require "enums.SceneId"
 
 local castFailureMessages = {
@@ -49,16 +51,8 @@ function BattleScene:enter()
     self.humanController:reset()
     self.enemyController:reset()
 
-    -- Fisher-Yates shuffle
-    local function shuffle(t)
-        local n = #t
-        for i = n, 2, -1 do
-            local j = love.math.random(i)
-            t[i], t[j] = t[j], t[i]
-        end
-    end
-    shuffle(self.humanController.player.library)
-    shuffle(self.enemyController.player.library)
+    Table.shuffle(self.humanController.player.library)
+    Table.shuffle(self.enemyController.player.library)
 
     -- Set all card positions to library
     for _, card in ipairs(self.humanController.player.library) do
@@ -165,46 +159,6 @@ function BattleScene:draw()
     end
 end
 
-local function colorizeIncantation(incantation, input)
-    local text = {}
-    local incantationIdx = 1
-    local prevInterval = 1
-    local curStreak = "correct"
-    for inputIdx = 1, #input do
-        local inputChar = string.sub(input, inputIdx, inputIdx)
-        local incantationChar = string.sub(incantation, incantationIdx, incantationIdx)
-        if inputChar == incantationChar then
-            -- if the user has correctly typed this character, insert everything before it as incorrect
-            if curStreak == "incorrect" then
-                table.insert(text, COLORS.RED)
-                table.insert(text, string.sub(input, prevInterval, inputIdx - 1))
-                prevInterval = inputIdx
-            end
-            curStreak = "correct"
-            incantationIdx = incantationIdx + 1
-        else
-            -- if the user has made a typo, insert everything before it as correct
-            if curStreak == "correct" then
-                table.insert(text, COLORS.WHITE)
-                table.insert(text, string.sub(input, prevInterval, inputIdx - 1))
-                prevInterval = inputIdx
-            end
-            curStreak = "incorrect"
-        end
-    end
-    -- insert the remaining text after the last character
-    if curStreak == "correct" then
-        table.insert(text, COLORS.WHITE)
-    else
-        table.insert(text, COLORS.RED)
-    end
-    table.insert(text, string.sub(input, prevInterval, -1))
-    table.insert(text, COLORS.GREY)
-    table.insert(text, string.sub(incantation, incantationIdx, -1))
-
-    return text
-end
-
 -- input bar for the main gameplay scene.
 function BattleScene:drawInputInterface()
     local ui = self.ctx.ui
@@ -224,12 +178,9 @@ function BattleScene:drawInputInterface()
     elseif ui.input ~= "" and self.suggestedCommand then
         -- user is typing and we have a suggested command
         if self.inputBarState == "incantation" and self.suggestedCommand == self.humanController.incantation then
-            text = colorizeIncantation(self.humanController.incantation, ui.input)
+            text = Text.colorizeIncantation(self.humanController.incantation, ui.input)
         else
-            text = {
-                COLORS.WHITE, text,
-                COLORS.GREY, string.sub(self.suggestedCommand, #text + 1, -1),
-            }
+            text = Text.colorizeText(self.suggestedCommand, ui.input, COLORS.WHITE, COLORS.WHITE, COLORS.GREY)
         end
     end
     

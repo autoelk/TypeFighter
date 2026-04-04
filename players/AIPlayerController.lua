@@ -1,5 +1,6 @@
 local CastResult = require "enums.CastResult"
 local SceneId = require "enums.SceneId"
+local Table = require "util.Table"
 require "players.AIPlayerRenderer"
 
 AIPlayerController = {}
@@ -108,7 +109,7 @@ function AIPlayerController:chooseNextCard()
     if #availableCards > 0 then
         local card = availableCards[math.random(1, #availableCards)]
         self.player.selectedCard = card
-        table.remove(self.player.hand, indexOf(self.player.hand, card))
+        table.remove(self.player.hand, Table.indexOf(self.player.hand, card))
         return true
     end
     return false

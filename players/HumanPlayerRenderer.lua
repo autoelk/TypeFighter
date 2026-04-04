@@ -1,3 +1,5 @@
+local Text = require "util.Text"
+
 -- View class for a human player
 HumanPlayerRenderer = {}
 setmetatable(HumanPlayerRenderer, {
@@ -16,10 +18,10 @@ function HumanPlayerRenderer:new(ctx, player)
     return setmetatable(renderer, self)
 end
 
-function HumanPlayerRenderer:draw(drawWord)
+function HumanPlayerRenderer:draw(drawWord, incanting)
     BasePlayerRenderer.draw(self)
     self:drawHand()
-    self:drawLibrary(drawWord)
+    self:drawLibrary(drawWord, incanting)
 end
 
 -- Draw cards in hand as mini cards
@@ -36,7 +38,7 @@ function HumanPlayerRenderer:drawSelectedCard()
 end
 
 -- Draw library with draw word or card back
-function HumanPlayerRenderer:drawLibrary(drawWord)
+function HumanPlayerRenderer:drawLibrary(drawWord, incanting)
     local fonts = self.ctx.fonts
     local x, y = self.libraryX, self.libraryY
     local w = MINI_CARD_WIDTH
@@ -44,12 +46,19 @@ function HumanPlayerRenderer:drawLibrary(drawWord)
     local function drawLibrarySlot(lineSmallTop, lineLarge, lineSmallBottom, bgColor, fgColor)
         lg.setColor(bgColor)
         lg.rectangle("fill", x, y, w, MINI_CARD_HEIGHT)
-        lg.setColor(fgColor)
         lg.setFont(fonts.fontS)
+        lg.setColor(fgColor)
         lg.printf(lineSmallTop, x, y + 4, w, "center")
         lg.setFont(fonts.fontL)
+        -- Colored-text tables are multiplied by the current color; use white so segment colors show.
+        if type(lineLarge) == "table" then
+            lg.setColor(COLORS.WHITE)
+        else
+            lg.setColor(fgColor)
+        end
         lg.printf(lineLarge, x, y + 8, w, "center")
         lg.setFont(fonts.fontS)
+        lg.setColor(fgColor)
         lg.printf(lineSmallBottom, x, y + 44, w, "center")
     end
 
@@ -60,12 +69,15 @@ function HumanPlayerRenderer:drawLibrary(drawWord)
     end
 
     local cantDraw = "so you can't draw"
-    if self.player.isAlive and #self.player.library == 0 then
+    if incanting then
+        drawLibrarySlot("you are", "casting", cantDraw, COLORS.GREY, COLORS.WHITE)
+    elseif #self.player.library == 0 then
         drawLibrarySlot("your library is", "empty", cantDraw, COLORS.GREY, COLORS.WHITE)
     elseif #self.player.hand >= MAX_HAND_SIZE then
         drawLibrarySlot("your hand is", "full", cantDraw, COLORS.GREY, COLORS.WHITE)
     elseif drawWord ~= nil then
-        drawLibrarySlot("type", drawWord, "to draw", COLORS.YELLOW, COLORS.BLACK)
+        local coloredDrawWord = Text.colorizeText(drawWord, self.ctx.ui.input, COLORS.WHITE, COLORS.GREEN, COLORS.WHITE)
+        drawLibrarySlot("type", coloredDrawWord, "to draw", COLORS.BLACK, COLORS.WHITE)
     end
 end
 
