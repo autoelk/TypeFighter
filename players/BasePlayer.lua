@@ -17,26 +17,37 @@ function BasePlayer:new(ctx, character)
         selectedCard = nil, -- Card being cast by the player
         hand = {}, -- Current cards in hand
         library = {}, -- All cards available to draw from
-        deck = {} -- All cards owned by the player
+        deck = {}, -- All cards owned by the player
+
+        -- Words
+        wordBank = {} -- List of words that can appear in the player's incantations
     }
-    setmetatable(player, self)
-    return player
-end
-
-function BasePlayer:reset()
-    self.isAlive = true
-    self.stackEffects = {}
-    self.durationEffects = {}
-    self.selectedCard = nil
-    self.hand = {}
-    self.deck = {}
-
-    for _, cardName in ipairs(self.character.startingDeck) do
-        local cm = self.ctx and self.ctx.cardManager
+    for _, cardName in ipairs(character.startingDeck) do
+        local cm = ctx and ctx.cardManager
         if not cm then
             error("BasePlayer requires ctx.cardManager")
         end
-        self:addCard(cm:createCard(cardName))
+        table.insert(player.deck, cm:createCard(cardName))
+    end
+
+    for _, word in ipairs(character.startingWordBank) do
+        table.insert(player.wordBank, word)
+    end
+    return setmetatable(player, self)
+end
+
+-- Used between battles
+function BasePlayer:reset()
+    self.isAlive = true
+    self.shield = 0
+    self.stackEffects = {}
+    self.durationEffects = {}
+
+    self.selectedCard = nil
+    self.hand = {}
+    self.library = {}
+    for _, card in ipairs(self.deck) do
+        table.insert(self.library, card)
     end
 end
 

@@ -13,8 +13,7 @@ function GameOverScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = SceneId.GameOver
     scene.gameOverMessage = ""
-    scene.controlsHint = "[restart], [quit]"
-    scene:addAvailableCommand("restart", true)
+    scene.controlsHint = "[quit]"
     scene:addAvailableCommand("quit", true)
     return scene
 end
@@ -36,13 +35,12 @@ function GameOverScene:draw()
     lg.setFont(fonts.fontXL)
     lg.printf(self.gameOverMessage, 0, 200, GAME_WIDTH, "center")
     lg.setFont(fonts.fontM)
-    lg.printf("[restart]\n[quit]", 0, 300, GAME_WIDTH, "center")
+    lg.printf("[quit]", 0, 300, GAME_WIDTH, "center")
 end
 
 function GameOverScene:handleInput(userInput)
     if userInput == "quit" then
-        love.event.quit()
-    elseif userInput == "restart" then
+        self.ctx.runState:endRun()
         self.ctx.sceneManager:changeScene(SceneId.Menu)
     end
 end

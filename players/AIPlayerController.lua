@@ -1,4 +1,5 @@
 local CastResult = require "enums.CastResult"
+local SceneId = require "enums.SceneId"
 require "players.AIPlayerRenderer"
 
 AIPlayerController = {}
@@ -32,7 +33,7 @@ end
 function AIPlayerController:update(dt)
     BasePlayerController.update(self, dt)
 
-    if self.ctx.sceneManager:getCurrentScene().name == "game" then
+    if self.ctx.sceneManager:getCurrentScene().name == SceneId.Battle then
         self:updateActions(dt)
     end
 end

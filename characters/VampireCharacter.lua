@@ -14,6 +14,7 @@ function VampireCharacter:new()
     character.deathSprite = "wizardDeath"
 
     character.startingDeck = { "poison", "poison", "poison", "poison", "rage", "slice" }
+    character.startingWordBank = {"sacrificum", "mortuus", "cruentus", "sanguis", "vulnero", "absorbeo", "devoveo", "vulnus", "diabolus", "sanctifico"}
 
     setmetatable(character, self)
     return character

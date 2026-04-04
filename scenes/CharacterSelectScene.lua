@@ -112,13 +112,15 @@ function CharacterSelectScene:handleInput(userInput)
         end
 
         local selectedName = self.charSelected.player.character.name
-        -- Seed a simple linear run of opponents and start at stage 1
-        self.ctx.runState:startRun(selectedName, { "wizard", "wizard", "wizard", "wizard", "wizard" })
+        local humanPlayerController = HumanPlayerController:new(self.ctx, BasePlayer:new(self.ctx, self.ctx.characterManager:createCharacter(selectedName)))
+        self.ctx.sceneManager:getScene(SceneId.Battle):setHumanController(humanPlayerController)
+        
+        self.ctx.runState:startRun(humanPlayerController, { "wizard", "wizard", "wizard", "wizard", "wizard" })
+
         local oppName = self.ctx.runState:getCurrentOpponent()
-        self.ctx.sceneManager:getScene(SceneId.Battle):setHumanController(
-            HumanPlayerController:new(self.ctx, BasePlayer:new(self.ctx, self.ctx.characterManager:createCharacter(selectedName))))
-        self.ctx.sceneManager:getScene(SceneId.Battle):setEnemyController(
-            AIPlayerController:new(self.ctx, BasePlayer:new(self.ctx, self.ctx.characterManager:createCharacter(oppName)), "normal"))
+        local enemyPlayerController = AIPlayerController:new(self.ctx, BasePlayer:new(self.ctx, self.ctx.characterManager:createCharacter(oppName)), "normal")
+        self.ctx.sceneManager:getScene(SceneId.Battle):setEnemyController(enemyPlayerController)
+
         self.ctx.sceneManager:changeScene(SceneId.Battle)
     elseif userInput == "quit" then
         if self.charSelected then

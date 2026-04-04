@@ -15,5 +15,7 @@ function BaseCharacter:new(name, health)
     character.tint = COLORS.WHITE
 
     character.startingDeck = {}
+    character.startingWordBank = {}
+    
     return character
 end 

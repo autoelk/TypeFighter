@@ -10,7 +10,7 @@ HumanPlayerController.__index = HumanPlayerController
 function HumanPlayerController:new(ctx, player)
     local controller = BasePlayerController:new(ctx, player, HumanPlayerRenderer:new(ctx, player))
     controller.isHuman = true
-    controller.drawWord = ctx.resourceManager:getRandomWord()
+    controller.drawWord = ctx.resourceManager:getRandomWords(1)[1]
     controller.incantation = nil
     controller.lastAttemptedCardName = nil
 
@@ -19,7 +19,7 @@ end
 
 function HumanPlayerController:reset()
     BasePlayerController.reset(self)
-    self.drawWord = self.ctx.resourceManager:getRandomWord()
+    self.drawWord = self.ctx.resourceManager:getRandomWords(1)[1]
     self.incantation = nil
     self.lastAttemptedCardName = nil
 end
@@ -31,7 +31,7 @@ end
 function HumanPlayerController:generateIncantation(length)
     local result = ""
     for i = 1, length do
-        result = result .. " " .. self.ctx.resourceManager:getRandomWord()
+        result = result .. " " .. self.player.wordBank[math.random(1, #self.player.wordBank)]
     end
     return string.sub(result, 2)
 end
@@ -63,8 +63,9 @@ function HumanPlayerController:handleIncantationInput(userInput)
         self.incantation = nil
 
         return castResult
-    elseif userInput == "quit" then
+    elseif userInput == "quit" or userInput == "cancel" then
         self.incantation = nil
+        table.insert(self.player.hand, self.player.selectedCard)
         self.player.selectedCard = nil
         return InputResult.IncantationCancelled
     else
@@ -75,7 +76,7 @@ end
 function HumanPlayerController:drawCard()
     local drawResult = self.player:drawCard()
     if drawResult then
-        self.drawWord = self.ctx.resourceManager:getRandomWord()
+        self.drawWord = self.ctx.resourceManager:getRandomWords(1)[1]
     end
     return drawResult
 end

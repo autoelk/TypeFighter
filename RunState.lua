@@ -6,15 +6,15 @@ function RunState:new()
     rs.active = false
     rs.stageIndex = 0
     rs.stages = {}
-    rs.playerCharacterName = nil
+    rs.humanPlayerController = nil
     return rs
 end
 
 -- Initialize a new run with a simple linear list of encounters
 -- opponentNames: array of character names for opponents (e.g., {"wizard", "wizard", ...})
-function RunState:startRun(playerCharacterName, opponentNames)
+function RunState:startRun(humanPlayerController, opponentNames)
     self.active = true
-    self.playerCharacterName = playerCharacterName
+    self.humanPlayerController = humanPlayerController
     self.stages = opponentNames or { "wizard", "wizard", "wizard", "wizard", "wizard" }
     self.stageIndex = 1
 end

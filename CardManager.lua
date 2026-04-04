@@ -22,6 +22,7 @@ function CardManager:new(ctx)
     end
     local manager = {
         ctx = ctx,
+        -- Map of card name to card class
         cardTypes = {
             ["fireball"] = FireballCard,
             ["heal"] = HealCard,
@@ -36,7 +37,8 @@ function CardManager:new(ctx)
             ["portal"] = PortalCard,
             ["forcefield"] = ForceFieldCard
         },
-        cardNames = {}
+        cardCharacters = {}, -- Map of card name to character name
+        cardNames = {} -- List of card names
     }
     for cardName, _ in pairs(manager.cardTypes) do
         table.insert(manager.cardNames, cardName)
@@ -56,4 +58,22 @@ end
 
 function CardManager:getAllCardNames()
     return self.cardNames
+end
+
+function CardManager:getRandomCards(count, characterName)
+    local cards = {}
+    for cardName, cardCharacter in pairs(self.cardCharacters) do
+        if cardCharacter == characterName then
+            table.insert(cards, cardName)
+        end
+    end
+
+    local randomCards = {}
+    for i = 1, count do
+        local cardIdx = math.random(1, #cards)
+        local cardClass = self.cardTypes[cards[cardIdx]]
+        table.remove(cards, cardIdx)
+        table.insert(randomCards, cardClass:new(self.ctx, 0, 0))
+    end
+    return randomCards
 end

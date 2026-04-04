@@ -2,6 +2,7 @@ require "scenes.BaseScene"
 local SceneId = require "enums.SceneId"
 
 -- Battle End Scene
+-- shows rewards for winning the battle 
 BattleEndScene = {}
 setmetatable(BattleEndScene, {
     __index = BaseScene
@@ -11,10 +12,16 @@ BattleEndScene.__index = BattleEndScene
 function BattleEndScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = SceneId.BattleEnd
-    scene.controlsHint = "[play] next level, [quit]"
-    scene:addAvailableCommand("play", true)
+    scene.controlsHint = "[skip] reward, [quit]"
+    scene:addAvailableCommand("skip", true)
     scene:addAvailableCommand("quit", true)
-    scene.message = ""
+    scene.title = ""
+    scene.subtitle = ""
+    scene.mode = "card" -- card, word
+    scene.rewards = {
+        cards = {},
+        words = {}
+    }
     return scene
 end
 
@@ -25,28 +32,46 @@ function BattleEndScene:enter()
     local p1Alive = game.humanController.player.isAlive
     local p2Alive = game.enemyController.player.isAlive
 
+    local rs = self.ctx.runState
     if p1Alive and not p2Alive then
         -- Win this stage
-        local rs = self.ctx.runState
         local current = rs.stageIndex
         local total = #rs.stages
         if current < total then
-            self.message = "stage " .. current .. " cleared"
+            self.title = "stage " .. current .. " cleared"
         else
-            self.message = "final stage cleared"
+            self.title = "final stage cleared"
         end
     else
-        -- We should never reach here if the runState is managed correctly
-        self.message = "stage end"
+        error("BattleEndScene:enter() called, but player is not alive")
     end
 
+    self.cards = self.ctx.cardManager:getRandomCards(3, rs.humanPlayerController.player.character.name)
+    for _, card in ipairs(self.cards) do
+        card.x = (GAME_WIDTH - LARGE_CARD_WIDTH) / 2
+        card.y = -LARGE_CARD_HEIGHT
+        self:addAvailableCommand(card.name, true)
+    end
+
+    self.words = self.ctx.resourceManager:getRandomWords(3)
+
     self.ctx.ui.input = ""
-    self.ctx.ui.messageLeft = self.controlsHint
+    self.ctx.ui.messageLeft = self.controlsHint 
     self.ctx.ui.messageRight = ""
 end
 
 function BattleEndScene:exit()
     self.ctx.sceneManager:pause(false)
+end
+
+function BattleEndScene:update(dt)
+    local card_margin = 16
+    local step = LARGE_CARD_WIDTH + card_margin
+    local row_width = 3 * LARGE_CARD_WIDTH + 2 * card_margin
+    for i, card in ipairs(self.cards) do
+        card:move((GAME_WIDTH - row_width) / 2 + (i - 1) * step, 256)
+        card:update(dt)
+    end
 end
 
 function BattleEndScene:draw()
@@ -58,38 +83,84 @@ function BattleEndScene:draw()
     -- Draw message
     lg.setColor(COLORS.WHITE)
     lg.setFont(fonts.fontXL)
-    lg.printf(self.message, 0, 200, GAME_WIDTH, "center")
+    lg.printf(self.title, 0, 100, GAME_WIDTH, "center")
     lg.setFont(fonts.fontM)
-    lg.printf(self.controlsHint, 0, 300, GAME_WIDTH, "center")
-end
-
-local function restartStage(scene)
-    -- Reconfigure BattleScene for the current stage and restart
-    local game = scene.ctx.sceneManager:getScene(SceneId.Battle)
-    local rs = scene.ctx.runState
-    local playerCharName = rs.playerCharacterName
-    local oppName = rs:getCurrentOpponent()
-    
-    game:setHumanController(HumanPlayerController:new(scene.ctx, BasePlayer:new(scene.ctx, scene.ctx.characterManager:createCharacter(playerCharName))))
-    game:setEnemyController(AIPlayerController:new(scene.ctx, BasePlayer:new(scene.ctx, scene.ctx.characterManager:createCharacter(oppName)), "normal"))
-    scene.ctx.sceneManager:changeScene(SceneId.Battle)
+    lg.printf(self.subtitle, 0, 180, GAME_WIDTH, "center")
+    if self.mode == "card" then
+        for _, card in ipairs(self.cards) do
+            card:draw()
+        end
+    elseif self.mode == "word" then
+        lg.setFont(fonts.fontL)
+        for i, word in ipairs(self.words) do
+            lg.printf(word, 0, 256 + (i - 1) * 32, GAME_WIDTH, "center")
+        end
+    end
+    self.ctx.ui.messageLeft = self.controlsHint
 end
 
 function BattleEndScene:handleInput(userInput)
     local rs = self.ctx.runState
+    local changeMode = function(mode)
+        if mode == "card" then
+            self.mode = "card"
+            self.subtitle = "choose a card to add to your deck"
+        elseif mode == "word" then
+            self.mode = "word"
+            self.subtitle = "choose a word to add to your word bank"
+            for _, card in ipairs(self.cards) do
+                self:removeAvailableCommand(card.name)
+            end
+            for _, word in ipairs(self.words) do
+                self:addAvailableCommand(word, true)
+            end
+        elseif mode == "end" then
+            if rs:hasNextStage() then
+                rs:advanceStage()
+                local game = self.ctx.sceneManager:getScene(SceneId.Battle)
+                local oppName = rs:getCurrentOpponent()
+                game:setHumanController(rs.humanPlayerController)
+                game:setEnemyController(AIPlayerController:new(self.ctx, BasePlayer:new(self.ctx, self.ctx.characterManager:createCharacter(oppName)), "normal"))
+                self.ctx.sceneManager:changeScene(SceneId.Battle)
+            else
+                rs:endRun()
+                self.ctx.sceneManager:changeScene(SceneId.GameOver)
+            end
+        end
+    end
+
     if userInput == "quit" then
+        rs:endRun()
         self.ctx.sceneManager:changeScene(SceneId.Menu)
         return
     end
 
-    if userInput == "play" then
-        -- Only called on victory; advance or end run
-        if rs:hasNextStage() then
-            rs:advanceStage()
-            restartStage(self)
-        else
-            rs:endRun()
-            self.ctx.sceneManager:changeScene(SceneId.GameOver)
+    if self.mode == "card" then
+        for _, card in ipairs(self.cards) do
+            if userInput == card.name then
+                table.insert(rs.humanPlayerController.player.deck, card)
+                changeMode("word")
+                return
+            end
+        end
+
+        if userInput == "skip" then
+            changeMode("word")
+        end
+    elseif self.mode == "word" then
+        for _, word in ipairs(self.words) do
+            if userInput == word then
+                table.insert(rs.humanPlayerController.player.wordBank, word)
+                changeMode("end")
+                return
+            end
+        end
+
+        if userInput == "play" or userInput == "skip" then
+            for _, word in ipairs(self.words) do
+                self:removeAvailableCommand(word)
+            end
+            changeMode("end")
         end
     end
 end

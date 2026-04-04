@@ -63,6 +63,7 @@ end
 
 function PauseScene:handleInput(userInput)
     if userInput == "quit" then
+        self.ctx.runState:endRun()
         self.ctx.sceneManager:changeScene(SceneId.Menu)
     elseif userInput == "resume" then
         self.ctx.sceneManager:popScene()

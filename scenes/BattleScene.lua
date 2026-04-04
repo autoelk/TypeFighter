@@ -49,9 +49,6 @@ function BattleScene:enter()
     self.humanController:reset()
     self.enemyController:reset()
 
-    self.humanController.player.library = self.humanController.player.deck
-    self.enemyController.player.library = self.enemyController.player.deck
-
     -- Fisher-Yates shuffle
     local function shuffle(t)
         local n = #t
@@ -60,8 +57,8 @@ function BattleScene:enter()
             t[i], t[j] = t[j], t[i]
         end
     end
-    shuffle(self.humanController.player.deck)
-    shuffle(self.enemyController.player.deck)
+    shuffle(self.humanController.player.library)
+    shuffle(self.enemyController.player.library)
 
     -- Set all card positions to library
     for _, card in ipairs(self.humanController.player.library) do
@@ -87,6 +84,7 @@ function BattleScene:enter()
     -- Initialize active spells list for this game
     self.activeSpells = {}
     self.gameOverTriggered = false
+    self.inputBarState = "normal"
     self:refreshAvailableCommands()
 end
 
@@ -109,25 +107,27 @@ function BattleScene:update(dt)
             self.ctx.sceneManager:changeScene(SceneId.GameOver)
         elseif not self.enemyController.player.isAlive then
             self.gameOverTriggered = true
-            self.ctx.sceneManager:pushScene(SceneId.BattleEnd)
+            self.ctx.sceneManager:changeScene(SceneId.BattleEnd)
         end
     end
 end
 
 function BattleScene:refreshAvailableCommands()
     self.availableCommands = {}
+    self:addAvailableCommand("quit", true)
     if self.inputBarState == "incantation" then
         self:addAvailableCommand(self.humanController.incantation, false)
-        self:addAvailableCommand("quit", true)
+        self:addAvailableCommand("cancel", true)
         self.ctx.ui.messageLeft = tostring(self.humanController.incantation)
         self.ctx.ui.messageRight = "type incantation above to cast"
     else
+        -- normal input bar
         for i = 1, #self.humanController.player.hand do
             self:addAvailableCommand(self.humanController.player.hand[i].name, false)
         end
         self:addAvailableCommand(self.humanController.drawWord, false)
         self:addAvailableCommand("pause", true)
-        self:addAvailableCommand("quit", true)
+        self:removeAvailableCommand("cancel")
         -- self.ctx.ui.messageLeft = self.humanController.drawWord
         if self.humanController.player:canDrawCard() then
             self.ctx.ui.messageRight = "type \"" .. self.humanController.drawWord .. "\" to draw, or type card name to cast"
@@ -206,6 +206,7 @@ end
 
 function BattleScene:handleInput(userInput)
     if self.inputBarState == "normal" and userInput == "quit" then
+        self.ctx.runState:endRun()
         self.ctx.sceneManager:changeScene(SceneId.Menu)
         return
     elseif userInput == "pause" then

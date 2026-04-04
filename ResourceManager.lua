@@ -119,7 +119,11 @@ function ResourceManager:loadDictionary()
     file:close()
 end
 
-function ResourceManager:getRandomWord()
-    local index = math.random(#self.dict)
-    return self.dict[index]
+function ResourceManager:getRandomWords(count)
+    local words = {}
+    for i = 1, count do
+        local index = math.random(#self.dict)
+        table.insert(words, self.dict[index])
+    end
+    return words
 end

@@ -54,6 +54,12 @@ function love.load()
     ctx.fonts.fontS = ctx.resourceManager:getFont("fontS")
     ctx.assets.background = ctx.resourceManager:getImage("background")
 
+    -- Initialize cards for selection
+    for _, cardName in ipairs(ctx.cardManager:getAllCardNames()) do
+        local tempCard = ctx.cardManager.cardTypes[cardName]:new(ctx, 0, 0)
+        ctx.cardManager.cardCharacters[cardName] = tempCard.character
+    end
+
     -- Initialize scenes
     ctx.sceneManager:addScene(MenuScene:new(ctx))
     ctx.sceneManager:addScene(CardBrowseScene:new(ctx))
