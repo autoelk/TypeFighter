@@ -31,6 +31,9 @@ function BaseScene:drawInputInterface()
     local inputY = GAME_HEIGHT - inputRectHeight
     local leftPadding = 8
     local rightPadding = 8
+    local cursorWidth = 10
+    local cursorHeight = 2
+
     lg.setColor(COLORS.BLACK)
     lg.rectangle("fill", 0, inputY, GAME_WIDTH, inputRectHeight)
     
@@ -48,14 +51,15 @@ function BaseScene:drawInputInterface()
 
     local rightMessage = ui.messageRight or ""
     local rightMessageWidth = font:getWidth(rightMessage)
-    local inputWidth = GAME_WIDTH - leftPadding - rightPadding - rightMessageWidth - 8
+    local inputWidth = GAME_WIDTH - leftPadding - rightPadding - rightMessageWidth - cursorWidth - 8
     inputWidth = math.max(inputWidth, 0)
 
     local drawX = leftPadding
     local textWidth = font:getWidth(text)
     local textOffsetX = 0
     if isTyping and textWidth > inputWidth then
-        textOffsetX = inputWidth - textWidth -- Current horizontal scrolling of the input text
+        -- current horizontal "scroll" amount for the input
+        textOffsetX = inputWidth - textWidth
     end
 
     local prevScissorX, prevScissorY, prevScissorW, prevScissorH = lg.getScissor()
@@ -66,11 +70,24 @@ function BaseScene:drawInputInterface()
             COLORS.GREY, string.sub(self.suggestedCommand, #text + 1, -1),
         }
     end
+    
+    local cursorX = drawX + font:getWidth(ui.input)
+    if textWidth > inputWidth then
+        cursorX = drawX + inputWidth
+    end
+    local cursorY = inputY + font:getHeight() * font:getLineHeight() + 2
+
+    -- main text
     lg.print(text, drawX + textOffsetX, inputY)
     lg.setScissor(prevScissorX, prevScissorY, prevScissorW, prevScissorH)
 
+    -- feedback message
     lg.setColor(COLORS.GREY)
     lg.printf(rightMessage, -rightPadding, inputY, GAME_WIDTH, "right")
+
+    -- cursor
+    lg.setColor(COLORS.WHITE)
+    lg.rectangle("fill", cursorX, cursorY, cursorWidth, cursorHeight)
 end
 
 function BaseScene:updateSuggestedCommand()

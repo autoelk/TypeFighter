@@ -27,8 +27,6 @@ function BattleEndScene:new(ctx)
 end
 
 function BattleEndScene:enter()
-    -- Pause underlying game updates while on overlay
-    self.ctx.sceneManager:pause(true)
     local game = self.ctx.sceneManager:getScene(SceneId.Battle)
     local p1Alive = game.humanController.player.isAlive
     local p2Alive = game.enemyController.player.isAlive
@@ -55,14 +53,23 @@ function BattleEndScene:enter()
     end
 
     self.words = self.ctx.resourceManager:getRandomWords(3)
+    for _, word in ipairs(self.words) do
+        self:addAvailableCommand(word, true)
+    end
 
     self.ctx.ui.input = ""
-    self.ctx.ui.messageLeft = self.controlsHint 
+    self.ctx.ui.messageLeft = self.controlsHint
     self.ctx.ui.messageRight = ""
 end
 
 function BattleEndScene:exit()
-    self.ctx.sceneManager:pause(false)
+    for _, card in ipairs(self.cards) do
+        self:removeAvailableCommand(card.name)
+    end
+
+    for _, word in ipairs(self.words) do
+        self:removeAvailableCommand(word)
+    end
 end
 
 function BattleEndScene:update(dt)

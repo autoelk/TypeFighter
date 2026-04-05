@@ -132,7 +132,7 @@ function BattleScene:refreshAvailableCommands()
     else
         -- normal input bar
         for i = 1, #self.humanController.player.hand do
-            self:addAvailableCommand(self.humanController.player.hand[i].name, false)
+            self:addAvailableCommand(self.humanController.player.hand[i].name, true)
         end
         self:addAvailableCommand(self.humanController.drawWord, false)
         self:addAvailableCommand("pause", true)
@@ -166,6 +166,8 @@ function BattleScene:drawInputInterface()
     local color = COLORS.WHITE
     local font = self.ctx.fonts.fontM
     local barWidth = 512
+    local cursorWidth = 10
+    local cursorHeight = 2
     
     if ui.input == "" then
         -- if the user hasn't typed anything, show the reminder text.
@@ -184,21 +186,31 @@ function BattleScene:drawInputInterface()
         end
     end
     
-    local _, wrappedText = font:getWrap(text, barWidth - 16)
-    local barHeight = #wrappedText * (font:getHeight() * font:getLineHeight()) + 8
     local x = math.floor((GAME_WIDTH - barWidth) / 2)
     local y = 200
 
-    -- Bar background + outline.
+    local _, wrappedText = font:getWrap(text, barWidth - 16)
+    local barHeight = #wrappedText * (font:getHeight() * font:getLineHeight()) + 8
+
+    -- cursor placement
+    local _, uiWrappedText = font:getWrap(ui.input, barWidth - 16)
+    local cursorX = x + font:getWidth(uiWrappedText[#uiWrappedText]) + 8
+    local cursorY = y + #uiWrappedText * (font:getHeight() * font:getLineHeight()) + 2
+
+    -- bar background and outline
     lg.setColor(COLORS.BLACK)
     lg.rectangle("fill", x, y, barWidth, barHeight)
 
-    -- Text
+    -- text
     lg.setFont(font)
     lg.setColor(color)
     lg.printf(text, x + 8, y, barWidth - 16, "left")
 
-    -- Feedback (instructions / errors) below the bar
+    -- cursor
+    lg.setColor(COLORS.WHITE)
+    lg.rectangle("fill", cursorX, cursorY, cursorWidth, cursorHeight)
+
+    -- feedback below the bar
     lg.setFont(self.ctx.fonts.fontS)
     lg.setColor(COLORS.WHITE)
     lg.printf(ui.messageRight, x + 8, y + barHeight + 4, barWidth - 16, "left")
