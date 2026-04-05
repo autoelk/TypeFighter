@@ -25,6 +25,7 @@ function InstructionsScene:enter()
     end
     self.ctx.ui.messageLeft = self.controlsHint
     self.ctx.ui.messageRight = ""
+    self.ctx.ui.input = ""
     self.timeLeft = 20
 end
 

@@ -25,6 +25,7 @@ end
 function CardBrowseScene:enter()
     self.ctx.ui.messageLeft = self.controlsHint
     self.ctx.ui.messageRight = ""
+    self.ctx.ui.input = ""
 end
 
 function CardBrowseScene:update(dt)

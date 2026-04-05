@@ -21,6 +21,7 @@ end
 function GameOverScene:enter()
     self.ctx.ui.messageLeft = self.controlsHint
     self.ctx.ui.messageRight = ""
+    self.ctx.ui.input = ""
     self.gameOverMessage = "game over"
 end
 
