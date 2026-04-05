@@ -37,6 +37,17 @@ function ResourceManager:getImage(name)
     return self.images[name]
 end
 
+function ResourceManager:loadSound(name, path)
+    if not self.sounds[name] then
+        self.sounds[name] = love.audio.newSource(path, "static")
+    end
+    return self.sounds[name]
+end
+
+function ResourceManager:getSound(name)
+    return self.sounds[name]
+end
+
 function ResourceManager:loadAllAssets(cardNames)
     if not cardNames then
         error("ResourceManager:loadAllAssets(cardNames) requires cardNames")
@@ -68,6 +79,9 @@ function ResourceManager:loadAllAssets(cardNames)
             self.images["card_" .. cardName] = self:getImage("placeholder")
         end
     end
+
+    -- Load sounds
+    self:loadSound("hurt", "assets/sounds/hurt.wav")
 
     self:loadDictionary()
 end

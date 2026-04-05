@@ -1,4 +1,5 @@
 local Table = require "util.Table"
+local Sound = require "util.Sound"
 
 -- Model class for a player
 BasePlayer = {}
@@ -67,13 +68,14 @@ end
 
 function BasePlayer:damage(amount)
     local remDmg = amount
-    self.shield = math.max(0, self.shield - remDmg)
     remDmg = math.max(0, remDmg - self.shield)
-    self.health = math.max(0, self.health - remDmg)
+    self.shield = math.max(0, self.shield - amount)
+    self.health = self.health - remDmg
     if self.health <= 0 then
         self.isAlive = false
     end
     self.onDamage(amount)
+    Sound.playSound(self.ctx.resourceManager:getSound("hurt"))
 end
 
 function BasePlayer:heal(amount)
