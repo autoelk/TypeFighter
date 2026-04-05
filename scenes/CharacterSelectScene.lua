@@ -29,8 +29,8 @@ end
 
 function CharacterSelectScene:enter()
     self.ctx.ui.input = ""
-    self.ctx.ui.messageLeft = self.controlsHint
-    self.ctx.ui.messageRight = "choose your character"
+    self.ctx.ui.messageLeft = ""
+    self.ctx.ui.messageRight = self.controlsHint
     self.charSelected = nil
     self.charMargin = 200 -- Distance between characters
     self.startX = (GAME_WIDTH + self.charMargin - #self.controllers * (SPRITE_SIZE + self.charMargin)) / 2
@@ -49,8 +49,8 @@ function CharacterSelectScene:update(dt)
     else
         self.charSelected.renderer:updateCharAnimations(dt)
         
-        local deckX = 600
-        local deckY = 200
+        local deckX = 640
+        local deckY = 232
         local margin = 8
         local cardsPerCol = 3   
         for i, card in ipairs(self.charSelected.player.deck) do
@@ -85,6 +85,8 @@ function CharacterSelectScene:draw()
         lg.printf(char.name, 200, 208, GAME_WIDTH, "left")
         lg.setFont(fonts.fontM)
         lg.printf(char.description, 200, 284, GAME_WIDTH - 200, "left")
+        lg.printf("starter deck:", 640, 200, MINI_CARD_WIDTH * 2 + 8, "left")
+        lg.printf("type [play] to start the game", 640, 440, MINI_CARD_WIDTH * 2 + 8, "left")
 
         self.charSelected.renderer.x = 256
         self.charSelected.renderer:drawChar()
@@ -101,13 +103,14 @@ function CharacterSelectScene:handleInput(userInput)
         if userInput == char.name then
             self.charSelected = controller
             self.ctx.ui.messageRight = "selected " .. char.name
+            self.ctx.ui.messageLeft = "type [play] to start the game"
             return
         end
     end
 
     if userInput == "play" then
         if not self.charSelected then
-            self.ctx.ui.messageRight = "please select a character first"
+            self.ctx.ui.messageRight = "type the name of a character to select it"
             return
         end
 

@@ -44,7 +44,7 @@ end
 function MenuScene:enter()
     self.ctx.ui.input = ""
     self.ctx.ui.messageLeft = self.controlsHint
-    self.ctx.ui.messageRight = "type p to start"
+    self.ctx.ui.messageRight = "type [play] to start"
 end
 
 function MenuScene:draw()
