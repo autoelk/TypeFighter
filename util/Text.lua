@@ -31,8 +31,14 @@ function T.colorizeIncantation(incantation, input)
         local incantationChar = string.sub(incantation, incantationIdx, incantationIdx)
         if inputChar == incantationChar then
             if curStreak == "incorrect" then
+                -- use currency symbol to represent incorrect spaces
+                -- we are using a custom font where the currency symbol looks 
+                -- like the open box for a space whitespace character
+                local incorrectPortion = string.sub(input, prevInterval, inputIdx - 1)
+                incorrectPortion = string.gsub(incorrectPortion, " ", "¤")
+
                 table.insert(text, COLORS.RED)
-                table.insert(text, string.sub(input, prevInterval, inputIdx - 1))
+                table.insert(text, incorrectPortion)
                 prevInterval = inputIdx
             end
             curStreak = "correct"
@@ -46,12 +52,14 @@ function T.colorizeIncantation(incantation, input)
             curStreak = "incorrect"
         end
     end
+    local curPortion = string.sub(input, prevInterval, -1)
     if curStreak == "correct" then
         table.insert(text, COLORS.WHITE)
     else
+        curPortion = string.gsub(curPortion, " ", "¤")
         table.insert(text, COLORS.RED)
     end
-    table.insert(text, string.sub(input, prevInterval, -1))
+    table.insert(text, curPortion)
     table.insert(text, COLORS.GREY)
     table.insert(text, string.sub(incantation, incantationIdx, -1))
 
