@@ -47,6 +47,14 @@ function BasePlayerController:update(dt)
     self.renderer:update(dt)
 end
 
+function BasePlayerController:generateIncantation(length)
+    local result = ""
+    for i = 1, length do
+        result = result .. " " .. self.player.wordBank[math.random(1, #self.player.wordBank)]
+    end
+    return string.sub(result, 2)
+end
+
 function BasePlayerController:castSelectedCard()
     if not self.player.selectedCard then
         return

@@ -29,14 +29,6 @@ function HumanPlayerController:draw()
     self.renderer:draw(self.drawWord, self.incantation ~= nil)
 end
 
-function HumanPlayerController:generateIncantation(length)
-    local result = ""
-    for i = 1, length do
-        result = result .. " " .. self.player.wordBank[math.random(1, #self.player.wordBank)]
-    end
-    return string.sub(result, 2)
-end
-
 function HumanPlayerController:handleInput(userInput)
     if self.drawWord ~= "" and userInput == self.drawWord then
         if not self:drawCard() then
@@ -49,7 +41,12 @@ function HumanPlayerController:handleInput(userInput)
         if userInput == card.name then
             self.player.selectedCard = card
             table.remove(self.player.hand, Table.indexOf(self.player.hand, card))
-            self.incantation = self:generateIncantation(card.incantationLength)
+            local incantation = self:generateIncantation(card.incantationLength)
+            if #incantation == 0 then
+                self.lastAttemptedCardName = card.name
+                return self:castSelectedCard()
+            end
+            self.incantation = incantation
             return InputResult.CardSelected
         end
     end
