@@ -78,7 +78,7 @@ function BaseCard:drawMini()
     lg.rectangle("fill", self.x, self.y, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
     -- print text
     local margin = 4
-    lg.setColor(COLORS.BLACK)
+    lg.setColor(COLORS.WHITE)
     lg.setFont(fonts.fontM)
     lg.printf(self.name, self.x + margin, self.y - 4, MINI_CARD_WIDTH, "left")
     lg.printf(self.incantationLength, self.x - margin, self.y - 4, MINI_CARD_WIDTH, "right")
