@@ -1,15 +1,15 @@
 -- Colors
--- using the resurrect 32 color pallete
--- https://lospec.com/palette-list/resurrect-32
+-- using the resurrect 64 color pallete
+-- https://lospec.com/palette-list/resurrect-64
 COLORS = {
     RED = {232 / 255, 59 / 255, 59 / 255},
     ORANGE = {251 / 255, 107 / 255, 29 / 255},
     YELLOW = {251 / 255, 185 / 255, 84 / 255},
     GREEN = {145 / 255, 219 / 255, 105 / 255},
     BLUE = {77 / 255, 155 / 255, 230 / 255},
-    GREY = {98 / 255, 85 / 255, 101 / 255},
+    GREY = { 70 / 255, 70 / 255, 70 / 255 },
     WHITE = {1, 1, 1},
-    BLACK = {62 / 255, 53 / 255, 70 / 255}
+    BLACK = {0, 0, 0}
 }
 
 -- UI constants
