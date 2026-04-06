@@ -101,7 +101,7 @@ function BattleScene:update(dt)
             self.ctx.sceneManager:changeScene(SceneId.GameOver)
         elseif not self.enemyController.player.isAlive then
             self.gameOverTriggered = true
-            self.ctx.sceneManager:changeScene(SceneId.BattleEnd)
+            self.ctx.sceneManager:pushScene(SceneId.BattleEnd)
         end
     end
 end
