@@ -21,7 +21,7 @@ function MenuScene:new(ctx)
     scene.leftRenderer.x = 320
     scene.leftRenderer.mirror = false
 
-    scene.rightRenderer = BasePlayerRenderer:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter("wizard")))
+    scene.rightRenderer = BasePlayerRenderer:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter("vampire")))
     scene.rightRenderer.x = GAME_WIDTH - 320 - SPRITE_SIZE
     scene.rightRenderer.mirror = true
 

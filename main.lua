@@ -86,8 +86,22 @@ function love.draw()
     lg.clear(COLORS.BLACK)
 
     -- Background
+    -- 0.0 is grayscale, 1.0 is full color
+    local shaderCode = [[
+        extern float saturation;
+        vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+            vec4 pixel = Texel(texture, texture_coords);
+            float gray = dot(pixel.rgb, vec3(0.299, 0.587, 0.114));
+            vec3 grayscale = vec3(gray);
+            return vec4(mix(grayscale, pixel.rgb, saturation), pixel.a) * color;
+        }
+    ]]
+    local saturationShader = love.graphics.newShader(shaderCode)
+    lg.setShader(saturationShader)
+    saturationShader:send("saturation", 0.75)
     lg.draw(ctx.assets.background, 0, 0, 0, PIXEL_TO_GAME_SCALE, PIXEL_TO_GAME_SCALE)
-    lg.setColor({0, 0, 0, 1 / 4})
+    lg.setShader()
+    lg.setColor({0, 0, 0, 0.25})
     lg.rectangle("fill", 0, 0, GAME_WIDTH, GAME_HEIGHT)
 
     -- Draw current scene
