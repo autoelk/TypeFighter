@@ -41,26 +41,6 @@ end
 function HumanPlayerRenderer:drawLibrary(drawWord, incanting)
     local fonts = self.ctx.fonts
     local x, y = self.libraryX, self.libraryY
-    local w = MINI_CARD_WIDTH
-
-    local function drawLibrarySlot(lineSmallTop, lineLarge, lineSmallBottom, bgColor, fgColor)
-        lg.setColor(bgColor)
-        lg.rectangle("fill", x, y, w, MINI_CARD_HEIGHT)
-        lg.setFont(fonts.fontS)
-        lg.setColor(fgColor)
-        lg.printf(lineSmallTop, x, y + 4, w, "center")
-        lg.setFont(fonts.fontL)
-        -- Colored-text tables are multiplied by the current color; use white so segment colors show.
-        if type(lineLarge) == "table" then
-            lg.setColor(COLORS.WHITE)
-        else
-            lg.setColor(fgColor)
-        end
-        lg.printf(lineLarge, x, y + 8, w, "center")
-        lg.setFont(fonts.fontS)
-        lg.setColor(fgColor)
-        lg.printf(lineSmallBottom, x, y + 44, w, "center")
-    end
 
     for i, card in ipairs(self.player.library) do
         if card.x ~= self.libraryX or card.y ~= self.libraryY then
@@ -68,16 +48,29 @@ function HumanPlayerRenderer:drawLibrary(drawWord, incanting)
         end
     end
 
-    local cantDraw = "so you can't draw"
+    -- TODO: Consider if this makes deck size too confusing for the player
     if incanting then
-        drawLibrarySlot("you are", "casting", cantDraw, COLORS.GREY, COLORS.WHITE)
+        -- lg.setFont(fonts.fontS)
+        -- lg.setColor(COLORS.WHITE)
+        -- lg.printf("incanting", x, y + 24, MINI_CARD_WIDTH, "center")
     elseif #self.player.library == 0 then
-        drawLibrarySlot("your library is", "empty", cantDraw, COLORS.GREY, COLORS.WHITE)
+        -- lg.setFont(fonts.fontS)
+        -- lg.setColor(COLORS.WHITE)
+        -- lg.printf("library empty", x, y + 24, MINI_CARD_WIDTH, "center")
     elseif #self.player.hand >= MAX_HAND_SIZE then
-        drawLibrarySlot("your hand is", "full", cantDraw, COLORS.GREY, COLORS.WHITE)
+        -- lg.setFont(fonts.fontS)
+        -- lg.setColor(COLORS.WHITE)
+        -- lg.printf("hand full", x, y + 24, MINI_CARD_WIDTH, "center")
     elseif drawWord ~= nil then
+        lg.setColor(COLORS.BLACK)
+        lg.rectangle("fill", x, y, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
+        lg.setFont(fonts.fontS)
+        lg.setColor(COLORS.WHITE)
         local coloredDrawWord = Text.colorizeText(drawWord, self.ctx.ui.input, COLORS.WHITE, COLORS.GREEN, COLORS.WHITE)
-        drawLibrarySlot("type", coloredDrawWord, "to draw", COLORS.BLACK, COLORS.WHITE)
+        lg.printf("type", x, y + 4, MINI_CARD_WIDTH, "center")
+        lg.printf("to draw", x, y + 44, MINI_CARD_WIDTH, "center")
+        lg.setFont(fonts.fontL)
+        lg.printf(coloredDrawWord, x, y + 8, MINI_CARD_WIDTH, "center")
     end
 end
 
