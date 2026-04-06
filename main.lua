@@ -87,7 +87,8 @@ function love.draw()
 
     -- Background
     lg.draw(ctx.assets.background, 0, 0, 0, PIXEL_TO_GAME_SCALE, PIXEL_TO_GAME_SCALE)
-    lg.setFont(ctx.fonts.fontM)
+    lg.setColor({0, 0, 0, 1 / 4})
+    lg.rectangle("fill", 0, 0, GAME_WIDTH, GAME_HEIGHT)
 
     -- Draw current scene
     ctx.sceneManager:draw()

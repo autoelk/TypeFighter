@@ -62,6 +62,7 @@ function SceneManager:update(dt)
 end
 
 function SceneManager:draw()
+    lg.setColor(COLORS.WHITE)
     for _, scene in ipairs(self.sceneStack) do
         scene:draw()
     end
