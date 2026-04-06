@@ -1,6 +1,6 @@
 -- Colors
--- using the resurrect 32 color pallete
--- https://lospec.com/palette-list/resurrect-32
+-- using the resurrect 64 color pallete
+-- https://lospec.com/palette-list/resurrect-64
 COLORS = {
     RED = {232 / 255, 59 / 255, 59 / 255},
     ORANGE = {251 / 255, 107 / 255, 29 / 255},
