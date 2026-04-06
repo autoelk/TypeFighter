@@ -11,7 +11,6 @@ function BasePlayerRenderer:new(ctx, player)
         y = 408,
 
         mirror = nil,
-        tint = player.character.tint,
 
         idleAnim = ctx.resourceManager:newAnimation(player.character.idleSprite),
         castAnim = ctx.resourceManager:newAnimation(player.character.castSprite),
@@ -93,7 +92,7 @@ function BasePlayerRenderer:draw()
 end
 
 function BasePlayerRenderer:drawChar()
-    lg.setColor(self.tint)
+    lg.setColor(COLORS.WHITE)
     local scaleX = PIXEL_TO_GAME_SCALE
     local x = self.x
     if self.mirror then

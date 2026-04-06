@@ -12,7 +12,6 @@ AIPlayerController.__index = AIPlayerController
 function AIPlayerController:new(ctx, player, difficulty)
     local controller = BasePlayerController:new(ctx, player, AIPlayerRenderer:new(ctx, player))
     controller.isHuman = false
-    controller.tint = COLORS.RED
 
     controller.difficulty = difficulty or "normal"
     local wpm = 0

@@ -24,7 +24,6 @@ function MenuScene:new(ctx)
     scene.rightRenderer = BasePlayerRenderer:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter("wizard")))
     scene.rightRenderer.x = GAME_WIDTH - 320 - SPRITE_SIZE
     scene.rightRenderer.mirror = true
-    scene.rightRenderer.tint = COLORS.RED
 
     -- Load spells for display
     local margin = 340

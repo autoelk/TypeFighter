@@ -61,9 +61,13 @@ function ResourceManager:loadAllAssets(cardNames)
     -- Load images
     self:loadImage("background", "assets/background.png")
 
-    self:loadImage("wizardIdle", "assets/wizardIdle.png")
-    self:loadImage("wizardDeath", "assets/wizardDeath.png")
-    self:loadImage("wizardCast", "assets/wizardCast.png")
+    self:loadImage("wizardIdle", "assets/characters/wizard/wizardIdle.png")
+    self:loadImage("wizardCast", "assets/characters/wizard/wizardCast.png")
+    self:loadImage("wizardDeath", "assets/characters/wizard/wizardDeath.png")
+
+    self:loadImage("vampireIdle", "assets/characters/vampire/vampireIdle.png")
+    self:loadImage("vampireCast", "assets/characters/vampire/vampireCast.png")
+    self:loadImage("vampireDeath", "assets/characters/vampire/vampireDeath.png")
 
     self:loadImage("placeholder", "assets/placeholder.png")
 

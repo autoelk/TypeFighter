@@ -17,7 +17,6 @@ function CharacterSelectScene:new(ctx)
     scene.controllers = {}
     for i, charName in ipairs(ctx.characterManager:getAllCharNames()) do
         local controller = AIPlayerController:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter(charName)))
-        controller.renderer.tint = COLORS.WHITE
         controller.renderer.mirror = false
         controller.renderer.handX = GAME_WIDTH / 2
         table.insert(scene.controllers, controller)

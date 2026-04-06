@@ -9,7 +9,6 @@ function AIPlayerRenderer:new(ctx, player)
     local renderer = BasePlayerRenderer:new(ctx, player)
     renderer.x = GAME_WIDTH - 256 - SPRITE_SIZE
     renderer.mirror = true
-    renderer.tint = COLORS.RED
     return setmetatable(renderer, self)
 end
 
