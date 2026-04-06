@@ -1,6 +1,6 @@
 local utf8 = require("utf8")
 
--- Manages different game scenes and transitions between them
+-- manages different game scenes and transitions between them
 SceneManager = {}
 SceneManager.__index = SceneManager
 
@@ -18,7 +18,7 @@ function SceneManager:addScene(scene)
     scene.sceneManager = self
 end
 
--- Change to a new scene, clearing the scene stack
+-- change to a new scene, clearing the scene stack
 function SceneManager:changeScene(sceneId)
     while #self.sceneStack > 0 do
         self:popScene()
@@ -95,8 +95,11 @@ function SceneManager:keypressed(key)
 end
 
 function SceneManager:textinput(t)
+    if t == " " and self.ctx.ui.input:sub(-1) == " " then
+        return -- don't allow consecutive spaces
+    end
     self.ctx.ui.input = self.ctx.ui.input .. t
-    self.ctx.ui.messageLeft = "" -- Clears placeholder that shares the input area
+    self.ctx.ui.messageLeft = "" -- clears placeholder that shares the input area
     self:getCurrentScene():textinput(t)
 end
 

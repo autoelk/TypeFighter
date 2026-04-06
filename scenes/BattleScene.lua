@@ -19,7 +19,7 @@ BattleScene.__index = BattleScene
 function BattleScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = SceneId.Battle
-    scene.controlsHint = "[quit] to menu, [pause]" -- Unused for now
+    scene.controlsHint = "[quit] to menu, [pause]"
     scene:addAvailableCommand("quit", true)
     scene:addAvailableCommand("pause", true)
     scene.humanController = nil
@@ -47,14 +47,13 @@ function BattleScene:setEnemyController(controller)
 end
 
 function BattleScene:enter()
-    -- Initialize players for gameplay
     self.humanController:reset()
     self.enemyController:reset()
 
     Table.shuffle(self.humanController.player.library)
     Table.shuffle(self.enemyController.player.library)
 
-    -- Set all card positions to library
+    -- set all card positions to library
     for _, card in ipairs(self.humanController.player.library) do
         card:setPosition(self.humanController.renderer.libraryX, self.humanController.renderer.libraryY)
     end
@@ -64,18 +63,18 @@ function BattleScene:enter()
         card:setPosition(enemyLibraryX, enemyLibraryY)
     end
 
-    -- Draw starting hands
+    -- draw starting hands
     for i = 1, STARTING_HAND_SIZE do
         self.humanController.player:drawCard()
         self.enemyController.player:drawCard()
     end
 
-    -- Set game interface messages
+    -- set game interface messages
     self.ctx.ui.input = ""
     self.ctx.ui.messageLeft = self.controlsHint
     self.ctx.ui.messageRight = "type card name, then type the incantation to cast"
 
-    -- Initialize active spells list for this game
+    -- initialize active spells list for this game
     self.activeSpells = {}
     self.gameOverTriggered = false
     self.inputBarState = "normal"
@@ -196,7 +195,6 @@ function BattleScene:drawInputInterface()
     local barHeight = #wrappedText * (font:getHeight() * font:getLineHeight()) + 8
     
     -- cursor placement
-    -- TODO: edge case where the current word is too long to fit in the bar
     local _, wrappedInput = font:getWrap(modifiedInput, barWidth - 16)
     local _, wrappedInputWithWord = font:getWrap(modifiedInput .. remCurWord, barWidth - 16)
     local cursorX = x + font:getWidth(wrappedInput[#wrappedInput]) + 8
