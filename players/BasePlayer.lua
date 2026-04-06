@@ -70,7 +70,7 @@ function BasePlayer:damage(amount)
     local remDmg = amount
     remDmg = math.max(0, remDmg - self.shield)
     self.shield = math.max(0, self.shield - amount)
-    self.health = self.health - remDmg
+    self.health = math.max(0, self.health - remDmg)
     if self.health <= 0 then
         self.isAlive = false
     end

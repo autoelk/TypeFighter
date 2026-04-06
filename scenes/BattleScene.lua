@@ -163,12 +163,14 @@ end
 function BattleScene:drawInputInterface()
     local ui = self.ctx.ui
     local text = ui.input
-    local color = COLORS.WHITE
-    local font = self.ctx.fonts.fontM
     local barWidth = 512
+    
     local cursorWidth = 10
     local cursorHeight = 2
+    local progCurWord, remCurWord = "", ""
+    local modifiedInput = ui.input -- used for cursor positioning for incantation typing
     
+    local color = COLORS.WHITE
     if ui.input == "" then
         -- if the user hasn't typed anything, show the reminder text.
         if self.inputBarState == "normal" then
@@ -180,7 +182,7 @@ function BattleScene:drawInputInterface()
     elseif ui.input ~= "" and self.suggestedCommand then
         -- user is typing and we have a suggested command
         if self.inputBarState == "incantation" and self.suggestedCommand == self.humanController.incantation then
-            text = Text.colorizeIncantation(self.humanController.incantation, ui.input)
+            text, progCurWord, remCurWord, modifiedInput = Text.colorizeIncantation(self.humanController.incantation, ui.input)
         else
             text = Text.colorizeText(self.suggestedCommand, ui.input, COLORS.WHITE, COLORS.WHITE, COLORS.GREY)
         end
@@ -188,14 +190,22 @@ function BattleScene:drawInputInterface()
     
     local x = math.floor((GAME_WIDTH - barWidth) / 2)
     local y = 200
-
+    local font = self.ctx.fonts.fontM
+    
     local _, wrappedText = font:getWrap(text, barWidth - 16)
     local barHeight = #wrappedText * (font:getHeight() * font:getLineHeight()) + 8
-
+    
     -- cursor placement
-    local _, uiWrappedText = font:getWrap(ui.input, barWidth - 16)
-    local cursorX = x + font:getWidth(uiWrappedText[#uiWrappedText]) + 8
-    local cursorY = y + #uiWrappedText * (font:getHeight() * font:getLineHeight()) + 2
+    -- TODO: edge case where the current word is too long to fit in the bar
+    local _, wrappedInput = font:getWrap(modifiedInput, barWidth - 16)
+    local _, wrappedInputWithWord = font:getWrap(modifiedInput .. remCurWord, barWidth - 16)
+    local cursorX = x + font:getWidth(wrappedInput[#wrappedInput]) + 8
+    local cursorY = y + #wrappedInput * (font:getHeight() * font:getLineHeight()) + 2
+    if #wrappedInputWithWord > #wrappedInput then
+        -- if finishing the current word causes wrapping
+        cursorX = x + font:getWidth(progCurWord) + 8
+        cursorY = y + #wrappedInputWithWord * (font:getHeight() * font:getLineHeight()) + 2
+    end
 
     -- bar background and outline
     lg.setColor(COLORS.BLACK)

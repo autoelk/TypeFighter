@@ -21,7 +21,11 @@ function T.colorizeText(text, input, normalColor, correctColor, remainingColor)
 end
 
 -- Colored-text table for incantation typing (skips spaces in incantation, matches input char-by-char).
+-- progCurWord is the progress the user has made on the current word they are typing
+-- remCurWord is the remaining letters of the current word the user is typing
+-- modifiedInput is the input with the incorrect spaces replaced with currency symbols
 function T.colorizeIncantation(incantation, input)
+    local modifiedInput = "" -- used only for cursor positioning
     local text = {}
     local incantationIdx = 1
     local prevInterval = 1
@@ -36,7 +40,7 @@ function T.colorizeIncantation(incantation, input)
                 -- like the open box for a space whitespace character
                 local incorrectPortion = string.sub(input, prevInterval, inputIdx - 1)
                 incorrectPortion = string.gsub(incorrectPortion, " ", "¤")
-
+                modifiedInput = modifiedInput .. incorrectPortion
                 table.insert(text, COLORS.RED)
                 table.insert(text, incorrectPortion)
                 prevInterval = inputIdx
@@ -45,8 +49,10 @@ function T.colorizeIncantation(incantation, input)
             incantationIdx = incantationIdx + 1
         else
             if curStreak == "correct" then
+                local correctPortion = string.sub(input, prevInterval, inputIdx - 1)
+                modifiedInput = modifiedInput .. correctPortion
                 table.insert(text, COLORS.WHITE)
-                table.insert(text, string.sub(input, prevInterval, inputIdx - 1))
+                table.insert(text, correctPortion)
                 prevInterval = inputIdx
             end
             curStreak = "incorrect"
@@ -60,10 +66,16 @@ function T.colorizeIncantation(incantation, input)
         table.insert(text, COLORS.RED)
     end
     table.insert(text, curPortion)
-    table.insert(text, COLORS.GREY)
-    table.insert(text, string.sub(incantation, incantationIdx, -1))
+    modifiedInput = modifiedInput .. curPortion
 
-    return text
+    local remPortion = string.sub(incantation, incantationIdx, -1)
+    table.insert(text, COLORS.GREY)
+    table.insert(text, remPortion)
+
+    local progCurWord = string.match(modifiedInput, "([^ ]+)$") or ""
+    local remCurWord = string.match(remPortion, "^(%w+)") or ""
+
+    return text, progCurWord, remCurWord, modifiedInput
 end
 
 return T
