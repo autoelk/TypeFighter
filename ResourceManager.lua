@@ -4,6 +4,7 @@ ResourceManager.__index = ResourceManager
 
 function ResourceManager:new()
     local manager = {
+        shaders = {},
         images = {},
         fonts = {},
         sounds = {},
@@ -12,6 +13,17 @@ function ResourceManager:new()
     }
     setmetatable(manager, self)
     return manager
+end
+
+function ResourceManager:loadShader(name, code)
+    if not self.shaders[name] then
+        self.shaders[name] = love.graphics.newShader(code)
+    end
+    return self.shaders[name]
+end
+
+function ResourceManager:getShader(name)
+    return self.shaders[name]
 end
 
 function ResourceManager:loadFont(name, path, size)
@@ -86,6 +98,17 @@ function ResourceManager:loadAllAssets(cardNames)
 
     -- Load sounds
     self:loadSound("hurt", "assets/sounds/hurt.wav")
+
+    -- 0.0 is grayscale, 1.0 is full color
+    self:loadShader("saturation", [[
+        extern float saturation;
+        vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords) {
+            vec4 pixel = Texel(texture, texture_coords);
+            float gray = dot(pixel.rgb, vec3(0.299, 0.587, 0.114));
+            vec3 grayscale = vec3(gray);
+            return vec4(mix(grayscale, pixel.rgb, saturation), pixel.a) * color;
+        }
+    ]])
 
     self:loadDictionary()
 end
