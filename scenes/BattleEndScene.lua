@@ -3,7 +3,7 @@ local SceneId = require "enums.SceneId"
 local Text = require "util.Text"
 
 -- Battle End Scene
--- shows rewards for winning the battle 
+-- shows rewards for winning the battle
 BattleEndScene = {}
 setmetatable(BattleEndScene, {
     __index = BaseScene
@@ -28,10 +28,11 @@ end
 
 function BattleEndScene:enter()
     local game = self.ctx.sceneManager:getScene(SceneId.Battle)
-    local p1Alive = game.humanController.player.isAlive
-    local p2Alive = game.enemyController.player.isAlive
+    self.mode = "card"
 
     local rs = self.ctx.runState
+    local p1Alive = game.humanController.player.isAlive
+    local p2Alive = game.enemyController.player.isAlive
     if p1Alive and not p2Alive then
         -- Win this stage
         local current = rs.stageIndex
@@ -129,7 +130,8 @@ function BattleEndScene:handleInput(userInput)
                 local game = self.ctx.sceneManager:getScene(SceneId.Battle)
                 local oppName = rs:getCurrentOpponent()
                 game:setHumanController(rs.humanPlayerController)
-                game:setEnemyController(AIPlayerController:new(self.ctx, BasePlayer:new(self.ctx, self.ctx.characterManager:createCharacter(oppName)), "normal"))
+                game:setEnemyController(AIPlayerController:new(self.ctx,
+                    BasePlayer:new(self.ctx, self.ctx.characterManager:createCharacter(oppName)), "normal"))
                 self.ctx.sceneManager:changeScene(SceneId.Battle)
             else
                 rs:endRun()
