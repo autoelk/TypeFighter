@@ -1,20 +1,20 @@
 require "cards.BaseCard"
-require "spells.PoisonSpell"
+require "spells.LacerateSpell"
 
-PoisonCard = {}
-setmetatable(PoisonCard, {
+LacerateCard = {}
+setmetatable(LacerateCard, {
     __index = BaseCard
 })
-PoisonCard.__index = PoisonCard
+LacerateCard.__index = LacerateCard
 
-function PoisonCard:new(ctx, x, y)
+function LacerateCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
-    card.name = "poison"
+    card.name = "lacerate"
     card.incantationLength = 2
     card:setCharacter("vampire")
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
-    card.SpellClass = PoisonSpell
+    card.SpellClass = LacerateSpell
     card.spellData = { 
         stacksToAdd = 5,
     }
@@ -22,6 +22,6 @@ function PoisonCard:new(ctx, x, y)
     return card
 end
 
-function PoisonCard:getDescription()
-    return "apply " .. self.spellData.stacksToAdd .. " stacks of poison."
+function LacerateCard:getDescription()
+    return "apply " .. self.spellData.stacksToAdd .. " stacks of bleed."
 end

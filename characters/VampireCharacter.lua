@@ -12,7 +12,7 @@ function VampireCharacter:new()
     character.castSprite = "vampireCast"
     character.deathSprite = "vampireDeath"
 
-    character.startingDeck = { "poison", "poison", "block", "block", "rage", "slice" }
+    character.startingDeck = { "lacerate", "lacerate", "block", "block", "rage", "slice" }
     character.startingWordBank = {"sacrificum", "mortuus", "cruentus", "sanguis", "vulnero", "absorbeo", "devoveo", "vulnus", "diabolus", "sanctifico"}
 
     setmetatable(character, self)

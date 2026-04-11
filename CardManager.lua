@@ -3,11 +3,9 @@ require "cards.FireballCard"
 require "cards.HealCard"
 require "cards.BoltCard"
 require "cards.TorrentCard"
-require "cards.PoisonCard"
+require "cards.LacerateCard"
 require "cards.RageCard"
 require "cards.BlessingCard"
-require "cards.TyphoonCard"
-require "cards.PunchCard"
 require "cards.SliceCard"
 require "cards.PortalCard"
 require "cards.ForceFieldCard"
@@ -29,11 +27,9 @@ function CardManager:new(ctx)
             ["heal"] = HealCard,
             ["bolt"] = BoltCard,
             ["torrent"] = TorrentCard,
-            ["poison"] = PoisonCard,
+            ["lacerate"] = LacerateCard,
             ["rage"] = RageCard,
             ["blessing"] = BlessingCard,
-            ["typhoon"] = TyphoonCard,
-            ["punch"] = PunchCard,
             ["slice"] = SliceCard,
             ["portal"] = PortalCard,
             ["forcefield"] = ForceFieldCard,
