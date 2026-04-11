@@ -24,7 +24,6 @@ end
 
 function AIPlayerRenderer:update(dt)
     BasePlayerRenderer.update(self, dt)
-    self:updateSelectedCard(dt)
 end
 
 function AIPlayerRenderer:updateSelectedCard(dt)

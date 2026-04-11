@@ -83,7 +83,6 @@ function HumanPlayerRenderer:update(dt)
     BasePlayerRenderer.update(self, dt)
     self:updateHand(dt)
     self:updateLibrary(dt)
-    self:updateSelectedCard(dt)
 end
 
 -- Update positions of cards in hand
