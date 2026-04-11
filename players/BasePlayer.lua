@@ -23,6 +23,7 @@ function BasePlayer:new(ctx, character)
         hand = {}, -- Current cards in hand
         library = {}, -- All cards available to draw from
         deck = {}, -- All cards owned by the player
+        consumed = {}, -- List of cards that have been consumed
 
         -- Words
         wordBank = {} -- List of words that can appear in the player's incantations
@@ -60,7 +61,12 @@ function BasePlayer:castSelectedCard()
     if not self.selectedCard then
         return
     end
-    table.insert(self.library, self.selectedCard)
+
+    if self.selectedCard.keywords and Table.indexOf(self.selectedCard.keywords, "consume") then
+        table.insert(self.consumed, self.selectedCard)
+    else
+        table.insert(self.library, self.selectedCard)
+    end
     self.selectedCard = nil
 end
 

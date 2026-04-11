@@ -14,9 +14,10 @@ function BloodPactCard:new(ctx, x, y)
 
     card.SpellClass = BloodPactSpell
     card.spellData = {}
+    card.keywords = { "consume" }
     return setmetatable(card, self)
 end
 
 function BloodPactCard:getDescription()
-    return "whenever you deal damage to yourself, draw a card."
+    return "whenever you deal damage to yourself, draw a card. consume."
 end

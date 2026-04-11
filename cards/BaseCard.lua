@@ -20,11 +20,12 @@ function BaseCard:new(ctx, x, y)
         -- Attributes to be set by subclasses
         name = nil,
         incantationLength = nil,
-        character = nil, -- String name of character this card belongs to
+        character = nil, -- string name of character this card belongs to
         color = nil,
+        anim = nil,
         SpellClass = nil,
-        spellData = nil,
-        anim = nil
+        spellData = {}, -- list of data for the spell this card casts, such as damage
+        keywords = {}, -- list of keywords this card has
     }
     setmetatable(card, self)
     return card
