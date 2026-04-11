@@ -96,6 +96,7 @@ end
 
 function HumanPlayerRenderer:updateLibrary(dt)
     for i, card in ipairs(self.player.library) do
+        card.x = self.libraryX
         card:move(self.libraryX, self.libraryY)
     end
 end
