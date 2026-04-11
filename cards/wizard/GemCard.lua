@@ -14,7 +14,7 @@ function GemCard:new(ctx, x, y)
 
     card.SpellClass = GemSpell
     card.spellData = {
-        focusAmount = 1
+        focusAmount = 5
     }
     return setmetatable(card, self)
 end
