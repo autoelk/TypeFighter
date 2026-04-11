@@ -151,7 +151,7 @@ function BasePlayerRenderer:drawHealthBar()
     local healthBarWidth = math.ceil(SPRITE_SIZE * self.player.health / self.player.maxHealth)
     local healthBarHeight = 24
     local healthBarX = self.x
-    local healthBarY = self.y - 16
+    local healthBarY = self.y - 24
     
     lg.setColor(COLORS.RED)
     lg.rectangle("fill", healthBarX, healthBarY, SPRITE_SIZE, healthBarHeight)
