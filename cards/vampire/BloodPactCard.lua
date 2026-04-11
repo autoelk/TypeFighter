@@ -11,7 +11,7 @@ function BloodPactCard:new(ctx, x, y)
     card.name = "bloodpact"
     card.incantationLength = 5
     card:setCharacter("vampire")
-    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
+    card.anim = ctx.resourceManager:newAnimation("vampireSpellPlaceholder")
 
     card.SpellClass = BloodPactSpell
     card.spellData = {}

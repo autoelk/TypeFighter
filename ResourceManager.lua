@@ -78,12 +78,13 @@ function ResourceManager:loadAllAssets(cardNames)
     self:loadImage("wizardIdle", "assets/characters/wizard/wizardIdle.png")
     self:loadImage("wizardCast", "assets/characters/wizard/wizardCast.png")
     self:loadImage("wizardDeath", "assets/characters/wizard/wizardDeath.png")
+    self:loadImage("wizardSpellPlaceholder", "assets/characters/wizard/wizardSpellPlaceholder.png")
 
     self:loadImage("vampireIdle", "assets/characters/vampire/vampireIdle.png")
     self:loadImage("vampireCast", "assets/characters/vampire/vampireCast.png")
     self:loadImage("vampireDeath", "assets/characters/vampire/vampireDeath.png")
+    self:loadImage("vampireSpellPlaceholder", "assets/characters/vampire/vampireSpellPlaceholder.png")
 
-    self:loadImage("placeholder", "assets/placeholder.png")
 
     -- Load all card images
     for i, cardName in ipairs(cardNames) do
@@ -92,9 +93,6 @@ function ResourceManager:loadAllAssets(cardNames)
         if cardImageFile then
             cardImageFile:close()
             self:loadImage("card_" .. cardName, path)
-        end
-        if not self:getImage("card_" .. cardName) then
-            self.images["card_" .. cardName] = self:getImage("placeholder")
         end
     end
 

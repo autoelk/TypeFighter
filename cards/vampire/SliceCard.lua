@@ -10,7 +10,7 @@ function SliceCard:new(ctx, x, y)
     card.name = "slice"
     card.incantationLength = 3
     card:setCharacter("vampire")
-    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
+    card.anim = ctx.resourceManager:newAnimation("vampireSpellPlaceholder")
 
     card.SpellClass = SliceSpell
     card.spellData = { ratio = 1 / 2 }
