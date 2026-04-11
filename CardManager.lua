@@ -1,17 +1,18 @@
 require "cards.BaseCard"
 
+require "cards.vampire.SwipeCard"
+require "cards.vampire.ShroudCard"
 require "cards.vampire.LacerateCard"
 require "cards.vampire.RageCard"
 require "cards.vampire.SliceCard"
-require "cards.vampire.BlockCard"
 require "cards.vampire.SiphonCard"
 
+require "cards.wizard.BoltCard"
+require "cards.wizard.ForceFieldCard"
 require "cards.wizard.FireballCard"
 require "cards.wizard.HealCard"
-require "cards.wizard.BoltCard"
 require "cards.wizard.TorrentCard"
 require "cards.wizard.BlessingCard"
-require "cards.wizard.ForceFieldCard"
 require "cards.wizard.PortalCard"
 require "cards.wizard.GemCard"
 
@@ -27,19 +28,21 @@ function CardManager:new(ctx)
         ctx = ctx,
         -- Map of card name to card class
         cardTypes = {
-            ["fireball"] = FireballCard,
-            ["heal"] = HealCard,
-            ["bolt"] = BoltCard,
-            ["torrent"] = TorrentCard,
+            ["swipe"] = SwipeCard,
+            ["shroud"] = ShroudCard,
             ["lacerate"] = LacerateCard,
             ["rage"] = RageCard,
-            ["blessing"] = BlessingCard,
-            ["slice"] = SliceCard,
-            ["portal"] = PortalCard,
-            ["forcefield"] = ForceFieldCard,
-            ["block"] = BlockCard,
             ["siphon"] = SiphonCard,
-            ["gem"] = GemCard
+            ["slice"] = SliceCard,
+   
+            ["fireball"] = FireballCard,
+            ["bolt"] = BoltCard,
+            ["forcefield"] = ForceFieldCard,
+            ["heal"] = HealCard,
+            ["torrent"] = TorrentCard,
+            ["blessing"] = BlessingCard,
+            ["portal"] = PortalCard,
+            ["gem"] = GemCard,
         },
         cardCharacters = {}, -- Map of card name to character name
         cardNames = {} -- List of card names

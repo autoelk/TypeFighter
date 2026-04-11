@@ -2,9 +2,7 @@ require "cards.BaseCard"
 require "spells.wizard.HealSpell"
 
 HealCard = {}
-setmetatable(HealCard, {
-    __index = BaseCard
-})
+setmetatable(HealCard, {__index = BaseCard})
 HealCard.__index = HealCard
 
 function HealCard:new(ctx, x, y)
@@ -16,8 +14,7 @@ function HealCard:new(ctx, x, y)
 
     card.SpellClass = HealSpell
     card.spellData = { healAmount = 10 }
-    setmetatable(card, self)
-    return card
+    return setmetatable(card, self)
 end
 
 function HealCard:getDescription()

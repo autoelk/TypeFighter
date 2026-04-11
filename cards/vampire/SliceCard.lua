@@ -2,9 +2,7 @@ require "cards.BaseCard"
 require "spells.vampire.SliceSpell"
 
 SliceCard = {}
-setmetatable(SliceCard, {
-    __index = BaseCard
-})
+setmetatable(SliceCard, {__index = BaseCard})
 SliceCard.__index = SliceCard
 
 function SliceCard:new(ctx, x, y)
@@ -16,8 +14,7 @@ function SliceCard:new(ctx, x, y)
 
     card.SpellClass = SliceSpell
     card.spellData = { ratio = 1 / 2 }
-    setmetatable(card, self)
-    return card
+    return setmetatable(card, self)
 end
 
 function SliceCard:getDescription()

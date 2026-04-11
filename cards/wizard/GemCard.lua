@@ -2,9 +2,7 @@ require "cards.BaseCard"
 require "spells.wizard.GemSpell"
 
 GemCard = {}
-setmetatable(GemCard, {
-    __index = BaseCard
-})
+setmetatable(GemCard, {__index = BaseCard})
 GemCard.__index = GemCard
 
 function GemCard:new(ctx, x, y)
@@ -18,8 +16,7 @@ function GemCard:new(ctx, x, y)
     card.spellData = {
         focusAmount = 1
     }
-    setmetatable(card, self)
-    return card
+    return setmetatable(card, self)
 end
 
 function GemCard:getDescription()

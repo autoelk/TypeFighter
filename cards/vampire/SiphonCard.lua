@@ -2,9 +2,7 @@ require "cards.BaseCard"
 require "spells.vampire.SiphonSpell"
 
 SiphonCard = {}
-setmetatable(SiphonCard, {
-    __index = BaseCard
-})
+setmetatable(SiphonCard, {__index = BaseCard})
 SiphonCard.__index = SiphonCard
 
 function SiphonCard:new(ctx, x, y)
@@ -16,8 +14,7 @@ function SiphonCard:new(ctx, x, y)
 
     card.SpellClass = SiphonSpell
     card.spellData = {}
-    setmetatable(card, self)
-    return card
+    return setmetatable(card, self)
 end
 
 function SiphonCard:getDescription()

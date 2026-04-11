@@ -2,9 +2,7 @@ require "cards.BaseCard"
 require "spells.wizard.PortalSpell"
 
 PortalCard = {}
-setmetatable(PortalCard, {
-    __index = BaseCard
-})
+setmetatable(PortalCard, {__index = BaseCard})
 PortalCard.__index = PortalCard
 
 function PortalCard:new(ctx, x, y)
@@ -16,8 +14,7 @@ function PortalCard:new(ctx, x, y)
 
     card.SpellClass = PortalSpell
     card.spellData = { damage = 40 }
-    setmetatable(card, self)
-    return card
+    return setmetatable(card, self)
 end
 
 function PortalCard:getDescription()

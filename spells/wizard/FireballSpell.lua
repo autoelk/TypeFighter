@@ -17,8 +17,7 @@ function FireballSpell:new(caster, target, spellData, anim)
     spell:playOnce()
     spell.speedX = math.abs(spell.endX - spell.startX) / anim.timeLeft
     spell.speedY = math.abs(spell.endY - spell.startY) / anim.timeLeft
-    setmetatable(spell, self)
-    return spell
+    return setmetatable(spell, self)
 end
 
 function FireballSpell:onStart()

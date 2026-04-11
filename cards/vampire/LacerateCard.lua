@@ -2,9 +2,7 @@ require "cards.BaseCard"
 require "spells.vampire.LacerateSpell"
 
 LacerateCard = {}
-setmetatable(LacerateCard, {
-    __index = BaseCard
-})
+setmetatable(LacerateCard, {__index = BaseCard})
 LacerateCard.__index = LacerateCard
 
 function LacerateCard:new(ctx, x, y)
@@ -18,8 +16,7 @@ function LacerateCard:new(ctx, x, y)
     card.spellData = { 
         bleedAmount = 5,
     }
-    setmetatable(card, self)
-    return card
+    return setmetatable(card, self)
 end
 
 function LacerateCard:getDescription()

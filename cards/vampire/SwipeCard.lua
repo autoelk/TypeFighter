@@ -1,24 +1,24 @@
 require "cards.BaseCard"
-require "spells.wizard.BoltSpell"
+require "spells.vampire.SwipeSpell"
 
-BoltCard = {}
-setmetatable(BoltCard, {__index = BaseCard})
-BoltCard.__index = BoltCard
+SwipeCard = {}
+setmetatable(SwipeCard, {__index = BaseCard})
+SwipeCard.__index = SwipeCard
 
-function BoltCard:new(ctx, x, y)
+function SwipeCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
-    card.name = "bolt"
+    card.name = "swipe"
     card.incantationLength = 1
-    card:setCharacter("wizard")
+    card:setCharacter("vampire")
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
-    card.SpellClass = BoltSpell
+    card.SpellClass = SwipeSpell
     card.spellData = {
         damage = 5
     }
     return setmetatable(card, self)
 end
 
-function BoltCard:getDescription()
+function SwipeCard:getDescription()
     return "deal " .. self.spellData.damage .. " damage."
 end

@@ -2,9 +2,7 @@ require "cards.BaseCard"
 require "spells.vampire.RageSpell"
 
 RageCard = {}
-setmetatable(RageCard, {
-    __index = BaseCard
-})
+setmetatable(RageCard, {__index = BaseCard})
 RageCard.__index = RageCard
 
 function RageCard:new(ctx, x, y)
@@ -16,8 +14,7 @@ function RageCard:new(ctx, x, y)
 
     card.SpellClass = RageSpell
     card.spellData = { damage = 30, healthCost = 10 }
-    setmetatable(card, self)
-    return card
+    return setmetatable(card, self)
 end
 
 function RageCard:getDescription()

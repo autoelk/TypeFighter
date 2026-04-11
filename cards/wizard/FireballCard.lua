@@ -2,9 +2,7 @@ require "cards.BaseCard"
 require "spells.wizard.FireballSpell"
 
 FireballCard = {}
-setmetatable(FireballCard, {
-    __index = BaseCard
-})
+setmetatable(FireballCard, {__index = BaseCard})
 FireballCard.__index = FireballCard
 
 function FireballCard:new(ctx, x, y)
@@ -19,8 +17,7 @@ function FireballCard:new(ctx, x, y)
         damage = 15,
         focusAmount = -3
     }
-    setmetatable(card, self)
-    return card
+    return setmetatable(card, self)
 end
 
 function FireballCard:getDescription()

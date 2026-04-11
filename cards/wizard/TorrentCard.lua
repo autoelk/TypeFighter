@@ -2,9 +2,7 @@ require "cards.BaseCard"
 require "spells.wizard.TorrentSpell"
 
 TorrentCard = {}
-setmetatable(TorrentCard, {
-    __index = BaseCard
-})
+setmetatable(TorrentCard, {__index = BaseCard})
 TorrentCard.__index = TorrentCard
 
 function TorrentCard:new(ctx, x, y)
@@ -19,8 +17,7 @@ function TorrentCard:new(ctx, x, y)
         damage = 5,
         focusAmount = 3
     }
-    setmetatable(card, self)
-    return card
+    return setmetatable(card, self)
 end
 
 function TorrentCard:getDescription()

@@ -2,9 +2,7 @@ require "cards.BaseCard"
 require "spells.wizard.BlessingSpell"
 
 BlessingCard = {}
-setmetatable(BlessingCard, {
-    __index = BaseCard
-})
+setmetatable(BlessingCard, {__index = BaseCard})
 BlessingCard.__index = BlessingCard
 
 function BlessingCard:new(ctx, x, y)
@@ -18,8 +16,7 @@ function BlessingCard:new(ctx, x, y)
     card.spellData = {
         regenAmount = 5,
     }
-    setmetatable(card, self)
-    return card
+    return setmetatable(card, self)
 end
 
 function BlessingCard:getDescription()

@@ -12,7 +12,7 @@ function WizardCharacter:new()
     character.castSprite = "wizardCast"
     character.deathSprite = "wizardDeath"
 
-    character.startingDeck = {"bolt", "bolt", "forcefield", "forcefield", "torrent", "fireball"}
+    character.startingDeck = {"bolt", "bolt", "forcefield", "forcefield", "gem", "fireball"}
     character.startingWordBank = {"ignis", "inflammatio", "accendo", "infervesco", "fulgeo", "aqua", "mare", "demergo", "liquidus", "flumen"}
 
     setmetatable(character, self)

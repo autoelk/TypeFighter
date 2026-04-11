@@ -1,27 +1,24 @@
 require "cards.BaseCard"
-require "spells.vampire.BlockSpell"
+require "spells.vampire.ShroudSpell"
 
-BlockCard = {}
-setmetatable(BlockCard, {
-    __index = BaseCard
-})
-BlockCard.__index = BlockCard
+ShroudCard = {}
+setmetatable(ShroudCard, {__index = BaseCard})
+ShroudCard.__index = ShroudCard
 
-function BlockCard:new(ctx, x, y)
+function ShroudCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
-    card.name = "block"
+    card.name = "shroud"
     card.incantationLength = 1
     card:setCharacter("vampire")
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
-    card.SpellClass = BlockSpell
+    card.SpellClass = ShroudSpell
     card.spellData = {
         shieldAmount = 5
     }
-    setmetatable(card, self)
-    return card
+    return setmetatable(card, self)
 end
 
-function BlockCard:getDescription()
+function ShroudCard:getDescription()
     return "gain " .. self.spellData.shieldAmount .. " shield."
 end

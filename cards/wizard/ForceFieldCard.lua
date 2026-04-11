@@ -2,24 +2,21 @@ require "cards.BaseCard"
 require "spells.wizard.ForceFieldSpell"
 
 ForceFieldCard = {}
-setmetatable(ForceFieldCard, {
-    __index = BaseCard
-})
+setmetatable(ForceFieldCard, {__index = BaseCard})
 ForceFieldCard.__index = ForceFieldCard
 
 function ForceFieldCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "forcefield"
-    card.incantationLength = 2
+    card.incantationLength = 1
     card:setCharacter("wizard")
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = ForceFieldSpell
     card.spellData = {
-        shieldAmount = 10
+        shieldAmount = 5
     }
-    setmetatable(card, self)
-    return card
+    return setmetatable(card, self)
 end
 
 function ForceFieldCard:getDescription()
