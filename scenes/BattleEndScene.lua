@@ -13,7 +13,7 @@ BattleEndScene.__index = BattleEndScene
 function BattleEndScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = SceneId.BattleEnd
-    scene.controlsHint = "[skip] reward, [quit]"
+    scene.controlsHint = "[skip] reward, [quit] to menu"
     scene:addAvailableCommand("skip", true)
     scene:addAvailableCommand("quit", true)
     scene.title = ""

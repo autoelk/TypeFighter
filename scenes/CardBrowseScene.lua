@@ -14,7 +14,7 @@ function CardBrowseScene:new(ctx)
     scene.posy = 16 -- Scroll position
     scene.cardsPerRow = 4
     scene.cards = {}
-    scene.controlsHint = "[quit]"
+    scene.controlsHint = "[quit] to menu"
     scene:addAvailableCommand("quit", true)
     for _, cardName in ipairs(ctx.cardManager:getAllCardNames()) do
         table.insert(scene.cards, ctx.cardManager:createCard(cardName))

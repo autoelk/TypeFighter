@@ -13,14 +13,14 @@ function GameOverScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = SceneId.GameOver
     scene.gameOverMessage = ""
-    scene.controlsHint = "[quit]"
+    scene.controlsHint = "[quit] to menu"
     scene:addAvailableCommand("quit", true)
     return scene
 end
 
 function GameOverScene:enter()
     self.ctx.ui.messageLeft = self.controlsHint
-    self.ctx.ui.messageRight = ""
+    self.ctx.ui.messageRight = "type [quit] to return to menu"
     self.ctx.ui.input = ""
     self.gameOverMessage = "game over"
 end
