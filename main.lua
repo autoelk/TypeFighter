@@ -23,7 +23,6 @@ require "scenes.CharacterSelectScene"
 require "scenes.BattleScene"
 require "scenes.PauseScene"
 require "scenes.GameOverScene"
-require "scenes.InstructionsScene"
 require "scenes.BattleEndScene"
 
 function love.load()
@@ -68,7 +67,6 @@ function love.load()
     ctx.sceneManager:addScene(BattleScene:new(ctx))
     ctx.sceneManager:addScene(PauseScene:new(ctx))
     ctx.sceneManager:addScene(GameOverScene:new(ctx))
-    ctx.sceneManager:addScene(InstructionsScene:new(ctx))
     ctx.sceneManager:addScene(BattleEndScene:new(ctx))
 
     ctx.sceneManager:changeScene(SceneId.Menu)
