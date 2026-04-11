@@ -10,6 +10,7 @@ require "cards.SliceCard"
 require "cards.PortalCard"
 require "cards.ForceFieldCard"
 require "cards.BlockCard"
+require "cards.SiphonCard"
 
 -- Static class responsible for creating card instances based on their names
 CardManager = {}
@@ -33,7 +34,8 @@ function CardManager:new(ctx)
             ["slice"] = SliceCard,
             ["portal"] = PortalCard,
             ["forcefield"] = ForceFieldCard,
-            ["block"] = BlockCard
+            ["block"] = BlockCard,
+            ["siphon"] = SiphonCard
         },
         cardCharacters = {}, -- Map of card name to character name
         cardNames = {} -- List of card names
