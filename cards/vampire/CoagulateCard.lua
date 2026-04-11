@@ -1,5 +1,6 @@
 require "cards.BaseCard"
 require "spells.vampire.CoagulateSpell"
+local Keyword = require "enums.Keyword"
 
 CoagulateCard = {}
 setmetatable(CoagulateCard, {__index = BaseCard})
@@ -17,9 +18,10 @@ function CoagulateCard:new(ctx, x, y)
         healthCost = 5,
         shieldAmount = 20
     }
+    card.keywords = { Keyword.Sacrifice }
     return setmetatable(card, self)
 end
 
 function CoagulateCard:getDescription()
-    return "lose " .. self.spellData.healthCost .. " health, gain " .. self.spellData.shieldAmount .. " shield."
+    return "sacrifice " .. self.spellData.healthCost .. " health, gain " .. self.spellData.shieldAmount .. " shield."
 end

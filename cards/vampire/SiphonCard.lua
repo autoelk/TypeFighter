@@ -1,5 +1,6 @@
 require "cards.BaseCard"
 require "spells.vampire.SiphonSpell"
+local Keyword = require "enums.Keyword"
 
 SiphonCard = {}
 setmetatable(SiphonCard, {__index = BaseCard})
@@ -14,9 +15,10 @@ function SiphonCard:new(ctx, x, y)
 
     card.SpellClass = SiphonSpell
     card.spellData = {}
+    card.keywords = { Keyword.Bleed }
     return setmetatable(card, self)
 end
 
 function SiphonCard:getDescription()
-    return "gain shield equal to bleed on the target."
+    return "gain shield equal to stacks of bleed on the target."
 end

@@ -1,5 +1,6 @@
 require "cards.BaseCard"
 require "spells.vampire.BloodPactSpell"
+local Keyword = require "enums.Keyword"
 
 BloodPactCard = {}
 setmetatable(BloodPactCard, {__index = BaseCard})
@@ -14,10 +15,10 @@ function BloodPactCard:new(ctx, x, y)
 
     card.SpellClass = BloodPactSpell
     card.spellData = {}
-    card.keywords = { "consume" }
+    card.keywords = { Keyword.Sacrifice, Keyword.Consume }
     return setmetatable(card, self)
 end
 
 function BloodPactCard:getDescription()
-    return "whenever you deal damage to yourself, draw a card. consume."
+    return "whenever you sacrifice, draw a card. consume."
 end

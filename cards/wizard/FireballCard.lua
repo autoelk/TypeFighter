@@ -1,5 +1,6 @@
 require "cards.BaseCard"
 require "spells.wizard.FireballSpell"
+local Keyword = require "enums.Keyword"
 
 FireballCard = {}
 setmetatable(FireballCard, {__index = BaseCard})
@@ -17,6 +18,7 @@ function FireballCard:new(ctx, x, y)
         damage = 15,
         focusAmount = -3
     }
+    card.keywords = { Keyword.Focus }
     return setmetatable(card, self)
 end
 

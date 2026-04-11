@@ -1,5 +1,6 @@
 require "cards.BaseCard"
 require "spells.vampire.RageSpell"
+local Keyword = require "enums.Keyword"
 
 RageCard = {}
 setmetatable(RageCard, {__index = BaseCard})
@@ -14,9 +15,10 @@ function RageCard:new(ctx, x, y)
 
     card.SpellClass = RageSpell
     card.spellData = { damage = 30, healthCost = 10 }
+    card.keywords = { Keyword.Sacrifice }
     return setmetatable(card, self)
 end
 
 function RageCard:getDescription()
-    return "lose " .. self.spellData.healthCost .. " health, deal " .. self.spellData.damage .. " damage."
+    return "sacrifice " .. self.spellData.healthCost .. " health, deal " .. self.spellData.damage .. " damage."
 end

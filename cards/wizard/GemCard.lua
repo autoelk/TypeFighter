@@ -1,5 +1,6 @@
 require "cards.BaseCard"
 require "spells.wizard.GemSpell"
+local Keyword = require "enums.Keyword"
 
 GemCard = {}
 setmetatable(GemCard, {__index = BaseCard})
@@ -16,6 +17,7 @@ function GemCard:new(ctx, x, y)
     card.spellData = {
         focusAmount = 5
     }
+    card.keywords = { Keyword.Focus }
     return setmetatable(card, self)
 end
 

@@ -1,5 +1,6 @@
 local Table = require "util.Table"
 local Sound = require "util.Sound"
+local Keyword = require "enums.Keyword"
 
 -- Model class for a player
 BasePlayer = {}
@@ -62,7 +63,7 @@ function BasePlayer:castSelectedCard()
         return
     end
 
-    if self.selectedCard.keywords and Table.indexOf(self.selectedCard.keywords, "consume") then
+    if self.selectedCard.keywords[Keyword.Consume] then
         table.insert(self.consumed, self.selectedCard)
     else
         table.insert(self.library, self.selectedCard)

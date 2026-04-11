@@ -34,6 +34,11 @@ end
 function HumanPlayerRenderer:drawSelectedCard()
     if self.player.selectedCard then
         self.player.selectedCard:drawMini()
+        self.player.selectedCard:drawKeywords(
+            self.player.selectedCard.x + MINI_CARD_WIDTH + 4,
+            self.player.selectedCard.y,
+            MINI_CARD_WIDTH
+        )
     end
 end
 

@@ -1,5 +1,6 @@
 require "cards.BaseCard"
 require "spells.wizard.TorrentSpell"
+local Keyword = require "enums.Keyword"
 
 TorrentCard = {}
 setmetatable(TorrentCard, {__index = BaseCard})
@@ -17,6 +18,7 @@ function TorrentCard:new(ctx, x, y)
         damage = 5,
         focusAmount = 3
     }
+    card.keywords = { Keyword.Focus }
     return setmetatable(card, self)
 end
 

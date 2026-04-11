@@ -1,5 +1,6 @@
 require "cards.BaseCard"
 require "spells.vampire.LacerateSpell"
+local Keyword = require "enums.Keyword"
 
 LacerateCard = {}
 setmetatable(LacerateCard, {__index = BaseCard})
@@ -16,6 +17,7 @@ function LacerateCard:new(ctx, x, y)
     card.spellData = { 
         bleedAmount = 5,
     }
+    card.keywords = { Keyword.Bleed }
     return setmetatable(card, self)
 end
 

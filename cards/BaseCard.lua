@@ -1,4 +1,5 @@
 local CastResult = require "enums.CastResult"
+local Keyword = require "enums.Keyword"
 
 -- Base Card class that all cards inherit from
 BaseCard = {}
@@ -85,6 +86,23 @@ function BaseCard:drawMini()
     lg.printf(self.incantationLength, self.x - margin, self.y - 4, MINI_CARD_WIDTH, "right")
     lg.setFont(fonts.fontS)
     lg.printf(self:getDescription(), self.x + margin, self.y + 20, MINI_CARD_WIDTH - margin * 2, "left")
+end
+
+-- Draw short description of keywords beside the card
+function BaseCard:drawKeywords(x, y, maxWidth)
+    local font = self.ctx.fonts.fontS
+    local margin = 4
+    lg.setFont(font)
+    for _, keyword in ipairs(self.keywords) do
+        local text = "[" .. keyword .. "] " .. Keyword.descriptions[keyword]
+        local width, wrappedtext = font:getWrap( text, maxWidth )
+        local height = #wrappedtext * (font:getHeight() * font:getLineHeight())
+        lg.setColor(COLORS.GREY)
+        lg.rectangle("fill", x, y, width + margin * 2, height + margin * 2)
+        lg.setColor(COLORS.WHITE)
+        lg.printf(text, x + margin, y, maxWidth, "left")
+        y = y + height + margin * 3
+    end
 end
 
 function BaseCard:update(dt)
