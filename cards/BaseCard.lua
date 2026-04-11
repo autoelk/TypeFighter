@@ -55,17 +55,22 @@ function BaseCard:draw()
     local margin = 8
     -- Draw background
     lg.setColor(self:getColor())
-    lg.rectangle("fill", self.x, self.y, LARGE_CARD_WIDTH, LARGE_CARD_HEIGHT)
-    lg.setColor(COLORS.WHITE)
+    lg.rectangle("fill", self.x, self.y, LARGE_CARD_WIDTH, 32)
+    lg.rectangle("fill", self.x , self.y + 32, margin, SPRITE_SIZE)
+    lg.rectangle("fill", self.x + LARGE_CARD_WIDTH - margin, self.y + 32, margin, SPRITE_SIZE)
+    lg.rectangle("fill", self.x, self.y + 32 + SPRITE_SIZE, LARGE_CARD_WIDTH, LARGE_CARD_HEIGHT - 32 - SPRITE_SIZE)
+    lg.setColor({0, 0, 0, 0.5})
     lg.rectangle("fill", self.x + margin, self.y + 32, SPRITE_SIZE, SPRITE_SIZE)
 
     -- Animate spell preview
+    lg.setColor(COLORS.WHITE)
     local spriteNum = math.min(math.max(1, self.anim.currentFrame), #self.anim.quads)
     lg.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], self.x + margin, self.y + 32, math.rad(self.anim.rotation),
         self.anim.scaleX, self.anim.scaleY)
 
     -- Print text onto card
     local fonts = self.ctx.fonts
+    lg.setColor(COLORS.BLACK)
     lg.setFont(fonts.fontM)
     lg.printf(self.name, self.x + margin, self.y, LARGE_CARD_WIDTH, "left")
     lg.printf(self.incantationLength, self.x - margin, self.y, LARGE_CARD_WIDTH, "right")
