@@ -1,5 +1,5 @@
 require "cards.BaseCard"
-require "spells.ForceFieldSpell"
+require "spells.wizard.ForceFieldSpell"
 
 ForceFieldCard = {}
 setmetatable(ForceFieldCard, {

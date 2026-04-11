@@ -1,5 +1,5 @@
 require "cards.BaseCard"
-require "spells.BlessingSpell"
+require "spells.wizard.BlessingSpell"
 
 BlessingCard = {}
 setmetatable(BlessingCard, {

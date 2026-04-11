@@ -1,5 +1,5 @@
 require "cards.BaseCard"
-require "spells.LacerateSpell"
+require "spells.vampire.LacerateSpell"
 
 LacerateCard = {}
 setmetatable(LacerateCard, {

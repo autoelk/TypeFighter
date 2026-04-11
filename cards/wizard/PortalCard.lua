@@ -1,5 +1,5 @@
 require "cards.BaseCard"
-require "spells.PortalSpell"
+require "spells.wizard.PortalSpell"
 
 PortalCard = {}
 setmetatable(PortalCard, {

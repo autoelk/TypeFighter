@@ -1,5 +1,5 @@
 require "cards.BaseCard"
-require "spells.SiphonSpell"
+require "spells.vampire.SiphonSpell"
 
 SiphonCard = {}
 setmetatable(SiphonCard, {

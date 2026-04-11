@@ -1,5 +1,5 @@
 require "cards.BaseCard"
-require "spells.FireballSpell"
+require "spells.wizard.FireballSpell"
 
 FireballCard = {}
 setmetatable(FireballCard, {

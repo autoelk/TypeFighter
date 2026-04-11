@@ -1,5 +1,5 @@
 require "cards.BaseCard"
-require "spells.BoltSpell"
+require "spells.wizard.BoltSpell"
 
 BoltCard = {}
 setmetatable(BoltCard, {

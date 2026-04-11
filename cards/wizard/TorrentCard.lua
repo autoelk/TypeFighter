@@ -1,5 +1,5 @@
 require "cards.BaseCard"
-require "spells.TorrentSpell"
+require "spells.wizard.TorrentSpell"
 
 TorrentCard = {}
 setmetatable(TorrentCard, {

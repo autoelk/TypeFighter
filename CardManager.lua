@@ -1,17 +1,19 @@
 require "cards.BaseCard"
-require "cards.FireballCard"
-require "cards.HealCard"
-require "cards.BoltCard"
-require "cards.TorrentCard"
-require "cards.LacerateCard"
-require "cards.RageCard"
-require "cards.BlessingCard"
-require "cards.SliceCard"
-require "cards.PortalCard"
-require "cards.ForceFieldCard"
-require "cards.BlockCard"
-require "cards.SiphonCard"
-require "cards.GemCard"
+
+require "cards.vampire.LacerateCard"
+require "cards.vampire.RageCard"
+require "cards.vampire.SliceCard"
+require "cards.vampire.BlockCard"
+require "cards.vampire.SiphonCard"
+
+require "cards.wizard.FireballCard"
+require "cards.wizard.HealCard"
+require "cards.wizard.BoltCard"
+require "cards.wizard.TorrentCard"
+require "cards.wizard.BlessingCard"
+require "cards.wizard.ForceFieldCard"
+require "cards.wizard.PortalCard"
+require "cards.wizard.GemCard"
 
 -- Static class responsible for creating card instances based on their names
 CardManager = {}

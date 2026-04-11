@@ -1,5 +1,5 @@
 require "cards.BaseCard"
-require "spells.SliceSpell"
+require "spells.vampire.SliceSpell"
 
 SliceCard = {}
 setmetatable(SliceCard, {

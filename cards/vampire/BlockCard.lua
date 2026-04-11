@@ -1,5 +1,5 @@
 require "cards.BaseCard"
-require "spells.BlockSpell"
+require "spells.vampire.BlockSpell"
 
 BlockCard = {}
 setmetatable(BlockCard, {
