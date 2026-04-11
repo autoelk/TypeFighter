@@ -11,7 +11,7 @@ function CoagulateCard:new(ctx, x, y)
     card.name = "coagulate"
     card.incantationLength = 5
     card:setCharacter("vampire")
-    card.anim = ctx.resourceManager:newAnimation("vampireSpellPlaceholder")
+    card.anim = ctx.resourceManager:newAnimation("vampireSpellPlaceholder", "loop")
 
     card.SpellClass = CoagulateSpell
     card.spellData = {

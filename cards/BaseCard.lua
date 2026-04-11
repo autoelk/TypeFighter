@@ -64,9 +64,7 @@ function BaseCard:draw()
 
     -- Animate spell preview
     lg.setColor(COLORS.WHITE)
-    local spriteNum = math.min(math.max(1, self.anim.currentFrame), #self.anim.quads)
-    lg.draw(self.anim.spriteSheet, self.anim.quads[spriteNum], self.x + margin, self.y + 32, math.rad(self.anim.rotation),
-        self.anim.scaleX, self.anim.scaleY)
+    self.anim:draw(self.x + margin, self.y + 32)
 
     -- Print text onto card
     local fonts = self.ctx.fonts
@@ -111,15 +109,7 @@ function BaseCard:drawKeywords(x, y, maxWidth)
 end
 
 function BaseCard:update(dt)
-    self.anim.accumulator = self.anim.accumulator + dt
-    while self.anim.accumulator >= self.anim.frameDuration do
-        self.anim.accumulator = self.anim.accumulator - self.anim.frameDuration
-        self.anim.currentFrame = self.anim.currentFrame + 1
-
-        if self.anim.currentFrame > #self.anim.quads then
-            self.anim.currentFrame = 1
-        end
-    end
+    self.anim:update(dt)
 end
 
 function BaseCard:setPosition(x, y)
@@ -134,8 +124,15 @@ function BaseCard:move(destX, destY)
 end
 
 function BaseCard:cast(caster, target)
-    local spellAnim = self.ctx.resourceManager:newAnimation("card_" .. self.name)
-    spellAnim.playMode = "once"
+    local imageName = "card_" .. self.name
+    if not self.ctx.resourceManager.images[imageName] then
+        if self.character == "vampire" then
+            imageName = "vampireSpellPlaceholder"
+        else
+            imageName = "wizardSpellPlaceholder"
+        end
+    end
+    local spellAnim = self.ctx.resourceManager:newAnimation(imageName, "once")
     local spell = self.SpellClass:new(caster, target, self.spellData, spellAnim)
     spell:onStart()
     return spell

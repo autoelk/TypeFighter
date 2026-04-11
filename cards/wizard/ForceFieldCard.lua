@@ -10,7 +10,7 @@ function ForceFieldCard:new(ctx, x, y)
     card.name = "forcefield"
     card.incantationLength = 1
     card:setCharacter("wizard")
-    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
+    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name, "loop")
 
     card.SpellClass = ForceFieldSpell
     card.spellData = {

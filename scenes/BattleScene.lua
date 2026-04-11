@@ -89,7 +89,7 @@ function BattleScene:update(dt)
 
     for i = #self.activeSpells, 1, -1 do
         local spell = self.activeSpells[i]
-        if spell.anim.timeLeft and spell.anim.timeLeft <= 0 then
+        if spell.anim:isFinished() then
             table.remove(self.activeSpells, i)
         else
             spell:update(dt)

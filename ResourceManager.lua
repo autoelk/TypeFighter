@@ -114,34 +114,11 @@ function ResourceManager:loadAllAssets(cardNames)
     self:loadDictionary()
 end
 
-function ResourceManager:newAnimation(imageName, width, height)
-    local animation = {}
-    animation.spriteSheet = self.images[imageName]
-    animation.quads = {}
-
-    width = width or SPRITE_PIXEL_SIZE
-    height = height or SPRITE_PIXEL_SIZE
-
-    for y = 0, animation.spriteSheet:getHeight() - height, height do
-        for x = 0, animation.spriteSheet:getWidth() - width, width do
-            table.insert(animation.quads, lg.newQuad(x, y, width, height, animation.spriteSheet:getDimensions()))
-        end
-    end
-
-    local fps = 12
-    animation.frameDuration = 1 / fps
-    animation.currentFrame = 1
-    animation.accumulator = 0
-    animation.timeLeft = nil
-    animation.playMode = nil -- loop | once | loop_for
-
-    -- transformations
-    animation.rotation = 0
-    animation.scaleX = PIXEL_TO_GAME_SCALE
-    animation.scaleY = PIXEL_TO_GAME_SCALE
-    animation.offsetX = 0
-    animation.offsetY = 0
-
+function ResourceManager:newAnimation(imageName, playMode, duration, width, height)
+    local playMode = playMode or "once"
+    local duration = duration or math.huge
+    local animation = Animation:new(self.images[imageName], width, height)
+    animation:setPlayMode(playMode, duration)
     return animation
 end
 

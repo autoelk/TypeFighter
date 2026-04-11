@@ -10,7 +10,7 @@ function HealCard:new(ctx, x, y)
     card.name = "heal"
     card.incantationLength = 2
     card:setCharacter("wizard")
-    card.anim = ctx.resourceManager:newAnimation("card_heal")
+    card.anim = ctx.resourceManager:newAnimation("card_heal", "loop")
 
     card.SpellClass = HealSpell
     card.spellData = { healAmount = 10 }

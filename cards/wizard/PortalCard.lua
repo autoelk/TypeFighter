@@ -10,7 +10,7 @@ function PortalCard:new(ctx, x, y)
     card.name = "portal"
     card.incantationLength = 10
     card:setCharacter("wizard")
-    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
+    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name, "loop")
 
     card.SpellClass = PortalSpell
     card.spellData = { damage = 40 }

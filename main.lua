@@ -1,4 +1,5 @@
 require "constants"
+require "Animation"
 require "app.Context"
 
 local SceneId = require "enums.SceneId"

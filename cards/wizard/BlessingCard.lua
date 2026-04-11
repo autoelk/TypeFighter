@@ -10,7 +10,7 @@ function BlessingCard:new(ctx, x, y)
     card.name = "blessing"
     card.incantationLength = 3
     card:setCharacter("wizard")
-    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
+    card.anim = ctx.resourceManager:newAnimation("card_" .. card.name, "loop")
 
     card.SpellClass = BlessingSpell
     card.spellData = {

@@ -26,16 +26,13 @@ function MenuScene:new(ctx)
     scene.rightRenderer.mirror = true
 
     -- Load spells for display
-    local margin = 340
     scene.torrentAnimation = ctx.resourceManager:newAnimation("card_torrent")
-    scene.torrentAnimation.x = margin
-    scene.torrentAnimation.y = 180
     scene.torrentAnimation.rotation = 0
+    scene.torrentAnimation:setPlayMode("loop")
 
     scene.fireballAnimation = ctx.resourceManager:newAnimation("card_fireball")
-    scene.fireballAnimation.x = GAME_WIDTH - margin
-    scene.fireballAnimation.y = 180 + SPRITE_SIZE + 8
     scene.fireballAnimation.rotation = 180
+    scene.fireballAnimation:setPlayMode("loop")
 
     return scene
 end
@@ -53,43 +50,18 @@ function MenuScene:draw()
     lg.printf("typefighter", 0, 200, GAME_WIDTH, "center")
     lg.setFont(fonts.fontM)
     lg.printf("[play] game\n[browse] cards\n[quit]", 0, 300, GAME_WIDTH, "center")
-
-    -- Animation
-    local margin = 320
-    local torrentSpriteNum = math.min(math.max(1, self.torrentAnimation.currentFrame), #self.torrentAnimation.quads)
-    local fireballSpriteNum = math.min(math.max(1, self.fireballAnimation.currentFrame), #self.fireballAnimation.quads)
-    lg.draw(self.torrentAnimation.spriteSheet, self.torrentAnimation.quads[torrentSpriteNum], 
-        self.torrentAnimation.x, self.torrentAnimation.y, math.rad(self.torrentAnimation.rotation), 
-        self.torrentAnimation.scaleX, self.torrentAnimation.scaleY)
-    lg.draw(self.fireballAnimation.spriteSheet, self.fireballAnimation.quads[fireballSpriteNum],
-        self.fireballAnimation.x, self.fireballAnimation.y, math.rad(self.fireballAnimation.rotation),
-        self.fireballAnimation.scaleX, self.fireballAnimation.scaleY)
+    
+    local margin = 340
+    self.torrentAnimation:draw(margin, 180)
+    self.fireballAnimation:draw(GAME_WIDTH - margin, 180 + SPRITE_SIZE + 8)
 
     self.leftRenderer:drawChar()
     self.rightRenderer:drawChar()
 end
 
 function MenuScene:update(dt)
-    -- Update animations
-    self.torrentAnimation.accumulator = self.torrentAnimation.accumulator + dt
-    while self.torrentAnimation.accumulator >= self.torrentAnimation.frameDuration do
-        self.torrentAnimation.accumulator = self.torrentAnimation.accumulator - self.torrentAnimation.frameDuration
-        self.torrentAnimation.currentFrame = self.torrentAnimation.currentFrame + 1
-
-        if self.torrentAnimation.currentFrame > #self.torrentAnimation.quads then
-            self.torrentAnimation.currentFrame = 1
-        end
-    end
-
-    self.fireballAnimation.accumulator = self.fireballAnimation.accumulator + dt
-    while self.fireballAnimation.accumulator >= self.fireballAnimation.frameDuration do
-        self.fireballAnimation.accumulator = self.fireballAnimation.accumulator - self.fireballAnimation.frameDuration
-        self.fireballAnimation.currentFrame = self.fireballAnimation.currentFrame + 1
-
-        if self.fireballAnimation.currentFrame > #self.fireballAnimation.quads then
-            self.fireballAnimation.currentFrame = 1
-        end
-    end
+    self.torrentAnimation:update(dt)
+    self.fireballAnimation:update(dt)
 
     self.leftRenderer:updateCharAnimations(dt)
     self.rightRenderer:updateCharAnimations(dt)

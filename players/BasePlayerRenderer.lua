@@ -12,9 +12,9 @@ function BasePlayerRenderer:new(ctx, player)
 
         mirror = nil,
 
-        idleAnim = ctx.resourceManager:newAnimation(player.character.idleSprite),
-        castAnim = ctx.resourceManager:newAnimation(player.character.castSprite),
-        deathAnim = ctx.resourceManager:newAnimation(player.character.deathSprite),
+        idleAnim = ctx.resourceManager:newAnimation(player.character.idleSprite, "loop"),
+        castAnim = ctx.resourceManager:newAnimation(player.character.castSprite, "once"),
+        deathAnim = ctx.resourceManager:newAnimation(player.character.deathSprite, "once"),
         isCasting = false,
         castAnimFinished = false,
 
@@ -26,12 +26,9 @@ end
 function BasePlayerRenderer:reset()
     self.isCasting = false
 
-    self.deathAnim.currentFrame = 1
-    self.deathAnim.accumulator = 0
-    self.castAnim.currentFrame = 1
-    self.castAnim.accumulator = 0
-    self.idleAnim.currentFrame = 1
-    self.idleAnim.accumulator = 0
+    self.deathAnim:reset()
+    self.castAnim:reset()
+    self.idleAnim:reset()
 
     self.damageDisplays = {}
 end
@@ -79,8 +76,7 @@ end
 
 function BasePlayerRenderer:startCastAnimation()
     self.isCasting = true
-    self.castAnim.currentFrame = 1
-    self.castAnim.accumulator = 0
+    self.castAnim:reset()
 end
 
 function BasePlayerRenderer:draw()
@@ -101,14 +97,11 @@ function BasePlayerRenderer:drawChar()
     end
 
     if not self.player.isAlive then
-        lg.draw(self.deathAnim.spriteSheet, self.deathAnim.quads[self.deathAnim.currentFrame], x, self.y, 0, scaleX,
-            PIXEL_TO_GAME_SCALE)
+        self.deathAnim:draw(x, self.y, 0, scaleX, PIXEL_TO_GAME_SCALE)
     elseif self.isCasting then
-        lg.draw(self.castAnim.spriteSheet, self.castAnim.quads[self.castAnim.currentFrame], x, self.y, 0, scaleX,
-            PIXEL_TO_GAME_SCALE)
+        self.castAnim:draw(x, self.y, 0, scaleX, PIXEL_TO_GAME_SCALE)
     else
-        lg.draw(self.idleAnim.spriteSheet, self.idleAnim.quads[self.idleAnim.currentFrame], x, self.y, 0, scaleX,
-            PIXEL_TO_GAME_SCALE)
+        self.idleAnim:draw(x, self.y, 0, scaleX, PIXEL_TO_GAME_SCALE)
     end
 end
 
@@ -236,37 +229,13 @@ end
 
 function BasePlayerRenderer:updateCharAnimations(dt)
     if not self.player.isAlive then
-        self.deathAnim.accumulator = self.deathAnim.accumulator + dt
-        while self.deathAnim.accumulator >= self.deathAnim.frameDuration do
-            self.deathAnim.accumulator = self.deathAnim.accumulator - self.deathAnim.frameDuration
-            self.deathAnim.currentFrame = (self.deathAnim.currentFrame or 1) + 1
-            -- Freeze on last frame
-            if self.deathAnim.currentFrame >= #self.deathAnim.quads then
-                self.deathAnim.currentFrame = #self.deathAnim.quads
-                break
-            end
-        end
+        self.deathAnim:update(dt)
     elseif self.isCasting then
-        self.castAnim.accumulator = self.castAnim.accumulator + dt
-        while self.castAnim.accumulator >= self.castAnim.frameDuration do
-            self.castAnim.accumulator = self.castAnim.accumulator - self.castAnim.frameDuration
-            self.castAnim.currentFrame = (self.castAnim.currentFrame or 1) + 1
-            if self.castAnim.currentFrame > #self.castAnim.quads then
-                self.castAnim.currentFrame = #self.castAnim.quads
-                self.isCasting = false
-                break
-            end
+        if self.castAnim:update(dt) then
+            self.isCasting = false
         end
     else
-        self.idleAnim.accumulator = self.idleAnim.accumulator + dt
-        while self.idleAnim.accumulator >= self.idleAnim.frameDuration do
-            self.idleAnim.accumulator = self.idleAnim.accumulator - self.idleAnim.frameDuration
-            self.idleAnim.currentFrame = (self.idleAnim.currentFrame or 1) + 1
-            if self.idleAnim.currentFrame > #self.idleAnim.quads then
-                self.idleAnim.currentFrame = 1
-                break
-            end
-        end
+        self.idleAnim:update(dt)
     end
 end
 
