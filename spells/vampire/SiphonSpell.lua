@@ -10,6 +10,8 @@ function SiphonSpell:new(caster, target, spellData, anim)
     local spell = BaseSpell:new(caster, target, spellData, anim)
     spell.x = target.renderer.x
     spell.y = target.renderer.y
+    spell.anim.offsetX = -36
+    spell.anim.offsetY = 20
     spell:playOnce()
     return setmetatable(spell, self)
 end
