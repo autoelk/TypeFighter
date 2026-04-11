@@ -97,6 +97,7 @@ function ResourceManager:loadAllAssets(cardNames)
     end
 
     -- Load sounds
+    self:loadSound("music", "assets/sounds/music.mp3")
     self:loadSound("hurt", "assets/sounds/hurt.wav")
 
     -- 0.0 is grayscale, 1.0 is full color

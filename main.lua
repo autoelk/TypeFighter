@@ -2,6 +2,7 @@ require "constants"
 require "app.Context"
 
 local SceneId = require "enums.SceneId"
+local Sound = require "util.Sound"
 local push = require "libraries.push"
 
 require "players.BasePlayer"
@@ -71,6 +72,11 @@ function love.load()
     ctx.sceneManager:addScene(BattleEndScene:new(ctx))
 
     ctx.sceneManager:changeScene(SceneId.Menu)
+    
+    local backgroundMusic = ctx.resourceManager:getSound("music")
+    backgroundMusic:setLooping(true)
+    backgroundMusic:setVolume(0.5)
+    backgroundMusic:play()
 end
 
 function love.keypressed(key)
