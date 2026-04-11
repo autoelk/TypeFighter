@@ -15,5 +15,5 @@ end
 
 function LacerateSpell:onStart()
     local player = self.target.player
-    player:applyEffect(BleedEffect:new(player, self.spellData.stacksToAdd))
+    player:applyEffect(BleedEffect:new(player, self.spellData.bleedAmount))
 end

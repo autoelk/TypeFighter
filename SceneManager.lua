@@ -1,4 +1,5 @@
 local utf8 = require("utf8")
+local Text = require("util.Text")
 
 -- manages different game scenes and transitions between them
 SceneManager = {}
@@ -86,7 +87,7 @@ function SceneManager:keypressed(key)
         if currentScene.suggestedCommand and currentScene.suggestedCommandAutocomplete then
             userInput = currentScene.suggestedCommand
         end
-        userInput = userInput:match("^%s*(.-)%s*$")
+        userInput = Text.trim(userInput)
         self.ctx.ui.input = "" -- clear user input field
         currentScene:updateSuggestedCommand()
         currentScene:handleInput(userInput)

@@ -1,3 +1,5 @@
+local Text = require("util.Text")
+
 -- Manages loading and accessing game resources like images, fonts, sounds, and animations.
 ResourceManager = {}
 ResourceManager.__index = ResourceManager
@@ -153,7 +155,7 @@ function ResourceManager:loadDictionary()
 
     self.dict = {}
     for line in file:lines() do
-        local word = line:match("^%s*(.-)%s*$") -- trim whitespace
+        local word = Text.trim(line)
         if word ~= "" then
             table.insert(self.dict, word)
         end

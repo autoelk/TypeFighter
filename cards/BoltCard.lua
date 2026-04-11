@@ -16,7 +16,7 @@ function BoltCard:new(ctx, x, y)
 
     card.SpellClass = BoltSpell
     card.spellData = {
-        damage = 4
+        damage = 5
     }
     setmetatable(card, self)
     return card

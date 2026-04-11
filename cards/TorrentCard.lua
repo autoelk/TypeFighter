@@ -15,11 +15,14 @@ function TorrentCard:new(ctx, x, y)
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = TorrentSpell
-    card.spellData = { damage = 15 }
+    card.spellData = { 
+        damage = 5,
+        focusAmount = 3
+    }
     setmetatable(card, self)
     return card
 end
 
 function TorrentCard:getDescription()
-    return "deal " .. self.spellData.damage .. " damage. draw a card."
+    return "gain " .. self.spellData.focusAmount .. " focus. deal " .. self.spellData.damage .. " damage."
 end

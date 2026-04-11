@@ -11,6 +11,7 @@ require "cards.PortalCard"
 require "cards.ForceFieldCard"
 require "cards.BlockCard"
 require "cards.SiphonCard"
+require "cards.GemCard"
 
 -- Static class responsible for creating card instances based on their names
 CardManager = {}
@@ -35,7 +36,8 @@ function CardManager:new(ctx)
             ["portal"] = PortalCard,
             ["forcefield"] = ForceFieldCard,
             ["block"] = BlockCard,
-            ["siphon"] = SiphonCard
+            ["siphon"] = SiphonCard,
+            ["gem"] = GemCard
         },
         cardCharacters = {}, -- Map of card name to character name
         cardNames = {} -- List of card names

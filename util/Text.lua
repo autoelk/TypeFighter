@@ -1,5 +1,9 @@
 local T = {}
 
+function T.trim(string)
+    return string:match("^%s*(.-)%s*$")
+end
+
 -- Build colored-text table for love.graphics.print / printf (prefix match vs user input).
 function T.colorizeText(text, input, normalColor, correctColor, remainingColor)
     local numCorrect = 0

@@ -16,12 +16,12 @@ function LacerateCard:new(ctx, x, y)
 
     card.SpellClass = LacerateSpell
     card.spellData = { 
-        stacksToAdd = 5,
+        bleedAmount = 5,
     }
     setmetatable(card, self)
     return card
 end
 
 function LacerateCard:getDescription()
-    return "apply " .. self.spellData.stacksToAdd .. " stacks of bleed."
+    return "apply " .. self.spellData.bleedAmount .. " stacks of bleed."
 end

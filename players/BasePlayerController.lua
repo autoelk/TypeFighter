@@ -1,5 +1,6 @@
 require "players.BasePlayerRenderer"
 local CastResult = require "enums.CastResult"
+local Text = require "util.Text"
 
 -- Abstract controller class for players
 BasePlayerController = {}
@@ -49,10 +50,36 @@ end
 
 function BasePlayerController:generateIncantation(length)
     local result = ""
+    local alphabet = "abcdefghijklmnopqrstuvwxyz"
     for i = 1, length do
-        result = result .. " " .. self.player.wordBank[math.random(1, #self.player.wordBank)]
+        local word = self.player.wordBank[math.random(1, #self.player.wordBank)]
+        if self.player.focus < 0 then
+            -- if focus is negative, add random letters to the incantation
+            for j = 1, -self.player.focus do
+                local breakpoint = math.random(0, #word)
+                local randomIdx = math.random(1, #alphabet)
+                local randomLetter = string.sub(alphabet, randomIdx, randomIdx)
+                word = string.sub(word, 1, breakpoint) .. randomLetter .. string.sub(word, breakpoint + 1)
+            end
+        elseif self.player.focus > 0 then
+            -- if focus is positive, remove random letters from the incantation
+            local letters = {}
+            for char in word:gmatch(".") do
+                table.insert(letters, char)
+            end
+            local amtToRemove = math.min(self.player.focus, #letters)
+            for j = 1, amtToRemove do
+                local randomIdx = math.random(1, #letters)
+                table.remove(letters, randomIdx)
+            end
+            word = table.concat(letters)
+        end
+
+        if #word > 0 then
+            result = result .. " " .. word
+        end
     end
-    return string.sub(result, 2)
+    return Text.trim(result)
 end
 
 function BasePlayerController:castSelectedCard()
@@ -63,6 +90,7 @@ function BasePlayerController:castSelectedCard()
     local card = self.player.selectedCard
     local castResult = card:canCast(self.player)    
     if castResult == CastResult.Success then
+        self.player:tickEffects()
         self.renderer:startCastAnimation()
         self.player:castSelectedCard()
         local spell = card:cast(self, self:getOpponent())

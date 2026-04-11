@@ -13,8 +13,10 @@ function BasePlayer:new(ctx, character)
         health = character.health,
         maxHealth = character.maxHealth,
         shield = 0,
-        stackEffects = {}, -- Map of name to stack effect
-        durationEffects = {}, -- List of duration effects
+
+        -- Statuses
+        effects = {}, -- Map of effect name to effect instance for stack effects
+        focus = 0, -- How many letters to add/subtract from each word in an incantation
         
         -- Cards
         selectedCard = nil, -- Card being cast by the player
@@ -43,8 +45,8 @@ end
 function BasePlayer:reset()
     self.isAlive = true
     self.shield = 0
-    self.stackEffects = {}
-    self.durationEffects = {}
+    self.focus = 0
+    self.effects = {}
 
     self.selectedCard = nil
     self.hand = {}
@@ -89,8 +91,6 @@ function BasePlayer:addShield(amount)
 end
 
 function BasePlayer:update(dt)
-    self:updateEffects(dt)
-
     self.health = math.min(self.health, self.maxHealth)
 end
 
@@ -108,36 +108,20 @@ function BasePlayer:removeCard(card)
 end
 
 function BasePlayer:applyEffect(effect)
-    if effect.type == "stack" then
-        if self.stackEffects[effect.name] then
-            self.stackEffects[effect.name]:addStacks(effect.stacks)
-        else
-            self.stackEffects[effect.name] = effect
-            effect:onApply()
-        end
-    elseif effect.type == "duration" then
-        table.insert(self.durationEffects, effect)
-        effect:onApply()
+    if self.effects[effect.name] then
+        self.effects[effect.name]:addStacks(effect.stacks)
     else
-        error("Invalid effect type: " .. effect.type)
+        self.effects[effect.name] = effect
     end
+    effect:onApply()
 end
 
-function BasePlayer:updateEffects(dt)
-    for name, effect in pairs(self.stackEffects) do
-        effect:update(dt)
-        if effect.expired then
-            self.stackEffects[name] = nil
+function BasePlayer:tickEffects()
+    for name, effect in pairs(self.effects) do
+        effect:onTick()
+        if effect.stacks == 0 then
             effect:onExpire()
-        end
-    end
-
-    for i = #self.durationEffects, 1, -1 do
-        local effect = self.durationEffects[i]
-        effect:update(dt)
-        if effect.expired then
-            table.remove(self.durationEffects, i)
-            effect:onExpire()
+            self.effects[name] = nil
         end
     end
 end

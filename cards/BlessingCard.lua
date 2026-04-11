@@ -10,20 +10,18 @@ BlessingCard.__index = BlessingCard
 function BlessingCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "blessing"
-    card.incantationLength = 2
+    card.incantationLength = 3
     card:setCharacter("wizard")
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name)
 
     card.SpellClass = BlessingSpell
     card.spellData = {
-        effectName = card.name,
-        regenAmount = 1,
-        duration = 15
+        regenAmount = 5,
     }
     setmetatable(card, self)
     return card
 end
 
 function BlessingCard:getDescription()
-    return "+" .. self.spellData.regenAmount .. " health/sec for " .. self.spellData.duration .. " seconds."
+    return "apply " .. self.spellData.regenAmount .. " stacks of health regeneration."
 end

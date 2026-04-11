@@ -1,12 +1,11 @@
-require "effects.StackEffect"
+require "effects.BaseEffect"
 
 BleedEffect = {}
-setmetatable(BleedEffect, { __index = StackEffect })
+setmetatable(BleedEffect, { __index = BaseEffect })
 BleedEffect.__index = BleedEffect
 
 function BleedEffect:new(player, initialStacks)
-    local effect = StackEffect:new("bleed", player, initialStacks)
-    effect.tickInterval = 5
+    local effect = BaseEffect:new("bleed", player, initialStacks)
     return setmetatable(effect, self)
 end
     

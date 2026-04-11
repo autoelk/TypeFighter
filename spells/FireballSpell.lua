@@ -1,4 +1,5 @@
 require "spells.ProjectileSpell"
+require "effects.FocusEffect"
 
 FireballSpell = {}
 setmetatable(FireballSpell, { __index = ProjectileSpell })
@@ -18,6 +19,11 @@ function FireballSpell:new(caster, target, spellData, anim)
     spell.speedY = math.abs(spell.endY - spell.startY) / anim.timeLeft
     setmetatable(spell, self)
     return spell
+end
+
+function FireballSpell:onStart()
+    local player = self.caster.player
+    player:applyEffect(FocusEffect:new(player, self.spellData.focusAmount))
 end
 
 function FireballSpell:onFinish()

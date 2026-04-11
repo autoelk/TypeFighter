@@ -1,4 +1,5 @@
 require "spells.ProjectileSpell"
+require "effects.FocusEffect"
 
 TorrentSpell = {}
 setmetatable(TorrentSpell, { __index = ProjectileSpell })
@@ -19,7 +20,11 @@ function TorrentSpell:new(caster, target, spellData, anim)
     return setmetatable(spell, self)
 end
 
+function TorrentSpell:onStart()
+    local player = self.caster.player
+    player:applyEffect(FocusEffect:new(player, self.spellData.focusAmount))
+end
+
 function TorrentSpell:onFinish()
     self.target.player:damage(self.spellData.damage)
-    self.caster.player:drawCard()
 end

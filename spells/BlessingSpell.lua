@@ -11,12 +11,11 @@ function BlessingSpell:new(caster, target, spellData, anim)
     spell.y = caster.renderer.y
     spell.anim.offsetX = 8
     spell.anim.offsetY = 20
-    spell:playLoopFor(spellData.duration)
-    setmetatable(spell, self)
-    return spell
+    spell:playOnce()
+    return setmetatable(spell, self)
 end
 
 function BlessingSpell:onStart()
     local player = self.caster.player
-    player:applyEffect(HealthRegenEffect:new(self.spellData.effectName, player, self.spellData.duration, self.spellData.regenAmount))
+    player:applyEffect(HealthRegenEffect:new(player, self.spellData.regenAmount))
 end

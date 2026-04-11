@@ -175,11 +175,23 @@ function BasePlayerRenderer:drawHealthBar()
 end
 
 function BasePlayerRenderer:drawEffectsList()
-    local stackEffects = self:drawStackEffectsHelper()
-    local durationEffects = self:drawDurationEffectsHelper()
     local effects = {}
-    table.move(stackEffects, 1, #stackEffects, 1, effects)
-    table.move(durationEffects, 1, #durationEffects, 1 + #stackEffects, effects)
+    for _, effect in pairs(self.player.effects) do
+        local eff = {
+            name = effect.name,
+            stacks = effect.stacks,
+        }
+        table.insert(effects, eff)
+    end
+
+    -- Sort effects by stacks left, then by name
+    table.sort(effects, function(a, b)
+        if a.stacks == b.stacks then
+            return a.name < b.name
+        else
+            return a.stacks > b.stacks
+        end
+    end)
 
     local textAlign = "left"
     local baseX = self.x
@@ -187,63 +199,15 @@ function BasePlayerRenderer:drawEffectsList()
 
     lg.setFont(self.ctx.fonts.fontS)
     for i, effect in ipairs(effects) do
-        local label = effect.name
-        if effect.type == "stack" then
-            label = label .. " x" .. math.floor(effect.stacks)
-        elseif effect.type == "duration" and effect.timeLeft ~= nil then
-            label = label .. " (" .. math.max(0, math.ceil(effect.timeLeft)) .. "s)"
-        end
-
-        local y = baseY + (i - 1) * 16
         lg.setColor(COLORS.WHITE)
-        lg.printf(label, baseX, y, SPRITE_SIZE, textAlign)
+        lg.printf(
+            effect.name .. " x" .. math.floor(effect.stacks),
+            baseX,
+            baseY + (i - 1) * 16,
+            SPRITE_SIZE,
+            textAlign
+        )
     end
-end
-
-function BasePlayerRenderer:drawStackEffectsHelper()
-    local stackEffects = {}
-    for _, effect in pairs(self.player.stackEffects) do
-        local eff = {
-            name = effect.name,
-            stacks = effect.stacks,
-            type = effect.type
-        }
-        table.insert(stackEffects, eff)
-    end
-
-    -- Sort effects by stacks left, then by name
-    table.sort(stackEffects, function(a, b)
-        if a.stacks == b.stacks then
-            return a.name < b.name
-        else 
-            return a.stacks > b.stacks
-        end
-    end)
-
-    return stackEffects
-end
-
-function BasePlayerRenderer:drawDurationEffectsHelper()
-    local durationEffects = {}
-    for _, effect in ipairs(self.player.durationEffects) do
-        local eff = {
-            name = effect.name,
-            timeLeft = effect.timeLeft,
-            type = effect.type
-        }
-        table.insert(durationEffects, eff)
-    end
-
-    -- Sort effects by time left, then by name
-    table.sort(durationEffects, function(a, b)
-        if a.timeLeft == b.timeLeft then
-            return a.name < b.name
-        else 
-            return a.timeLeft > b.timeLeft
-        end
-    end)
-
-    return durationEffects
 end
 
 function BasePlayerRenderer:drawSelectedCard()

@@ -15,7 +15,7 @@ function SiphonSpell:new(caster, target, spellData, anim)
 end
 
 function SiphonSpell:onStart()
-    local bleedEffect = self.target.player.stackEffects["bleed"]
+    local bleedEffect = self.target.player.effects["bleed"]
     if not bleedEffect then
         return
     end
