@@ -33,11 +33,11 @@ end
 
 function HumanPlayerRenderer:drawSelectedCard()
     if self.player.selectedCard then
-        self.player.selectedCard:drawMini()
+        self.player.selectedCard:draw()
         self.player.selectedCard:drawKeywords(
-            self.player.selectedCard.x + MINI_CARD_WIDTH + 4,
+            self.player.selectedCard.x + LARGE_CARD_WIDTH + 4,
             self.player.selectedCard.y,
-            MINI_CARD_WIDTH
+            LARGE_CARD_WIDTH
         )
     end
 end
@@ -111,6 +111,7 @@ end
 
 function HumanPlayerRenderer:updateSelectedCard(dt)
     if self.player.selectedCard then
-        self.player.selectedCard:move((GAME_WIDTH - MINI_CARD_WIDTH) / 2, 300)
+        self.player.selectedCard:move((GAME_WIDTH - LARGE_CARD_WIDTH) / 2, 304)
+        self.player.selectedCard:update(dt)
     end
 end
