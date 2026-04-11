@@ -146,7 +146,7 @@ function ResourceManager:newAnimation(imageName, width, height)
 end
 
 function ResourceManager:loadDictionary()
-    local file = io.open("assets/dict.txt", "r")
+    local file = io.open("assets/dictionaries/latinDict.txt", "r")
     if not file then
         error("Could not open dictionary file.")
     end
