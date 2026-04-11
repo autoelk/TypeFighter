@@ -12,10 +12,6 @@ function AIPlayerRenderer:new(ctx, player)
     return setmetatable(renderer, self)
 end
 
-function AIPlayerRenderer:draw()
-    BasePlayerRenderer.draw(self)
-end
-
 function AIPlayerRenderer:drawSelectedCard()
     if self.player.selectedCard then
         self.player.selectedCard:drawMini()

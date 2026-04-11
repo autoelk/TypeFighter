@@ -82,8 +82,10 @@ end
 function BasePlayerRenderer:draw()
     self:drawChar()
     self:drawHealthBar()
-    self:drawEffectsList()
-    self:drawSelectedCard()
+    if self.player.isAlive then
+        self:drawSelectedCard()
+        self:drawEffectsList()
+    end
     self:drawDamageDisplay()
 end
 

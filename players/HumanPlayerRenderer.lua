@@ -20,8 +20,11 @@ end
 
 function HumanPlayerRenderer:draw(drawWord, incanting)
     BasePlayerRenderer.draw(self)
-    self:drawHand()
-    self:drawLibrary(drawWord, incanting)
+
+    if self.player.isAlive then
+        self:drawHand()
+        self:drawLibrary(drawWord, incanting)
+    end
 end
 
 -- Draw cards in hand as mini cards
@@ -52,7 +55,7 @@ function HumanPlayerRenderer:drawLibrary(drawWord, incanting)
         end
     end
     
-    if incanting or #self.player.library == 0 or #self.player.hand >= MAX_HAND_SIZE then
+    if incanting or #self.player.library == 0 or #self.player.hand >= MAX_HAND_SIZE or not drawWord then
         return
     end
 

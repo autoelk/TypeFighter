@@ -81,6 +81,7 @@ function BasePlayer:damage(amount)
     self.shield = math.max(0, self.shield - amount)
     self.health = math.max(0, self.health - remDmg)
     if self.health <= 0 then
+        self.shield = 0
         self.isAlive = false
     end
     self.onDamage(amount)

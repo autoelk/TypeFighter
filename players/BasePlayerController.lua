@@ -16,6 +16,7 @@ function BasePlayerController:new(ctx, player, renderer)
         renderer = renderer,
         isHuman = nil,
         opponent = nil,
+        incantation = nil,
     }
     player.onDamage = function(amt)
         controller.renderer:showDamage(amt)
@@ -90,7 +91,7 @@ function BasePlayerController:castSelectedCard()
     local card = self.player.selectedCard
     local castResult = card:canCast(self.player)    
     if castResult == CastResult.Success then
-        self.player:tickEffects(card, self.player.incantation)
+        self.player:tickEffects(card, self.incantation)
         self.renderer:startCastAnimation()
         self.player:castSelectedCard()
         local spell = card:cast(self, self:getOpponent())

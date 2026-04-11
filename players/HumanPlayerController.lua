@@ -12,7 +12,6 @@ function HumanPlayerController:new(ctx, player)
     local controller = BasePlayerController:new(ctx, player, HumanPlayerRenderer:new(ctx, player))
     controller.isHuman = true
     controller.drawWord = nil
-    controller.incantation = nil
     controller.lastAttemptedCardName = nil
 
     return setmetatable(controller, self)
