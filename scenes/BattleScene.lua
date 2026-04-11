@@ -57,6 +57,8 @@ function BattleScene:enter()
     for _, card in ipairs(self.humanController.player.library) do
         card:setPosition(self.humanController.renderer.libraryX, self.humanController.renderer.libraryY)
     end
+
+    -- hide enemy library offscreen
     local enemyLibraryX = GAME_WIDTH + 16
     local enemyLibraryY = GAME_HEIGHT / 2
     for _, card in ipairs(self.enemyController.player.library) do

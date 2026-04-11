@@ -40,37 +40,31 @@ end
 -- Draw library with draw word or card back
 function HumanPlayerRenderer:drawLibrary(drawWord, incanting)
     local fonts = self.ctx.fonts
-    local x, y = self.libraryX, self.libraryY
-
+    
     for i, card in ipairs(self.player.library) do
         if card.x ~= self.libraryX or card.y ~= self.libraryY then
             card:drawMini()
         end
     end
+    
+    if incanting or #self.player.library == 0 or #self.player.hand >= MAX_HAND_SIZE then
+        return
+    end
 
-    -- TODO: Consider if this makes deck size too confusing for the player
-    if incanting then
-        -- lg.setFont(fonts.fontS)
-        -- lg.setColor(COLORS.WHITE)
-        -- lg.printf("incanting", x, y + 24, MINI_CARD_WIDTH, "center")
-    elseif #self.player.library == 0 then
-        -- lg.setFont(fonts.fontS)
-        -- lg.setColor(COLORS.WHITE)
-        -- lg.printf("library empty", x, y + 24, MINI_CARD_WIDTH, "center")
-    elseif #self.player.hand >= MAX_HAND_SIZE then
-        -- lg.setFont(fonts.fontS)
-        -- lg.setColor(COLORS.WHITE)
-        -- lg.printf("hand full", x, y + 24, MINI_CARD_WIDTH, "center")
-    elseif drawWord ~= nil then
+    local w = math.max(MINI_CARD_WIDTH, fonts.fontL:getWidth(drawWord) + 16)
+    local h = MINI_CARD_HEIGHT
+    local x = (GAME_WIDTH - w) / 2
+    local y = self.libraryY
+    if drawWord ~= nil then
         lg.setColor(COLORS.BLACK)
-        lg.rectangle("fill", x, y, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
+        lg.rectangle("fill", x, y, w, h)
         lg.setFont(fonts.fontS)
         lg.setColor(COLORS.WHITE)
         local coloredDrawWord = Text.colorizeText(drawWord, self.ctx.ui.input, COLORS.WHITE, COLORS.GREEN, COLORS.WHITE)
-        lg.printf("type", x, y + 4, MINI_CARD_WIDTH, "center")
-        lg.printf("to draw", x, y + 44, MINI_CARD_WIDTH, "center")
+        lg.printf("type", x, y + 4, w, "center")
+        lg.printf("to draw", x, y + 44, w, "center")
         lg.setFont(fonts.fontL)
-        lg.printf(coloredDrawWord, x, y + 8, MINI_CARD_WIDTH, "center")
+        lg.printf(coloredDrawWord, x, y + 8, w, "center")
     end
 end
 
