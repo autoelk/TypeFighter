@@ -6,6 +6,8 @@ require "cards.vampire.LacerateCard"
 require "cards.vampire.RageCard"
 require "cards.vampire.SliceCard"
 require "cards.vampire.SiphonCard"
+require "cards.vampire.CoagulateCard"
+require "cards.vampire.BloodPactCard"
 
 require "cards.wizard.BoltCard"
 require "cards.wizard.ForceFieldCard"
@@ -34,6 +36,8 @@ function CardManager:new(ctx)
             ["rage"] = RageCard,
             ["siphon"] = SiphonCard,
             ["slice"] = SliceCard,
+            ["coagulate"] = CoagulateCard,
+            ["bloodpact"] = BloodPactCard,
    
             ["fireball"] = FireballCard,
             ["bolt"] = BoltCard,

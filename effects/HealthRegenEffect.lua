@@ -9,7 +9,7 @@ function HealthRegenEffect:new(player, initialStacks)
     return setmetatable(effect, self)
 end
 
-function HealthRegenEffect:onTick()
+function HealthRegenEffect:onTick(card, incantation)
     self.player:heal(self.stacks)
     self.stacks = self.stacks - 1
 end

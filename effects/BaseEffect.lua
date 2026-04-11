@@ -17,7 +17,7 @@ function BaseEffect:onApply()
 end
 
 -- Effects tick when the player casts a spell
-function BaseEffect:onTick()
+function BaseEffect:onTick(card, incantation)
     -- Either implemented by subclass or does nothing
 end
 

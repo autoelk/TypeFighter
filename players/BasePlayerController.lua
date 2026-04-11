@@ -90,7 +90,7 @@ function BasePlayerController:castSelectedCard()
     local card = self.player.selectedCard
     local castResult = card:canCast(self.player)    
     if castResult == CastResult.Success then
-        self.player:tickEffects()
+        self.player:tickEffects(card, self.player.incantation)
         self.renderer:startCastAnimation()
         self.player:castSelectedCard()
         local spell = card:cast(self, self:getOpponent())

@@ -13,7 +13,7 @@ function FocusEffect:onApply()
     self.player.focus = self.player.focus + self.stacks
 end
 
-function FocusEffect:onTick()
+function FocusEffect:onTick(card, incantation)
     if self.stacks > 0 then
         self.stacks = self.stacks - 1
         self.player.focus = self.player.focus - 1

@@ -116,9 +116,9 @@ function BasePlayer:applyEffect(effect)
     effect:onApply()
 end
 
-function BasePlayer:tickEffects()
+function BasePlayer:tickEffects(card, incantation)
     for name, effect in pairs(self.effects) do
-        effect:onTick()
+        effect:onTick(card, incantation)
         if effect.stacks == 0 then
             effect:onExpire()
             self.effects[name] = nil

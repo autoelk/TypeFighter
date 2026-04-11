@@ -9,7 +9,7 @@ function BleedEffect:new(player, initialStacks)
     return setmetatable(effect, self)
 end
     
-function BleedEffect:onTick()
+function BleedEffect:onTick(card, incantation)
     self.player:damage(self.stacks)
     self.stacks = self.stacks - 1
 end
