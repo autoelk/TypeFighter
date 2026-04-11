@@ -177,13 +177,9 @@ function BasePlayerRenderer:drawEffectsList()
         table.insert(effects, eff)
     end
 
-    -- Sort effects by stacks left, then by name
+    -- sort effects alphabetically by name
     table.sort(effects, function(a, b)
-        if a.stacks == b.stacks then
-            return a.name < b.name
-        else
-            return a.stacks > b.stacks
-        end
+        return a.name < b.name
     end)
 
     local textAlign = "left"
