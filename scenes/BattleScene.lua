@@ -25,7 +25,7 @@ function BattleScene:new(ctx)
     scene.humanController = nil
     scene.enemyController = nil
     scene.activeSpells = {}
-    scene.battleEnded = false
+    scene.battleState = "normal" -- normal, dying, ended
     scene.inputBarState = "normal" -- normal, incantation
     return scene
 end
@@ -78,7 +78,7 @@ function BattleScene:enter()
 
     -- initialize active spells list for this game
     self.activeSpells = {}
-    self.battleEnded = false
+    self.battleState = "normal"
     self.inputBarState = "normal"
     self:refreshAvailableCommands()
 end
@@ -96,8 +96,31 @@ function BattleScene:update(dt)
         end
     end
 
-    if not self.battleEnded and (not self.humanController.player.isAlive or not self.enemyController.player.isAlive) then
-        self:endBattle()
+    local humanDead = not self.humanController.player.isAlive
+    local enemyDead = not self.enemyController.player.isAlive
+    if self.battleState == "normal" and (humanDead or enemyDead) then
+        self.battleState = "dying"
+        self.activeSpells = {}
+
+        self.humanController.player.selectedCard = nil
+        self.humanController.player.effects = {}
+        self.humanController.player.hand = {}
+        self.humanController.drawWord = nil
+        self.humanController.incantation = nil
+
+        self.enemyController.player.selectedCard = nil
+        self.enemyController.player.effects = {}
+        self.enemyController.player.hand = {}
+    elseif self.battleState == "dying" then
+        local humanDeathAnimFinished = self.humanController.renderer.deathAnim:isFinished()
+        local enemyDeathAnimFinished = self.enemyController.renderer.deathAnim:isFinished()
+        if humanDead and humanDeathAnimFinished then
+            self.battleState = "ended"
+            self.ctx.sceneManager:changeScene(SceneId.GameOver)
+        elseif enemyDead and enemyDeathAnimFinished then
+            self.battleState = "ended"
+            self.ctx.sceneManager:pushScene(SceneId.BattleEnd)
+        end
     end
 end
 
@@ -218,27 +241,6 @@ function BattleScene:drawInputInterface()
     lg.setFont(self.ctx.fonts.fontS)
     lg.setColor(COLORS.WHITE)
     lg.printf(ui.messageRight, x + 8, y + barHeight + 4, barWidth - 16, "left")
-end
-
-function BattleScene:endBattle()
-    self.battleEnded = true
-    self.activeSpells = {}
-
-    self.humanController.player.selectedCard = nil
-    self.humanController.player.effects = {}
-    self.humanController.player.hand = {}
-    self.humanController.drawWord = nil
-    self.humanController.incantation = nil
-
-    self.enemyController.player.selectedCard = nil
-    self.enemyController.player.effects = {}
-    self.enemyController.player.hand = {}
-    
-    if not self.humanController.player.isAlive then
-        self.ctx.sceneManager:changeScene(SceneId.GameOver)
-    elseif not self.enemyController.player.isAlive then
-        self.ctx.sceneManager:pushScene(SceneId.BattleEnd)
-    end
 end
 
 function BattleScene:keypressed(key)

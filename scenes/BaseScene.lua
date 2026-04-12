@@ -6,11 +6,12 @@ function BaseScene:new(ctx)
     if not ctx then
         error("BaseScene:new(ctx) requires ctx")
     end
-    scene = {
+    local scene = {
         ctx = ctx,
+        
         -- Map of commands available to the player currently
         -- { command = autocomplete }
-        availableCommands = {}, 
+        availableCommands = {},
         suggestedCommand = nil,
         suggestedCommandAutocomplete = false,
     }

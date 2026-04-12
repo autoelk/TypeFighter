@@ -12,8 +12,8 @@ function Animation:new(spriteSheet, width, height, fps)
         frameDuration = 1 / fps,
         currentFrame = 1,
         accumulator = 0, -- time accumulated since last frame
-        timeLeft = math.huge, -- time left
-        duration = math.huge, -- duration for loop_for play mode
+        timeLeft = nil, -- time left
+        duration = nil,
         playMode = "once", -- loop | once | loop_for
 
         -- constants
@@ -71,6 +71,7 @@ function Animation:update(dt)
         if self.currentFrame > #self.quads then
             if self.playMode == "once" then
                 self.currentFrame = #self.quads
+                self.timeLeft = 0
                 break
             else
                 self.currentFrame = 1
@@ -84,13 +85,14 @@ end
 function Animation:setPlayMode(playMode, duration)
     self.playMode = playMode
     if self.playMode == "once" then
-        self.timeLeft = #self.quads * self.frameDuration
+        self.duration = #self.quads * self.frameDuration
+        self.timeLeft = self.duration
     elseif self.playMode == "loop_for" then
         if not duration then
             error("Duration must be provided for loop_for play mode")
         end
         self.duration = duration
-        self.timeLeft = duration
+        self.timeLeft = self.duration
     elseif self.playMode == "loop" then
         self.timeLeft = math.huge
     end
