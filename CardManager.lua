@@ -1,24 +1,7 @@
-require "cards.BaseCard"
+require "Card"
 
-require "cards.vampire.SwipeCard"
-require "cards.vampire.ShroudCard"
-require "cards.vampire.LacerateCard"
-require "cards.vampire.RageCard"
-require "cards.vampire.SliceCard"
-require "cards.vampire.SiphonCard"
-require "cards.vampire.CoagulateCard"
-require "cards.vampire.BloodPactCard"
+local Cards = require "definitions.Cards"
 
-require "cards.wizard.BoltCard"
-require "cards.wizard.ForceFieldCard"
-require "cards.wizard.FireballCard"
-require "cards.wizard.HealCard"
-require "cards.wizard.TorrentCard"
-require "cards.wizard.BlessingCard"
-require "cards.wizard.PortalCard"
-require "cards.wizard.GemCard"
-
--- Static class responsible for creating card instances based on their names
 CardManager = {}
 CardManager.__index = CardManager
 
@@ -28,32 +11,14 @@ function CardManager:new(ctx)
     end
     local manager = {
         ctx = ctx,
-        -- Map of card name to card class
-        cardTypes = {
-            ["swipe"] = SwipeCard,
-            ["shroud"] = ShroudCard,
-            ["lacerate"] = LacerateCard,
-            ["rage"] = RageCard,
-            ["siphon"] = SiphonCard,
-            ["slice"] = SliceCard,
-            ["coagulate"] = CoagulateCard,
-            ["bloodpact"] = BloodPactCard,
-   
-            ["fireball"] = FireballCard,
-            ["bolt"] = BoltCard,
-            ["forcefield"] = ForceFieldCard,
-            ["heal"] = HealCard,
-            ["torrent"] = TorrentCard,
-            ["blessing"] = BlessingCard,
-            ["portal"] = PortalCard,
-            ["gem"] = GemCard,
-        },
         cardToCharacter = {}, -- Map of card name to character name
-        cardNames = {} -- List of card names
+        cardNames = {}, -- List of all card names
     }
-    for cardName, _ in pairs(manager.cardTypes) do
-        table.insert(manager.cardNames, cardName)
+
+    for name in pairs(Cards) do
+        table.insert(manager.cardNames, name)
     end
+    table.sort(manager.cardNames)
 
     for cardName, charName in pairs(ctx.characterManager.cardToCharacter) do
         manager.cardToCharacter[cardName] = charName
@@ -63,11 +28,9 @@ function CardManager:new(ctx)
 end
 
 function CardManager:createCard(cardName)
-    local CardClass = self.cardTypes[cardName]
-    if CardClass then
-        local card = CardClass:new(self.ctx, 0, 0)
-        local charName = self.cardToCharacter[cardName]
-        card.character = charName
+    if Cards[cardName] then
+        local card = Card:new(self.ctx, cardName, 0, 0)
+        local charName = card.character
         card.color = self.ctx.characterManager.characters[charName].color
         return card
     else
@@ -80,18 +43,18 @@ function CardManager:getAllCardNames()
 end
 
 function CardManager:getRandomCards(count, characterName)
-    local cards = {}
+    local pool = {}
     for cardName, cardCharacter in pairs(self.cardToCharacter) do
         if cardCharacter == characterName then
-            table.insert(cards, cardName)
+            table.insert(pool, cardName)
         end
     end
 
     local randomCards = {}
     for i = 1, count do
-        local cardIdx = math.random(1, #cards)
-        local cardName = cards[cardIdx]
-        table.remove(cards, cardIdx)
+        local cardIdx = math.random(1, #pool)
+        local cardName = pool[cardIdx]
+        table.remove(pool, cardIdx)
         table.insert(randomCards, self:createCard(cardName))
     end
     return randomCards

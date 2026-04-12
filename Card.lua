@@ -1,63 +1,63 @@
 local CastResult = require "enums.CastResult"
 local Keyword = require "enums.Keyword"
+local Cards = require "definitions.Cards"
 
--- Base Card class that all cards inherit from
-BaseCard = {}
-BaseCard.__index = BaseCard
+Card = {}
+Card.__index = Card
 
-function BaseCard:new(ctx, x, y)
+function Card:new(ctx, name, x, y)
     if not ctx then
-        error("BaseCard:new(ctx, x, y) requires ctx")
+        error("Card:new(ctx, name, x, y) requires ctx")
     end
+    local def = Cards[name]
+    if not def then
+        error("Unknown card: " .. tostring(name))
+    end
+
+    local previewKey = def.previewSprite or ("card_" .. name)
     local card = {
         ctx = ctx,
         x = x,
         y = y,
-
-        -- Attributes to be set by subclasses
-        name = nil,
-        incantationLength = nil,
-        character = nil, -- string name of character this card belongs to
+        name = name,
+        incantationLength = def.incantationLength,
+        character = def.character,
         color = nil,
-        anim = nil,
-        SpellClass = nil,
-        spellData = {}, -- list of data for the spell this card casts, such as damage
-        keywords = {}, -- list of keywords this card has
+        anim = ctx.resourceManager:newAnimation(previewKey, "loop"),
+        SpellClass = def.spell,
+        spellData = def.spellData,
+        keywords = def.keywords or {},
+        _describe = def.description,
     }
     setmetatable(card, self)
     return card
 end
 
-function BaseCard:getColor()
+function Card:getColor()
     return self.color or COLORS.GREY
 end
 
-function BaseCard:getDescription()
-    error("BaseCard:getDescription() must be implemented by subclass")
+function Card:getDescription()
+    return self._describe(self.spellData)
 end
 
--- Check if we are able to cast the card, returns failure reason if not
-function BaseCard:canCast(caster)
+function Card:canCast(caster)
     return CastResult.Success
 end
 
--- Draw large version of card
-function BaseCard:draw()
+function Card:draw()
     local margin = 8
-    -- Draw background
     lg.setColor(self:getColor())
     lg.rectangle("fill", self.x, self.y, LARGE_CARD_WIDTH, 32)
-    lg.rectangle("fill", self.x , self.y + 32, margin, SPRITE_SIZE)
+    lg.rectangle("fill", self.x, self.y + 32, margin, SPRITE_SIZE)
     lg.rectangle("fill", self.x + LARGE_CARD_WIDTH - margin, self.y + 32, margin, SPRITE_SIZE)
     lg.rectangle("fill", self.x, self.y + 32 + SPRITE_SIZE, LARGE_CARD_WIDTH, LARGE_CARD_HEIGHT - 32 - SPRITE_SIZE)
-    lg.setColor({0, 0, 0, 0.5})
+    lg.setColor({ 0, 0, 0, 0.5 })
     lg.rectangle("fill", self.x + margin, self.y + 32, SPRITE_SIZE, SPRITE_SIZE)
 
-    -- Animate spell preview
     lg.setColor(COLORS.WHITE)
     self.anim:draw(self.x + margin, self.y + 32)
 
-    -- Print text onto card
     local fonts = self.ctx.fonts
     lg.setColor(COLORS.BLACK)
     lg.setFont(fonts.fontM)
@@ -67,12 +67,10 @@ function BaseCard:draw()
     lg.printf(self:getDescription(), self.x + margin, self.y + SPRITE_SIZE + margin * 2 + 16, SPRITE_SIZE, "left")
 end
 
--- Draw mini version of card
-function BaseCard:drawMini()
+function Card:drawMini()
     local fonts = self.ctx.fonts
     lg.setColor(self:getColor())
     lg.rectangle("fill", self.x, self.y, MINI_CARD_WIDTH, MINI_CARD_HEIGHT)
-    -- print text
     local margin = 4
     lg.setColor(COLORS.BLACK)
     lg.setFont(fonts.fontM)
@@ -82,14 +80,13 @@ function BaseCard:drawMini()
     lg.printf(self:getDescription(), self.x + margin, self.y + 20, MINI_CARD_WIDTH - margin * 2, "left")
 end
 
--- Draw short description of keywords beside the card
-function BaseCard:drawKeywords(x, y, maxWidth)
+function Card:drawKeywords(x, y, maxWidth)
     local font = self.ctx.fonts.fontS
     local margin = 4
     lg.setFont(font)
     for _, keyword in ipairs(self.keywords) do
         local text = "[" .. keyword .. "] " .. Keyword.descriptions[keyword]
-        local width, wrappedtext = font:getWrap( text, maxWidth )
+        local width, wrappedtext = font:getWrap(text, maxWidth)
         local height = #wrappedtext * (font:getHeight() * font:getLineHeight())
         lg.setColor(COLORS.GREY)
         lg.rectangle("fill", x, y, width + margin * 2, height + margin * 2)
@@ -99,22 +96,21 @@ function BaseCard:drawKeywords(x, y, maxWidth)
     end
 end
 
-function BaseCard:update(dt)
+function Card:update(dt)
     self.anim:update(dt)
 end
 
-function BaseCard:setPosition(x, y)
+function Card:setPosition(x, y)
     self.x = x
     self.y = y
 end
 
--- Smoothly move card to new position, if destination is too close, set to destination
-function BaseCard:move(destX, destY)
+function Card:move(destX, destY)
     self:setPosition(math.abs(self.x - destX) < 1 and destX or self.x + ((destX - self.x) / 20),
         math.abs(self.y - destY) < 1 and destY or self.y + ((destY - self.y) / 20))
 end
 
-function BaseCard:cast(caster, target)
+function Card:cast(caster, target)
     local imageName = "card_" .. self.name
     if not self.ctx.resourceManager.images[imageName] then
         imageName = self.ctx.characterManager.characters[self.character].spellPlaceholderSprite

@@ -155,9 +155,9 @@ function BattleScene:refreshAvailableCommands()
         self:addAvailableCommand(self.humanController.drawWord, false)
         self:addAvailableCommand("pause", true)
         self:removeAvailableCommand("cancel")
-        -- self.ctx.ui.messageLeft = self.humanController.drawWord
-        if self.humanController.player:canDrawCard() then
-            self.ctx.ui.messageRight = "type \"" .. self.humanController.drawWord .. "\" to draw, or type card name to cast"
+        local drawWord = self.humanController.drawWord
+        if self.humanController.player:canDrawCard() and drawWord then
+            self.ctx.ui.messageRight = "type \"" .. drawWord .. "\" to draw, or type card name to cast"
         else
             self.ctx.ui.messageRight = "type card name to cast"
         end

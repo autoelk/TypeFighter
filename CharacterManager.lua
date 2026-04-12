@@ -1,23 +1,19 @@
-local C = require "Characters"
+local Chars = require "definitions.Characters"
+local Cards = require "definitions.Cards"
 
 CharacterManager = {}
 CharacterManager.__index = CharacterManager
 
 function CharacterManager:new()
     local manager = {
-        characters = C.characters,
-        humanCharacters = C.humanCharacters,
-        enemyCharacters = C.enemyCharacters,
-        bossCharacters = C.bossCharacters,
+        characters = Chars.characters,
+        humanCharacters = Chars.humanCharacters,
+        enemyCharacters = Chars.enemyCharacters,
+        bossCharacters = Chars.bossCharacters,
         cardToCharacter = {}, -- Map of card name to character name
     }
-    for charName, def in pairs(manager.characters) do
-        for _, cardName in ipairs(def.cardPool) do
-            if manager.cardToCharacter[cardName] and manager.cardToCharacter[cardName] ~= charName then
-                error("Card '" .. cardName .. "' appears in more than one character cardPool")
-            end
-            manager.cardToCharacter[cardName] = charName
-        end
+    for cardName, def in pairs(Cards) do
+        manager.cardToCharacter[cardName] = def.character
     end
     return setmetatable(manager, self)
 end

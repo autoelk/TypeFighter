@@ -1,4 +1,5 @@
--- Character definitions
+require "constants"
+
 local characters = {
     wizard = {
         name = "wizard",
@@ -11,7 +12,6 @@ local characters = {
         color = COLORS.BLUE,
         startingDeck = { "bolt", "bolt", "forcefield", "forcefield", "gem", "fireball" },
         startingWordBank = { "ignis", "inflammatio", "accendo", "infervesco", "fulgeo", "aqua", "mare", "demergo", "liquidus", "flumen" },
-        cardPool = { "bolt", "forcefield", "fireball", "heal", "torrent", "blessing", "portal", "gem" },
     },
     vampire = {
         name = "vampire",
@@ -24,7 +24,6 @@ local characters = {
         color = COLORS.RED,
         startingDeck = { "swipe", "swipe", "shroud", "shroud", "lacerate", "rage" },
         startingWordBank = { "sacrificum", "mortuus", "cruentus", "sanguis", "vulnero", "absorbeo", "devoveo", "vulnus", "diabolus", "sanctifico" },
-        cardPool = { "swipe", "shroud", "lacerate", "rage", "siphon", "slice", "coagulate", "bloodpact" },
     },
 }
 
