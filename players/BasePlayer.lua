@@ -11,7 +11,7 @@ function BasePlayer:new(ctx, character)
         ctx = ctx,
         character = character,
         isAlive = true,
-        health = character.health,
+        health = character.maxHealth,
         maxHealth = character.maxHealth,
         shield = 0,
 

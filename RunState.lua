@@ -15,7 +15,7 @@ end
 function RunState:startRun(humanPlayerController, opponentNames)
     self.active = true
     self.humanPlayerController = humanPlayerController
-    self.stages = opponentNames or { "wizard", "wizard", "wizard", "wizard", "wizard" }
+    self.stages = opponentNames
     self.stageIndex = 1
 end
 

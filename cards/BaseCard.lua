@@ -4,10 +4,6 @@ local Keyword = require "enums.Keyword"
 -- Base Card class that all cards inherit from
 BaseCard = {}
 BaseCard.__index = BaseCard
-BaseCard.characterColors = {
-    wizard = COLORS.BLUE,
-    vampire = COLORS.RED
-}
 
 function BaseCard:new(ctx, x, y)
     if not ctx then
@@ -34,11 +30,6 @@ end
 
 function BaseCard:getColor()
     return self.color or COLORS.GREY
-end
-
-function BaseCard:setCharacter(characterName)
-    self.character = characterName
-    self.color = BaseCard.characterColors[characterName] or COLORS.WHITE
 end
 
 function BaseCard:getDescription()
@@ -126,11 +117,7 @@ end
 function BaseCard:cast(caster, target)
     local imageName = "card_" .. self.name
     if not self.ctx.resourceManager.images[imageName] then
-        if self.character == "vampire" then
-            imageName = "vampireSpellPlaceholder"
-        else
-            imageName = "wizardSpellPlaceholder"
-        end
+        imageName = self.ctx.characterManager.characters[self.character].spellPlaceholderSprite
     end
     local spellAnim = self.ctx.resourceManager:newAnimation(imageName, "once")
     local spell = self.SpellClass:new(caster, target, self.spellData, spellAnim)

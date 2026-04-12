@@ -9,7 +9,6 @@ function ShroudCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "shroud"
     card.incantationLength = 1
-    card:setCharacter("vampire")
     card.anim = ctx.resourceManager:newAnimation("vampireSpellPlaceholder", "loop")
 
     card.SpellClass = ShroudSpell

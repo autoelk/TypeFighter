@@ -17,11 +17,11 @@ function MenuScene:new(ctx)
     scene:addAvailableCommand("quit", true)
 
     -- Load characters for display
-    scene.leftRenderer = BasePlayerRenderer:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter("wizard")))
+    scene.leftRenderer = BasePlayerRenderer:new(ctx, ctx.characterManager:createPlayer(ctx, "wizard"))
     scene.leftRenderer.x = 320
     scene.leftRenderer.mirror = false
 
-    scene.rightRenderer = BasePlayerRenderer:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter("vampire")))
+    scene.rightRenderer = BasePlayerRenderer:new(ctx, ctx.characterManager:createPlayer(ctx, "vampire"))
     scene.rightRenderer.x = GAME_WIDTH - 320 - SPRITE_SIZE
     scene.rightRenderer.mirror = true
 

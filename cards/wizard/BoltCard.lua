@@ -9,7 +9,6 @@ function BoltCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "bolt"
     card.incantationLength = 1
-    card:setCharacter("wizard")
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name, "loop")
 
     card.SpellClass = BoltSpell

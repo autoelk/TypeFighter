@@ -48,20 +48,28 @@ function CardManager:new(ctx)
             ["portal"] = PortalCard,
             ["gem"] = GemCard,
         },
-        cardCharacters = {}, -- Map of card name to character name
+        cardToCharacter = {}, -- Map of card name to character name
         cardNames = {} -- List of card names
     }
     for cardName, _ in pairs(manager.cardTypes) do
         table.insert(manager.cardNames, cardName)
     end
-    
+
+    for cardName, charName in pairs(ctx.characterManager.cardToCharacter) do
+        manager.cardToCharacter[cardName] = charName
+    end
+
     return setmetatable(manager, self)
 end
 
 function CardManager:createCard(cardName)
-    local CardClass = self.cardTypes[string.lower(cardName)]
+    local CardClass = self.cardTypes[cardName]
     if CardClass then
-        return CardClass:new(self.ctx, 0, 0)
+        local card = CardClass:new(self.ctx, 0, 0)
+        local charName = self.cardToCharacter[cardName]
+        card.character = charName
+        card.color = self.ctx.characterManager.characters[charName].color
+        return card
     else
         error("Unknown card type: " .. tostring(cardName))
     end
@@ -73,7 +81,7 @@ end
 
 function CardManager:getRandomCards(count, characterName)
     local cards = {}
-    for cardName, cardCharacter in pairs(self.cardCharacters) do
+    for cardName, cardCharacter in pairs(self.cardToCharacter) do
         if cardCharacter == characterName then
             table.insert(cards, cardName)
         end
@@ -82,9 +90,9 @@ function CardManager:getRandomCards(count, characterName)
     local randomCards = {}
     for i = 1, count do
         local cardIdx = math.random(1, #cards)
-        local cardClass = self.cardTypes[cards[cardIdx]]
+        local cardName = cards[cardIdx]
         table.remove(cards, cardIdx)
-        table.insert(randomCards, cardClass:new(self.ctx, 0, 0))
+        table.insert(randomCards, self:createCard(cardName))
     end
     return randomCards
 end

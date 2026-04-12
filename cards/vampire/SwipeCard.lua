@@ -9,7 +9,6 @@ function SwipeCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "swipe"
     card.incantationLength = 1
-    card:setCharacter("vampire")
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name, "loop")
 
     card.SpellClass = SwipeSpell

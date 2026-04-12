@@ -62,6 +62,16 @@ function ResourceManager:getSound(name)
     return self.sounds[name]
 end
 
+function ResourceManager:loadCharacterAssets(characterManager)
+    for _, def in pairs(characterManager.characters) do
+        local base = "assets/characters/" .. def.name .. "/"
+        self:loadImage(def.idleSprite, base .. def.idleSprite .. ".png")
+        self:loadImage(def.castSprite, base .. def.castSprite .. ".png")
+        self:loadImage(def.deathSprite, base .. def.deathSprite .. ".png")
+        self:loadImage(def.spellPlaceholderSprite, base .. def.spellPlaceholderSprite .. ".png")
+    end
+end
+
 function ResourceManager:loadAllAssets(cardNames)
     if not cardNames then
         error("ResourceManager:loadAllAssets(cardNames) requires cardNames")
@@ -74,17 +84,6 @@ function ResourceManager:loadAllAssets(cardNames)
 
     -- Load images
     self:loadImage("background", "assets/background.png")
-
-    self:loadImage("wizardIdle", "assets/characters/wizard/wizardIdle.png")
-    self:loadImage("wizardCast", "assets/characters/wizard/wizardCast.png")
-    self:loadImage("wizardDeath", "assets/characters/wizard/wizardDeath.png")
-    self:loadImage("wizardSpellPlaceholder", "assets/characters/wizard/wizardSpellPlaceholder.png")
-
-    self:loadImage("vampireIdle", "assets/characters/vampire/vampireIdle.png")
-    self:loadImage("vampireCast", "assets/characters/vampire/vampireCast.png")
-    self:loadImage("vampireDeath", "assets/characters/vampire/vampireDeath.png")
-    self:loadImage("vampireSpellPlaceholder", "assets/characters/vampire/vampireSpellPlaceholder.png")
-
 
     -- Load all card images
     for i, cardName in ipairs(cardNames) do

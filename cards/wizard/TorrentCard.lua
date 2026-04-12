@@ -10,7 +10,6 @@ function TorrentCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "torrent"
     card.incantationLength = 3
-    card:setCharacter("wizard")
     card.anim = ctx.resourceManager:newAnimation("card_" .. card.name, "loop")
 
     card.SpellClass = TorrentSpell

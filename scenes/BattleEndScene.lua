@@ -130,8 +130,11 @@ function BattleEndScene:handleInput(userInput)
                 local game = self.ctx.sceneManager:getScene(SceneId.Battle)
                 local oppName = rs:getCurrentOpponent()
                 game:setHumanController(rs.humanPlayerController)
-                game:setEnemyController(AIPlayerController:new(self.ctx,
-                    BasePlayer:new(self.ctx, self.ctx.characterManager:createCharacter(oppName)), "normal"))
+                game:setEnemyController(AIPlayerController:new(
+                    self.ctx, 
+                    self.ctx.characterManager:createPlayer(self.ctx, oppName), 
+                    "normal")
+                )
                 self.ctx.sceneManager:changeScene(SceneId.Battle)
             else
                 rs:endRun()

@@ -9,7 +9,6 @@ function SliceCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "slice"
     card.incantationLength = 3
-    card:setCharacter("vampire")
     card.anim = ctx.resourceManager:newAnimation("vampireSpellPlaceholder", "loop")
 
     card.SpellClass = SliceSpell

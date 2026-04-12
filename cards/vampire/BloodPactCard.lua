@@ -10,7 +10,6 @@ function BloodPactCard:new(ctx, x, y)
     local card = BaseCard:new(ctx, x, y)
     card.name = "bloodpact"
     card.incantationLength = 5
-    card:setCharacter("vampire")
     card.anim = ctx.resourceManager:newAnimation("vampireSpellPlaceholder", "loop")
 
     card.SpellClass = BloodPactSpell

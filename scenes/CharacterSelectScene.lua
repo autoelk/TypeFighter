@@ -15,8 +15,8 @@ function CharacterSelectScene:new(ctx)
     scene:addAvailableCommand("play", true)
     scene:addAvailableCommand("quit", true)
     scene.controllers = {}
-    for i, charName in ipairs(ctx.characterManager:getAllCharNames()) do
-        local controller = AIPlayerController:new(ctx, BasePlayer:new(ctx, ctx.characterManager:createCharacter(charName)))
+    for _, charName in ipairs(ctx.characterManager:getHumanCharacters()) do
+        local controller = AIPlayerController:new(ctx, ctx.characterManager:createPlayer(ctx, charName))
         controller.renderer.mirror = false
         controller.renderer.handX = GAME_WIDTH / 2
         table.insert(scene.controllers, controller)
@@ -114,13 +114,13 @@ function CharacterSelectScene:handleInput(userInput)
         end
 
         local selectedName = self.charSelected.player.character.name
-        local humanPlayerController = HumanPlayerController:new(self.ctx, BasePlayer:new(self.ctx, self.ctx.characterManager:createCharacter(selectedName)))
+        local humanPlayerController = HumanPlayerController:new(self.ctx, self.ctx.characterManager:createPlayer(self.ctx, selectedName))
         self.ctx.sceneManager:getScene(SceneId.Battle):setHumanController(humanPlayerController)
-        
+
         self.ctx.runState:startRun(humanPlayerController, { "wizard", "wizard", "wizard", "wizard", "wizard" })
 
         local oppName = self.ctx.runState:getCurrentOpponent()
-        local enemyPlayerController = AIPlayerController:new(self.ctx, BasePlayer:new(self.ctx, self.ctx.characterManager:createCharacter(oppName)), "normal")
+        local enemyPlayerController = AIPlayerController:new(self.ctx, self.ctx.characterManager:createPlayer(self.ctx, oppName), "normal")
         self.ctx.sceneManager:getScene(SceneId.Battle):setEnemyController(enemyPlayerController)
 
         self.ctx.sceneManager:changeScene(SceneId.Battle)
