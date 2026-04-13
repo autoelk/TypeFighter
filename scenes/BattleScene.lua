@@ -19,8 +19,7 @@ BattleScene.__index = BattleScene
 function BattleScene:new(ctx)
     local scene = setmetatable(BaseScene:new(ctx), self)
     scene.name = SceneId.Battle
-    scene.controlsHint = "[quit] to menu, [pause]"
-    scene:addAvailableCommand("quit", true)
+    scene.controlsHint = "[pause]"
     scene:addAvailableCommand("pause", true)
     scene.humanController = nil
     scene.enemyController = nil
@@ -252,11 +251,7 @@ function BattleScene:keypressed(key)
 end
 
 function BattleScene:handleInput(userInput)
-    if self.inputBarState == "normal" and userInput == "quit" then
-        self.ctx.runState:endRun()
-        self.ctx.sceneManager:changeScene(SceneId.Menu)
-        return
-    elseif userInput == "pause" then
+    if userInput == "pause" then
         self.ctx.sceneManager:pushScene(SceneId.Pause)
         return
     end
