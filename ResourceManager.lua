@@ -116,7 +116,11 @@ end
 function ResourceManager:newAnimation(imageName, playMode, duration, width, height)
     local playMode = playMode or "once"
     local duration = duration or math.huge
-    local animation = Animation:new(self.images[imageName], width, height)
+    local image = self.images[imageName]
+    if not image then
+        error("ResourceManager:newAnimation missing image '" .. tostring(imageName) .. "'")
+    end
+    local animation = Animation:new(image, width, height)
     animation:setPlayMode(playMode, duration)
     return animation
 end
