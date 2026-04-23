@@ -17,8 +17,12 @@ function CardBrowseScene:new(ctx)
     scene.controlsHint = "[quit] to menu"
     scene:addAvailableCommand("quit", true)
 
-    for _, cardName in ipairs(ctx.cardManager:getAllCardNames()) do
-        table.insert(scene.cards, ctx.cardManager:createCard(cardName))
+    local chars = ctx.characterManager:getHumanCharacters()
+    for _, char in ipairs(chars) do
+        local cardNames = ctx.cardManager:getAllCharacterCardNames(char)
+        for _, cardName in ipairs(cardNames) do
+            table.insert(scene.cards, ctx.cardManager:createCard(cardName))
+        end
     end
     -- sort cards by character, cost, then name
     table.sort(scene.cards, function(a, b)

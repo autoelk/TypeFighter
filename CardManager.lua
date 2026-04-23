@@ -42,6 +42,16 @@ function CardManager:getAllCardNames()
     return self.cardNames
 end
 
+function CardManager:getAllCharacterCardNames(characterName)
+    local pool = {}
+    for cardName, cardCharacter in pairs(self.cardToCharacter) do
+        if cardCharacter == characterName then
+            table.insert(pool, cardName)
+        end
+    end
+    return pool
+end
+
 function CardManager:getRandomCards(count, characterName)
     local pool = {}
     for cardName, cardCharacter in pairs(self.cardToCharacter) do
