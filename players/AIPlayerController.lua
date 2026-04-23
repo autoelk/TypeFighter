@@ -77,10 +77,10 @@ end
 
 function AIPlayerController:chooseNextAction()
     local action = nil
-    if #self.player.hand < STARTING_HAND_SIZE then
-        action = "draw"
-    elseif self.player.selectedCard then
+    if self.player.selectedCard then
         action = "cast"
+    elseif #self.player.hand < STARTING_HAND_SIZE and self.player:canDrawCard() then
+        action = "draw"
     else
         action = "incant"
         
