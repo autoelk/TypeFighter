@@ -7,6 +7,7 @@ require "spells.vampire.SliceSpell"
 require "spells.vampire.SiphonSpell"
 require "spells.vampire.CoagulateSpell"
 require "spells.vampire.BloodPactSpell"
+require "spells.vampire.NauseateSpell"
 
 local Keyword = require "enums.Keyword"
 
@@ -28,7 +29,6 @@ return {
         spell = CoagulateSpell,
         spellData = { healthCost = 5, shieldAmount = 20 },
         keywords = { Keyword.Sacrifice },
-        previewSprite = "vampireSpellPlaceholder",
         description = function(d)
             return "sacrifice " .. d.healthCost .. " health, gain " .. d.shieldAmount .. " shield."
         end,
@@ -95,4 +95,14 @@ return {
             return "deal " .. d.damage .. " damage."
         end,
     },
+    nauseate = {
+        character = "vampire",
+        incantationLength = 3,
+        spell = NauseateSpell,
+        spellData = {},
+        keywords = { Keyword.Bleed, Keyword.Focus },
+        description = function()
+            return "reduce focus by stacks of bleed on the target."
+        end,
+    }
 }
