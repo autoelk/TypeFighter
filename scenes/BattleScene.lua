@@ -140,10 +140,10 @@ end
 
 function BattleScene:refreshAvailableCommands()
     self.availableCommands = {}
-    self:addAvailableCommand("quit", true)
     if self.inputBarState == "incantation" then
         self:addAvailableCommand(self.humanController.incantation, false)
         self:addAvailableCommand("cancel", true)
+        self:addAvailableCommand("quit", true)
         self.ctx.ui.messageLeft = tostring(self.humanController.incantation)
         self.ctx.ui.messageRight = "type incantation above to cast"
     else
@@ -154,6 +154,7 @@ function BattleScene:refreshAvailableCommands()
         self:addAvailableCommand(self.humanController.drawWord, false)
         self:addAvailableCommand("pause", true)
         self:removeAvailableCommand("cancel")
+        self:removeAvailableCommand("quit")
         local drawWord = self.humanController.drawWord
         if self.humanController.player:canDrawCard() and drawWord then
             self.ctx.ui.messageRight = "type \"" .. drawWord .. "\" to draw, or type card name to cast"
