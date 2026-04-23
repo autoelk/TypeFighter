@@ -1,22 +1,30 @@
 RunState = {}
 RunState.__index = RunState
 
-function RunState:new()
-    local rs = setmetatable({}, self)
-    rs.active = false
-    rs.stageIndex = 0
-    rs.stages = {}
-    rs.humanPlayerController = nil
-    return rs
+function RunState:new(ctx)
+    local rs = {
+        ctx = ctx,
+        active = false,
+        stageIndex = nil,
+        numStages = 5, -- number of stages in a run
+        stages = {}, -- list of opponent names
+        humanPlayerController = nil,
+    }
+    return setmetatable(rs, self)
 end
 
--- Initialize a new run with a simple linear list of encounters
--- opponentNames: array of character names for opponents (e.g., {"wizard", "wizard", ...})
-function RunState:startRun(humanPlayerController, opponentNames)
+function RunState:startRun(humanPlayerController)
     self.active = true
     self.humanPlayerController = humanPlayerController
-    self.stages = opponentNames
+    self:generateStages()
     self.stageIndex = 1
+end
+
+function RunState:generateStages()
+    local enemyCharacters = self.ctx.characterManager:getEnemyCharacters()
+    for i = 1, self.numStages do
+        table.insert(self.stages, enemyCharacters[math.random(1, #enemyCharacters)])
+    end
 end
 
 function RunState:isActive()

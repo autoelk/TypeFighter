@@ -117,7 +117,7 @@ function CharacterSelectScene:handleInput(userInput)
         local humanPlayerController = HumanPlayerController:new(self.ctx, self.ctx.characterManager:createPlayer(self.ctx, selectedName))
         self.ctx.sceneManager:getScene(SceneId.Battle):setHumanController(humanPlayerController)
 
-        self.ctx.runState:startRun(humanPlayerController, { "wizard", "wizard", "wizard", "wizard", "wizard" })
+        self.ctx.runState:startRun(humanPlayerController)
 
         local oppName = self.ctx.runState:getCurrentOpponent()
         local enemyPlayerController = AIPlayerController:new(self.ctx, self.ctx.characterManager:createPlayer(self.ctx, oppName), "normal")

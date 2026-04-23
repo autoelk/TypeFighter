@@ -7,7 +7,6 @@ function Context:new()
         -- because it needs the context reference.
         characterManager = CharacterManager:new(),
         resourceManager = ResourceManager:new(),
-        runState = RunState:new(),
 
         fonts = {},
         assets = {},
@@ -18,10 +17,9 @@ function Context:new()
             messageRight = "",
         }
     }
-
-    -- cardManager needs `ctx` for creating cards with animations/fonts.
     context.cardManager = CardManager:new(context)
-
     context.sceneManager = SceneManager:new(context)
+    context.runState = RunState:new(context)
+
     return setmetatable(context, self)
 end

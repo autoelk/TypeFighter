@@ -3,6 +3,7 @@ local Keyword = {
     Bleed = "bleed",
     Sacrifice = "sacrifice",
     Focus = "focus",
+    Shifted = "shifted",
 }
 
 Keyword.descriptions = {
@@ -10,6 +11,7 @@ Keyword.descriptions = {
     [Keyword.Bleed] = "when player casts a card, lose x health.",
     [Keyword.Sacrifice] = "lose x health",
     [Keyword.Focus] = "remove x letters from each word in incantations.",
+    [Keyword.Shifted] = "randomly capitalize letters in your next x incantations.",
 }
 
 return setmetatable(Keyword, {

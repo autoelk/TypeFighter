@@ -18,6 +18,7 @@ function BasePlayer:new(ctx, character)
         -- Statuses
         effects = {}, -- Map of effect name to effect instance for stack effects
         focus = 0, -- How many letters to add/subtract from each word in an incantation
+        shifted = false, -- Whether the player will have random capitalization of letters in their incantations
         
         -- Cards
         selectedCard = nil, -- Card being cast by the player
@@ -47,8 +48,9 @@ end
 function BasePlayer:reset()
     self.isAlive = true
     self.shield = 0
-    self.focus = 0
     self.effects = {}
+    self.focus = 0
+    self.shifted = false
 
     self.selectedCard = nil
     self.hand = {}

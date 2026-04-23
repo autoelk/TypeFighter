@@ -22,6 +22,10 @@ function CharacterManager:getHumanCharacters()
     return self.humanCharacters
 end
 
+function CharacterManager:getEnemyCharacters()
+    return self.enemyCharacters
+end
+
 function CharacterManager:createPlayer(ctx, characterName)
     local def = self.characters[characterName]
     if not def then

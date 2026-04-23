@@ -9,6 +9,7 @@ local characters = {
         castSprite = "wizardCast",
         deathSprite = "wizardDeath",
         spellPlaceholderSprite = "wizardSpellPlaceholder",
+        mirrorCharSprite = true,
         color = COLORS.BLUE,
         startingDeck = { "bolt", "bolt", "forcefield", "forcefield", "gem", "fireball" },
         startingWordBank = { "ignis", "inflammatio", "accendo", "infervesco", "fulgeo", "aqua", "mare", "demergo", "liquidus", "flumen" },
@@ -21,14 +22,28 @@ local characters = {
         castSprite = "vampireCast",
         deathSprite = "vampireDeath",
         spellPlaceholderSprite = "vampireSpellPlaceholder",
+        mirrorCharSprite = true,
         color = COLORS.RED,
         startingDeck = { "swipe", "swipe", "shroud", "shroud", "lacerate", "rage" },
         startingWordBank = { "sacrificum", "mortuus", "cruentus", "sanguis", "vulnero", "absorbeo", "devoveo", "vulnus", "diabolus", "sanctifico" },
     },
+    shiftKey = {
+        name = "shiftKey",
+        description = "messes with your capitalization.",
+        maxHealth = 50,
+        idleSprite = "shiftKeyIdle",
+        castSprite = "shiftKeyIdle",
+        deathSprite = "shiftKeyIdle",
+        spellPlaceholderSprite = "wizardSpellPlaceholder",
+        mirrorCharSprite = false, -- Don't mirror the character sprite
+        color = COLORS.WHITE,
+        startingDeck = { "shiftKey", "bolt", "forcefield" },
+        startingWordBank = { "SHIFT", "KEY" },
+    }
 }
 
 local humanCharacters = { "vampire", "wizard" }
-local enemyCharacters = { "vampire", "wizard" } -- TODO: Create enemy characters
+local enemyCharacters = { "shiftKey" }
 local bossCharacters = { "vampire", "wizard" } -- TODO: Create boss characters
 
 return {

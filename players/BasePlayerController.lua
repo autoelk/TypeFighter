@@ -51,16 +51,33 @@ end
 
 function BasePlayerController:generateIncantation(length)
     local result = ""
-    local alphabet = "abcdefghijklmnopqrstuvwxyz"
+
     for i = 1, length do
         local word = self.player.wordBank[math.random(1, #self.player.wordBank)]
+        result = result .. " " .. word
+    end
+
+    result = self:_applyFocus(result)
+    result = self:_applyShifted(result)
+
+    return Text.trim(result)
+end
+
+function BasePlayerController:_applyFocus(incantation)
+    local alphabet = "abcdefghijklmnopqrstuvwxyz"
+    local words = {}
+    for word in incantation:gmatch("%S+") do
+        table.insert(words, word)
+    end
+
+    for i, word in ipairs(words) do
         if self.player.focus < 0 then
             -- if focus is negative, add random letters to the incantation
             for j = 1, -self.player.focus do
                 local breakpoint = math.random(0, #word)
                 local randomIdx = math.random(1, #alphabet)
                 local randomLetter = string.sub(alphabet, randomIdx, randomIdx)
-                word = string.sub(word, 1, breakpoint) .. randomLetter .. string.sub(word, breakpoint + 1)
+                words[i] = string.sub(word, 1, breakpoint) .. randomLetter .. string.sub(word, breakpoint + 1)
             end
         elseif self.player.focus > 0 then
             -- if focus is positive, remove random letters from the incantation
@@ -73,14 +90,28 @@ function BasePlayerController:generateIncantation(length)
                 local randomIdx = math.random(1, #letters)
                 table.remove(letters, randomIdx)
             end
-            word = table.concat(letters)
-        end
-
-        if #word > 0 then
-            result = result .. " " .. word
+            words[i] = table.concat(letters)
         end
     end
-    return Text.trim(result)
+
+    return table.concat(words, " ")
+end
+
+function BasePlayerController:_applyShifted(incantation)
+    if not self.player.shifted then
+        return incantation
+    end
+
+    local result = ""
+    for i = 1, #incantation do
+        local char = string.sub(incantation, i, i)
+        if math.random(1, 2) == 1 then
+            result = result .. char:upper()
+        else
+            result = result .. char
+        end
+    end
+    return result
 end
 
 function BasePlayerController:castSelectedCard()

@@ -11,6 +11,7 @@ function BasePlayerRenderer:new(ctx, player)
         y = 408,
 
         mirror = nil,
+        mirrorCharSprite = false, -- Whether to mirror the character sprite
 
         idleAnim = ctx.resourceManager:newAnimation(player.character.idleSprite, "loop"),
         castAnim = ctx.resourceManager:newAnimation(player.character.castSprite, "once"),
@@ -93,7 +94,7 @@ function BasePlayerRenderer:drawChar()
     lg.setColor(COLORS.WHITE)
     local scaleX = PIXEL_TO_GAME_SCALE
     local x = self.x
-    if self.mirror then
+    if self.mirror and self.mirrorCharSprite then
         scaleX = -PIXEL_TO_GAME_SCALE
         x = self.x + SPRITE_SIZE
     end

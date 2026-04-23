@@ -1,5 +1,6 @@
 local wizardCards = require "definitions.WizardCards"
 local vampireCards = require "definitions.VampireCards"
+local enemyCards = require "definitions.EnemyCards"
 
 local function merge(into, chunk)
     for name, def in pairs(chunk) do
@@ -13,5 +14,6 @@ end
 local M = {}
 merge(M, wizardCards)
 merge(M, vampireCards)
+merge(M, enemyCards)
 
 return M
