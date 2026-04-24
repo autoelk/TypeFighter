@@ -33,7 +33,7 @@ function love.load()
     push:setupScreen(GAME_WIDTH, GAME_HEIGHT, GAME_WIDTH, GAME_HEIGHT, {
         fullscreen = true,
         resizable = false,
-        pixelperfect = true,
+        pixelperfect = false,
         highdpi = true,
         canvas = true,
     })
@@ -66,7 +66,7 @@ function love.load()
     ctx.sceneManager:addScene(BattleEndScene:new(ctx))
 
     ctx.sceneManager:changeScene(SceneId.Menu)
-    
+
     local backgroundMusic = ctx.resourceManager:getSound("music")
     backgroundMusic:setLooping(true)
     backgroundMusic:setVolume(0.5)
