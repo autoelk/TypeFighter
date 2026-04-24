@@ -80,6 +80,7 @@ function SceneManager:keypressed(key)
         uiInput = string.sub(uiInput, 1, utf8.offset(uiInput, -1) - 1)
         self.ctx.ui.input = uiInput
         currentScene:updateSuggestedCommand()
+        currentScene:registerTypingActivity()
         return
     end
 
