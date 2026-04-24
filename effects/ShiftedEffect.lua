@@ -10,15 +10,10 @@ function ShiftedEffect:new(player, initialStacks)
 end
 
 function ShiftedEffect:onApply()
-    self.player.shifted = true
+    self.player.shifted = self.player.shifted + self.stacks
 end
 
 function ShiftedEffect:onTick(card, incantation)
-    if self.stacks > 0 then
-        self.stacks = self.stacks - 1
-    end
-end
-
-function ShiftedEffect:onExpire()
-    self.player.shifted = false
+    self.stacks = self.stacks - 1
+    self.player.shifted = self.player.shifted - 1
 end

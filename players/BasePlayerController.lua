@@ -93,21 +93,38 @@ function BasePlayerController:_applyFocus(incantation)
     return table.concat(words, " ")
 end
 
+-- randomly capitalize letters in each word of the incantation equal to the player's shifted stat
 function BasePlayerController:_applyShifted(incantation)
-    if not self.player.shifted then
+    if self.player.shifted <= 0 then
         return incantation
     end
 
-    local result = ""
-    for i = 1, #incantation do
-        local char = string.sub(incantation, i, i)
-        if math.random(1, 2) == 1 then
-            result = result .. char:upper()
-        else
-            result = result .. char
+    local words = {}
+    for word in incantation:gmatch("%S+") do
+        local chars = {}
+        for i = 1, #word do
+            table.insert(chars, string.sub(word, i, i))
         end
+
+        local indices = {}
+        for i = 1, #chars do
+            table.insert(indices, i)
+        end
+
+        for i = 1, self.player.shifted do
+            if #indices == 0 then
+                break
+            end
+            local randomIdx = math.random(1, #indices)
+            local charIdx = indices[randomIdx]
+            chars[charIdx] = string.upper(chars[charIdx])
+            table.remove(indices, randomIdx)
+        end
+
+        table.insert(words, table.concat(chars))
     end
-    return result
+
+    return table.concat(words, " ")
 end
 
 function BasePlayerController:castSelectedCard()

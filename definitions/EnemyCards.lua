@@ -11,8 +11,8 @@ return {
         spellData = { stacks = 3 },
         keywords = { Keyword.Shifted },
         previewSprite = "wizardSpellPlaceholder",
-        description = function()
-            return "randomly capitalize letters in your next x incantations."
+        description = function(d)
+            return "randomly capitalize " .. d.stacks .. " letters from each word in your next " .. d.stacks .. " incantations."
         end,
     },
 }
