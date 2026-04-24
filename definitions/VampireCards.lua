@@ -8,6 +8,7 @@ require "spells.vampire.SiphonSpell"
 require "spells.vampire.CoagulateSpell"
 require "spells.vampire.BloodPactSpell"
 require "spells.vampire.NauseateSpell"
+require "spells.vampire.BiteSpell"
 
 local Keyword = require "enums.Keyword"
 
@@ -104,5 +105,15 @@ return {
         description = function()
             return "reduce focus by stacks of bleed on the target."
         end,
-    }
+    },
+    bite = {
+        character = "vampire",
+        incantationLength = 3,
+        spell = BiteSpell,
+        spellData = { damage = 5, bleedAmount = 3 },
+        keywords = { Keyword.Bleed },
+        description = function(d)
+            return "deal " .. d.damage .. " damage. apply " .. d.bleedAmount .. " stacks of bleed."
+        end,
+    },
 }
