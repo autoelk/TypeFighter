@@ -71,26 +71,22 @@ function BasePlayerController:_applyFocus(incantation)
     end
 
     for i, word in ipairs(words) do
+        local newWord = word
         if self.player.focus < 0 then
             -- if focus is negative, add random letters to the incantation
             for j = 1, -self.player.focus do
-                local breakpoint = math.random(0, #word)
+                local breakpoint = math.random(0, #newWord)
                 local randomIdx = math.random(1, #alphabet)
                 local randomLetter = string.sub(alphabet, randomIdx, randomIdx)
-                words[i] = string.sub(word, 1, breakpoint) .. randomLetter .. string.sub(word, breakpoint + 1)
+                newWord = string.sub(newWord, 1, breakpoint) .. randomLetter .. string.sub(newWord, breakpoint + 1)
             end
         elseif self.player.focus > 0 then
-            -- if focus is positive, remove random letters from the incantation
-            local letters = {}
-            for char in word:gmatch(".") do
-                table.insert(letters, char)
-            end
-            local amtToRemove = math.min(self.player.focus, #letters)
-            for j = 1, amtToRemove do
-                local randomIdx = math.random(1, #letters)
-                table.remove(letters, randomIdx)
-            end
-            words[i] = table.concat(letters)
+            -- if focus is positive, remove letters from the end of each word in the incantation
+            newWord = string.sub(newWord, 1, math.max(0, #newWord - self.player.focus))
+        end
+
+        if #newWord > 0 then
+            words[i] = newWord
         end
     end
 
