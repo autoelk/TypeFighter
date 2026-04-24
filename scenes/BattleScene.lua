@@ -234,8 +234,10 @@ function BattleScene:drawInputInterface()
     lg.printf(text, x + 8, y, barWidth - 16, "left")
 
     -- cursor
-    lg.setColor(COLORS.WHITE)
-    lg.rectangle("fill", cursorX, cursorY, cursorWidth, cursorHeight)
+    if self:shouldDrawCursor() then
+        lg.setColor(COLORS.WHITE)
+        lg.rectangle("fill", cursorX, cursorY, cursorWidth, cursorHeight)
+    end
 
     -- feedback below the bar
     lg.setFont(self.ctx.fonts.fontS)

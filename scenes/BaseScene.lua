@@ -14,6 +14,11 @@ function BaseScene:new(ctx)
         availableCommands = {},
         suggestedCommand = nil,
         suggestedCommandAutocomplete = false,
+
+        cursorIdleDuration = 0.1, -- how long to wait before blinking the cursor
+        cursorIdleTime = 0,
+        cursorBlinkDuration = 0.5, -- how long to blink the cursor for
+        cursorBlinkTime = 0,
     }
     return setmetatable(scene, self)
 end
@@ -25,6 +30,26 @@ function BaseScene:exit() end
 function BaseScene:update(dt) end
 
 function BaseScene:draw() end
+
+function BaseScene:registerTypingActivity()
+    self.cursorIdleTime = 0
+    self.cursorBlinkTime = 0
+end
+
+function BaseScene:updateCursorBlink(dt)
+    self.cursorIdleTime = self.cursorIdleTime + dt
+    if self.cursorIdleTime >= self.cursorIdleDuration then
+        self.cursorBlinkTime = self.cursorBlinkTime + dt
+    end
+end
+
+function BaseScene:shouldDrawCursor()
+    if self.cursorIdleTime < self.cursorIdleDuration then
+        return true
+    end
+    
+    return math.floor(self.cursorBlinkTime / self.cursorBlinkDuration) % 2 == 0
+end
 
 function BaseScene:drawInputInterface()
     local ui = self.ctx.ui
@@ -87,8 +112,10 @@ function BaseScene:drawInputInterface()
     lg.printf(rightMessage, -rightPadding, inputY, GAME_WIDTH, "right")
 
     -- cursor
-    lg.setColor(COLORS.WHITE)
-    lg.rectangle("fill", cursorX, cursorY, cursorWidth, cursorHeight)
+    if self:shouldDrawCursor() then
+        lg.setColor(COLORS.WHITE)
+        lg.rectangle("fill", cursorX, cursorY, cursorWidth, cursorHeight)
+    end
 end
 
 function BaseScene:updateSuggestedCommand()

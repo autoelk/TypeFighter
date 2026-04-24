@@ -60,6 +60,7 @@ function SceneManager:update(dt)
             scene:update(dt)
         end
     end
+    self:getCurrentScene():updateCursorBlink(dt)
 end
 
 function SceneManager:draw()
@@ -102,7 +103,9 @@ function SceneManager:textinput(t)
     end
     self.ctx.ui.input = self.ctx.ui.input .. t
     self.ctx.ui.messageLeft = "" -- clears placeholder that shares the input area
-    self:getCurrentScene():textinput(t)
+    local currentScene = self:getCurrentScene()
+    currentScene:registerTypingActivity()
+    currentScene:textinput(t)
 end
 
 function SceneManager:wheelmoved(x, y)
