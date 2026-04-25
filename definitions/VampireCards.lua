@@ -19,7 +19,6 @@ return {
         spell = BloodPactSpell,
         spellData = {},
         keywords = { Keyword.Sacrifice, Keyword.Consume },
-        previewSprite = "vampireSpellPlaceholder",
         description = function()
             return "whenever you sacrifice, draw a card. consume."
         end,

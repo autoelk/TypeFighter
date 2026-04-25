@@ -7,8 +7,9 @@ BloodPactSpell.__index = BloodPactSpell
 
 function BloodPactSpell:new(caster, target, spellData, anim)
     local spell = BaseSpell:new(caster, target, spellData, anim)
-    spell.x = target.renderer.x
-    spell.y = target.renderer.y
+    spell.x = caster.renderer.x
+    spell.y = caster.renderer.y
+    spell.anim.offsetX = 64
     spell:playOnce()
     return setmetatable(spell, self)
 end
