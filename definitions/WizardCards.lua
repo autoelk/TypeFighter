@@ -5,6 +5,7 @@ require "spells.wizard.FireballSpell"
 require "spells.wizard.TorrentSpell"
 require "spells.wizard.PortalSpell"
 require "spells.wizard.GemSpell"
+require "spells.wizard.OutburstSpell"
 
 local Keyword = require "enums.Keyword"
 
@@ -67,6 +68,17 @@ return {
         keywords = { Keyword.Focus },
         description = function(d)
             return "gain " .. d.focusAmount .. " focus. deal " .. d.damage .. " damage."
+        end,
+    },
+    outburst = {
+        character = "wizard",
+        incantationLength = 3,
+        spell = OutburstSpell,
+        spellData = { chars = 2, damage = 1 },
+        keywords = { Keyword.Focus },
+        previewSprite = "wizardSpellPlaceholder",
+        description = function(d)
+            return "deal " .. d.damage .. " damage for every " .. d.chars .. " characters in the incantation."
         end,
     },
 }
