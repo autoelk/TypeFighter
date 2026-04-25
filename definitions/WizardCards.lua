@@ -2,25 +2,13 @@
 require "spells.wizard.BoltSpell"
 require "spells.wizard.ForceFieldSpell"
 require "spells.wizard.FireballSpell"
-require "spells.wizard.HealSpell"
 require "spells.wizard.TorrentSpell"
-require "spells.wizard.BlessingSpell"
 require "spells.wizard.PortalSpell"
 require "spells.wizard.GemSpell"
 
 local Keyword = require "enums.Keyword"
 
 return {
-    blessing = {
-        character = "wizard",
-        incantationLength = 3,
-        spell = BlessingSpell,
-        spellData = { regenAmount = 5 },
-        keywords = {},
-        description = function(d)
-            return "apply " .. d.regenAmount .. " stacks of health regeneration."
-        end,
-    },
     bolt = {
         character = "wizard",
         incantationLength = 1,
@@ -59,16 +47,6 @@ return {
         keywords = { Keyword.Focus },
         description = function(d)
             return "gain " .. d.focusAmount .. " focus."
-        end,
-    },
-    heal = {
-        character = "wizard",
-        incantationLength = 2,
-        spell = HealSpell,
-        spellData = { healAmount = 10 },
-        keywords = {},
-        description = function(d)
-            return "gain " .. d.healAmount .. " health."
         end,
     },
     portal = {
