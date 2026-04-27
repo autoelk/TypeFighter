@@ -1,6 +1,3 @@
-local utf8 = require("utf8")
-local Text = require("util.Text")
-
 -- manages different game scenes and transitions between them
 SceneManager = {}
 SceneManager.__index = SceneManager
@@ -69,44 +66,15 @@ function SceneManager:draw()
         scene:draw()
     end
     
-    local currentScene = self:getCurrentScene()
-    currentScene:drawInputInterface()
+    self:getCurrentScene():drawInputInterface()
 end
 
 function SceneManager:keypressed(key)
-    local currentScene = self:getCurrentScene()
-    local uiInput = self.ctx.ui.input
-    if key == "backspace" and utf8.offset(uiInput, -1) then
-        uiInput = string.sub(uiInput, 1, utf8.offset(uiInput, -1) - 1)
-        self.ctx.ui.input = uiInput
-        currentScene:updateSuggestedCommand()
-        currentScene:registerTypingActivity()
-        return
-    end
-
-    if key == "return" then
-        local userInput = uiInput
-        if currentScene.suggestedCommand and currentScene.suggestedCommandAutocomplete then
-            userInput = currentScene.suggestedCommand
-        end
-        userInput = Text.trim(userInput)
-        self.ctx.ui.input = "" -- clear user input field
-        currentScene:updateSuggestedCommand()
-        currentScene:handleInput(userInput)
-        return
-    end
-    currentScene:keypressed(key)
+    self:getCurrentScene():keypressed(key)
 end
 
 function SceneManager:textinput(t)
-    if t == " " and self.ctx.ui.input:sub(-1) == " " then
-        return -- don't allow consecutive spaces
-    end
-    self.ctx.ui.input = self.ctx.ui.input .. t
-    self.ctx.ui.messageLeft = "" -- clears placeholder that shares the input area
-    local currentScene = self:getCurrentScene()
-    currentScene:registerTypingActivity()
-    currentScene:textinput(t)
+    self:getCurrentScene():textinput(t)
 end
 
 function SceneManager:wheelmoved(x, y)

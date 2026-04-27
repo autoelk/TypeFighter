@@ -1,3 +1,6 @@
+local utf8 = require("utf8")
+local Text = require("util.Text")
+
 -- Base class for all game scenes
 BaseScene = {}
 BaseScene.__index = BaseScene
@@ -136,7 +139,21 @@ end
 
 -- For single key presses
 function BaseScene:keypressed(key)
-    if key == "tab" and self.suggestedCommand and self.suggestedCommandAutocomplete then
+    local uiInput = self.ctx.ui.input
+    if key == "backspace" and utf8.offset(uiInput, -1) then
+        uiInput = string.sub(uiInput, 1, utf8.offset(uiInput, -1) - 1)
+        self.ctx.ui.input = uiInput
+        self:updateSuggestedCommand()
+        self:registerTypingActivity()
+    elseif key == "return" then
+        if self.suggestedCommand and self.suggestedCommandAutocomplete then
+            uiInput = self.suggestedCommand
+        end
+        uiInput = Text.trim(uiInput)
+        self.ctx.ui.input = "" -- clear user input field
+        self:updateSuggestedCommand()
+        self:handleInput(uiInput)
+    elseif key == "tab" and self.suggestedCommand and self.suggestedCommandAutocomplete then
         self.ctx.ui.input = self.suggestedCommand
         self.suggestedCommand = nil
         self.suggestedCommandAutocomplete = false
@@ -144,6 +161,12 @@ function BaseScene:keypressed(key)
 end
 
 function BaseScene:textinput(t)
+    if t == " " and self.ctx.ui.input:sub(-1) == " " then
+        return -- don't allow consecutive spaces
+    end
+    self.ctx.ui.input = self.ctx.ui.input .. t
+    self.ctx.ui.messageLeft = "" -- clears placeholder that shares the input area
+    self:registerTypingActivity()
     self:updateSuggestedCommand()
 end
 
