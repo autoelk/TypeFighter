@@ -15,10 +15,21 @@ function BaseScene:new(ctx)
         suggestedCommand = nil,
         suggestedCommandAutocomplete = false,
 
-        cursorIdleDuration = 0.1, -- how long to wait before blinking the cursor
-        cursorIdleTime = 0,
-        cursorBlinkDuration = 0.5, -- how long to blink the cursor for
-        cursorBlinkTime = 0,
+        inputBar = {
+            x = 0,
+            y = GAME_HEIGHT - 32,
+            height = 32,
+            width = GAME_WIDTH,
+            padding = 8,
+            cursor = {
+                width = 10,
+                height = 2,
+                idleDuration = 0.1, -- how long to wait before blinking the cursor
+                idleTime = 0,
+                blinkDuration = 0.5, -- how long to blink the cursor for
+                blinkTime = 0,
+            }
+        }
     }
     return setmetatable(scene, self)
 end
@@ -32,36 +43,30 @@ function BaseScene:update(dt) end
 function BaseScene:draw() end
 
 function BaseScene:registerTypingActivity()
-    self.cursorIdleTime = 0
-    self.cursorBlinkTime = 0
+    self.inputBar.cursor.idleTime = 0
+    self.inputBar.cursor.blinkTime = 0
 end
 
 function BaseScene:updateCursorBlink(dt)
-    self.cursorIdleTime = self.cursorIdleTime + dt
-    if self.cursorIdleTime >= self.cursorIdleDuration then
-        self.cursorBlinkTime = self.cursorBlinkTime + dt
+    self.inputBar.cursor.idleTime = self.inputBar.cursor.idleTime + dt
+    if self.inputBar.cursor.idleTime >= self.inputBar.cursor.idleDuration then
+        self.inputBar.cursor.blinkTime = self.inputBar.cursor.blinkTime + dt
     end
 end
 
 function BaseScene:shouldDrawCursor()
-    if self.cursorIdleTime < self.cursorIdleDuration then
+    if self.inputBar.cursor.idleTime < self.inputBar.cursor.idleDuration then
         return true
     end
     
-    return math.floor(self.cursorBlinkTime / self.cursorBlinkDuration) % 2 == 0
+    return math.floor(self.inputBar.cursor.blinkTime / self.inputBar.cursor.blinkDuration) % 2 == 0
 end
 
 function BaseScene:drawInputInterface()
     local ui = self.ctx.ui
-    local inputRectHeight = 32
-    local inputY = GAME_HEIGHT - inputRectHeight
-    local leftPadding = 8
-    local rightPadding = 8
-    local cursorWidth = 10
-    local cursorHeight = 2
 
     lg.setColor(COLORS.BLACK)
-    lg.rectangle("fill", 0, inputY, GAME_WIDTH, inputRectHeight)
+    lg.rectangle("fill", self.inputBar.x, self.inputBar.y, self.inputBar.width, self.inputBar.height)
     
     local text = ui.input
     local color = COLORS.WHITE
@@ -77,10 +82,10 @@ function BaseScene:drawInputInterface()
 
     local rightMessage = ui.messageRight or ""
     local rightMessageWidth = font:getWidth(rightMessage)
-    local inputWidth = GAME_WIDTH - leftPadding - rightPadding - rightMessageWidth - cursorWidth - 8
+    local inputWidth = self.inputBar.width - (self.inputBar.padding * 2) - rightMessageWidth - self.inputBar.cursor.width - 8
     inputWidth = math.max(inputWidth, 0)
 
-    local drawX = leftPadding
+    local drawX = self.inputBar.x + self.inputBar.padding
     local textWidth = font:getWidth(text)
     local textOffsetX = 0
     if isTyping and textWidth > inputWidth then
@@ -89,7 +94,7 @@ function BaseScene:drawInputInterface()
     end
 
     local prevScissorX, prevScissorY, prevScissorW, prevScissorH = lg.getScissor()
-    lg.setScissor(drawX, inputY, inputWidth, inputRectHeight)
+    lg.setScissor(drawX, self.inputBar.y, inputWidth, self.inputBar.height)
     if isTyping and self.suggestedCommand then
         text = {
             COLORS.WHITE, text,
@@ -101,20 +106,20 @@ function BaseScene:drawInputInterface()
     if textWidth > inputWidth then
         cursorX = drawX + inputWidth
     end
-    local cursorY = inputY + font:getHeight() * font:getLineHeight() + 2
+    local cursorY = self.inputBar.y + font:getHeight() * font:getLineHeight() + 2
 
     -- main text
-    lg.print(text, drawX + textOffsetX, inputY)
+    lg.print(text, drawX + textOffsetX, self.inputBar.y)
     lg.setScissor(prevScissorX, prevScissorY, prevScissorW, prevScissorH)
 
     -- feedback message
     lg.setColor(COLORS.GREY)
-    lg.printf(rightMessage, -rightPadding, inputY, GAME_WIDTH, "right")
+    lg.printf(rightMessage, self.inputBar.x - self.inputBar.padding, self.inputBar.y, self.inputBar.width, "right")
 
     -- cursor
     if self:shouldDrawCursor() then
         lg.setColor(COLORS.WHITE)
-        lg.rectangle("fill", cursorX, cursorY, cursorWidth, cursorHeight)
+        lg.rectangle("fill", cursorX, cursorY, self.inputBar.cursor.width, self.inputBar.cursor.height)
     end
 end
 

@@ -26,6 +26,21 @@ function BattleScene:new(ctx)
     scene.activeSpells = {}
     scene.battleState = "normal" -- normal, dying, ended
     scene.inputBarState = "normal" -- normal, incantation
+    scene.inputBar = {
+        x = math.floor((GAME_WIDTH - 512) / 2),
+        y = 200,
+        height = 32,
+        width = 512,
+        padding = 8,
+        cursor = {
+            width = 10,
+            height = 2,
+            idleDuration = 0.1,
+            idleTime = 0,
+            blinkDuration = 0.5,
+            blinkTime = 0,
+        }
+    }
     return scene
 end
 
@@ -155,12 +170,7 @@ function BattleScene:refreshAvailableCommands()
         self:addAvailableCommand("pause", true)
         self:removeAvailableCommand("cancel")
         self:removeAvailableCommand("quit")
-        local drawWord = self.humanController.drawWord
-        if self.humanController.player:canDrawCard() and drawWord then
-            self.ctx.ui.messageRight = "type \"" .. drawWord .. "\" to draw, or type card name to cast"
-        else
-            self.ctx.ui.messageRight = "type card name to cast"
-        end
+        self.ctx.ui.messageRight = "type card name to select"
     end
 end
 
@@ -179,15 +189,23 @@ end
 
 -- input bar for the main gameplay scene.
 function BattleScene:drawInputInterface()
+    if self.inputBarState == "normal" then
+        BaseScene.drawInputInterface(self)
+    elseif self.inputBarState == "incantation" then
+        self:drawIncantationInputInterface()
+    end
+end
+
+function BattleScene:drawIncantationInputInterface()
     local ui = self.ctx.ui
     local text = ui.input
     local barWidth = 512
-    
+
     local cursorWidth = 10
     local cursorHeight = 2
     local progCurWord, remCurWord = "", ""
     local modifiedInput = ui.input -- used for cursor positioning for incantation typing
-    
+
     local color = COLORS.WHITE
     if ui.input == "" then
         -- if the user hasn't typed anything, show the reminder text.
@@ -200,19 +218,20 @@ function BattleScene:drawInputInterface()
     elseif ui.input ~= "" and self.suggestedCommand then
         -- user is typing and we have a suggested command
         if self.inputBarState == "incantation" and self.suggestedCommand == self.humanController:getIncantationString() then
-            text, progCurWord, remCurWord, modifiedInput = Text.colorizeIncantation(self.humanController:getIncantationString(), ui.input)
+            text, progCurWord, remCurWord, modifiedInput = Text.colorizeIncantation(
+            self.humanController:getIncantationString(), ui.input)
         else
             text = Text.colorizeText(self.suggestedCommand, ui.input, COLORS.WHITE, COLORS.WHITE, COLORS.GREY)
         end
     end
-    
+
     local x = math.floor((GAME_WIDTH - barWidth) / 2)
     local y = 200
     local font = self.ctx.fonts.fontM
-    
+
     local _, wrappedText = font:getWrap(text, barWidth - 16)
     local barHeight = #wrappedText * (font:getHeight() * font:getLineHeight()) + 8
-    
+
     -- cursor placement
     local _, wrappedInput = font:getWrap(modifiedInput, barWidth - 16)
     local _, wrappedInputWithWord = font:getWrap(modifiedInput .. remCurWord, barWidth - 16)
