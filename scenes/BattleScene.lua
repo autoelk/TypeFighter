@@ -105,7 +105,7 @@ function BattleScene:update(dt)
         self.humanController.player.effects = {}
         self.humanController.player.hand = {}
         self.humanController.drawWord = nil
-        self.humanController.incantation = nil
+        self.humanController.incantation = {}
 
         self.enemyController.player.selectedCard = nil
         self.enemyController.player.effects = {}
@@ -130,7 +130,7 @@ function BattleScene:updateSuggestedCommand()
             self.suggestedCommand = matchingCommands[1]
             self.suggestedCommandAutocomplete = self.availableCommands[self.suggestedCommand]
         else
-            self.suggestedCommand = self.humanController.incantation
+            self.suggestedCommand = self.humanController:getIncantationString()
             self.suggestedCommandAutocomplete = false
         end
     else
@@ -141,10 +141,10 @@ end
 function BattleScene:refreshAvailableCommands()
     self.availableCommands = {}
     if self.inputBarState == "incantation" then
-        self:addAvailableCommand(self.humanController.incantation, false)
+        self:addAvailableCommand(self.humanController:getIncantationString(), false)
         self:addAvailableCommand("cancel", true)
         self:addAvailableCommand("quit", true)
-        self.ctx.ui.messageLeft = tostring(self.humanController.incantation)
+        self.ctx.ui.messageLeft = tostring(self.humanController:getIncantationString())
         self.ctx.ui.messageRight = "type incantation above to cast"
     else
         -- normal input bar
@@ -194,13 +194,13 @@ function BattleScene:drawInputInterface()
         if self.inputBarState == "normal" then
             text = ui.messageLeft or ""
         elseif self.inputBarState == "incantation" then
-            text = tostring(self.humanController.incantation)
+            text = tostring(self.humanController:getIncantationString())
         end
         color = COLORS.GREY
     elseif ui.input ~= "" and self.suggestedCommand then
         -- user is typing and we have a suggested command
-        if self.inputBarState == "incantation" and self.suggestedCommand == self.humanController.incantation then
-            text, progCurWord, remCurWord, modifiedInput = Text.colorizeIncantation(self.humanController.incantation, ui.input)
+        if self.inputBarState == "incantation" and self.suggestedCommand == self.humanController:getIncantationString() then
+            text, progCurWord, remCurWord, modifiedInput = Text.colorizeIncantation(self.humanController:getIncantationString(), ui.input)
         else
             text = Text.colorizeText(self.suggestedCommand, ui.input, COLORS.WHITE, COLORS.WHITE, COLORS.GREY)
         end

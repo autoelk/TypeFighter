@@ -20,12 +20,12 @@ end
 function HumanPlayerController:reset()
     BasePlayerController.reset(self)
     self:generateDrawWord()
-    self.incantation = nil
+    self.incantation = {}
     self.lastAttemptedCardName = nil
 end
 
 function HumanPlayerController:draw()
-    self.renderer:draw(self.drawWord, self.incantation ~= nil)
+    self.renderer:draw(self.drawWord, #self.incantation > 0)
 end
 
 function HumanPlayerController:handleInput(userInput)
@@ -54,14 +54,14 @@ function HumanPlayerController:handleInput(userInput)
 end
 
 function HumanPlayerController:handleIncantationInput(userInput)
-    if userInput == self.incantation and self.player.selectedCard then
+    if userInput == self:getIncantationString() and self.player.selectedCard then
         self.lastAttemptedCardName = self.player.selectedCard.name
         local castResult = self:castSelectedCard()
-        self.incantation = nil
+        self.incantation = {}
 
         return castResult
     elseif userInput == "quit" or userInput == "cancel" then
-        self.incantation = nil
+        self.incantation = {}
         table.insert(self.player.hand, self.player.selectedCard)
         self.player.selectedCard = nil
         return InputResult.IncantationCancelled

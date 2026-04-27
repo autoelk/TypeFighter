@@ -16,7 +16,7 @@ function BasePlayerController:new(ctx, player, renderer)
         renderer = renderer,
         isHuman = nil,
         opponent = nil,
-        incantation = nil,
+        incantation = {}, -- List of words in the current incantation
     }
     player.onDamage = function(amt)
         controller.renderer:showDamage(amt)
@@ -49,24 +49,28 @@ function BasePlayerController:update(dt)
     self.renderer:update(dt)
 end
 
-function BasePlayerController:generateIncantation(length)
-    local result = ""
+function BasePlayerController:getIncantationString()
+    return table.concat(self.incantation, " ")
+end
 
-    for i = 1, length do
+function BasePlayerController:generateIncantation(numWords)
+    local result = {}
+
+    for i = 1, numWords do
         local word = self.player.wordBank[math.random(1, #self.player.wordBank)]
-        result = result .. " " .. word
+        table.insert(result, word)
     end
 
     result = self:_applyFocus(result)
     result = self:_applyShifted(result)
 
-    return Text.trim(result)
+    return result
 end
 
 function BasePlayerController:_applyFocus(incantation)
     local alphabet = "abcdefghijklmnopqrstuvwxyz"
     local words = {}
-    for word in incantation:gmatch("%S+") do
+    for _, word in ipairs(incantation) do
         local newWord = word
         if self.player.focus < 0 then
             -- if focus is negative, add random letters to the incantation
@@ -90,8 +94,7 @@ function BasePlayerController:_applyFocus(incantation)
             table.insert(words, newWord)
         end
     end
-
-    return table.concat(words, " ")
+    return words
 end
 
 -- randomly capitalize letters in each word of the incantation equal to the player's shifted stat
@@ -101,7 +104,7 @@ function BasePlayerController:_applyShifted(incantation)
     end
 
     local words = {}
-    for word in incantation:gmatch("%S+") do
+    for _, word in ipairs(incantation) do
         local chars = {}
         for i = 1, #word do
             table.insert(chars, string.sub(word, i, i))
@@ -124,8 +127,8 @@ function BasePlayerController:_applyShifted(incantation)
 
         table.insert(words, table.concat(chars))
     end
-
-    return table.concat(words, " ")
+    
+    return words
 end
 
 function BasePlayerController:castSelectedCard()

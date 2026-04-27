@@ -14,6 +14,6 @@ end
 
 function OutburstSpell:onStart()
     local player = self.target.player
-    local incantation = self.caster.incantation
+    local incantation = self.caster:getIncantationString()
     player:damage(self.spellData.damage * math.floor(#incantation / self.spellData.chars))
 end

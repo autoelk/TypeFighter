@@ -20,7 +20,7 @@ function Card:new(ctx, name, x, y)
         x = x,
         y = y,
         name = name,
-        incantationLength = def.incantationLength,
+        incantationLength = def.incantationLength, -- Number of words in the incantation
         character = def.character,
         color = nil,
         anim = ctx.resourceManager:newAnimation(previewKey, "loop"),
